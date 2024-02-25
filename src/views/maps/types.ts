@@ -1,0 +1,9 @@
+import { MapTileDto } from '../../common/api/.generated';
+
+export type UserSprite = Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
+
+export type MapTileSprite = MapTileDto & {
+    spriteRef: Phaser.GameObjects.Rectangle | undefined;
+};
+
+export type CursorKey = Phaser.Types.Input.Keyboard.CursorKeys;
