@@ -1,7 +1,10 @@
+import { MapsComponent } from '../maps/MapsComponent';
+
 export const GameComponent = () => {
     return (
         <main>
-            <h2>Epoch Forgotten - World Map</h2>
+            <h1>Epoch Forgotten</h1>
+            <MapsComponent />
         </main>
     );
 };

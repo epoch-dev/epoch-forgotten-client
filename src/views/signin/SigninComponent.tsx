@@ -3,8 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { UsersClient } from '../../common/api/client';
 import { isEmpty } from '../../common/utils';
 import { UserAuthDto } from '../../common/api/.generated';
+import { ToastService } from '../../common/services/ToastService';
+import { StorageService } from '../../common/services/StorageService';
 
 export const SigninComponent = () => {
+    // TODO - optimize with use-form-hook
     const [formData, setFormData] = useState<UserAuthDto>({
         username: '',
         password: '',
@@ -13,20 +16,18 @@ export const SigninComponent = () => {
     const navigate = useNavigate();
 
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = event.target;
-        setFormData({ ...formData, [name]: value });
+        const { id, value } = event.target;
+        setFormData({ ...formData, [id]: value });
     };
 
-    const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
+    const handleSignin = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         if (!validateForm()) {
             return;
         }
         UsersClient.signin(formData).then((res) => {
-            // TODO
-            // StorageService.set({ key: 'user', data: res.data });
-            // ToastService.success({ text: 'Welcome back!' });
-            console.log(res);
+            StorageService.set({ key: 'user', data: res.data });
+            ToastService.success({ message: 'Welcome back!' });
             navigate('game');
         });
     };
@@ -46,13 +47,12 @@ export const SigninComponent = () => {
     return (
         <main>
             <h2>Epoch Forgotten</h2>
-            <form onSubmit={handleLogin}>
+            <form onSubmit={handleSignin}>
                 <label htmlFor="username">Username:</label>
                 <input
                     value={formData.username}
                     onChange={handleInputChange}
                     type="text"
-                    name="username"
                     id="username"
                     autoComplete="username"
                 />
@@ -62,7 +62,6 @@ export const SigninComponent = () => {
                     value={formData.password}
                     onChange={handleInputChange}
                     type="password"
-                    name="password"
                     id="password"
                     autoComplete="current-password"
                 />
