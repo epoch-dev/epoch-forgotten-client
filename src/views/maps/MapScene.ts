@@ -1,12 +1,13 @@
 import { Scene } from 'phaser';
 import { AssetsService } from '../../common/services/AssetsService';
 import { MapsService } from './MapsService';
-import { MapTileSprite, UserSprite } from './types';
+import { MapImage, MapTileSprite, UserSprite } from './types';
 import { MapTileDto, MapTileType } from '../../common/api/.generated';
 
 export class MapScene extends Scene {
     private tiles: MapTileSprite[] = [];
     private user?: UserSprite;
+    private mapImageRef?: MapImage;
     private blockMovement = false;
 
     constructor() {
@@ -26,11 +27,12 @@ export class MapScene extends Scene {
         const { width, height } = await MapsService.getMapSize();
         const userPosition = await MapsService.getUserPosition();
 
+        this.mapImageRef?.destroy();
         this.load.image(`map-${mapData.name}`, AssetsService.getMapUri(mapData.imageUri));
         this.load.start();
 
         setTimeout(() => {
-            this.add.image(width / 2, height / 2, `map-${mapData.name}`);
+            this.mapImageRef = this.add.image(width / 2, height / 2, `map-${mapData.name}`);
             this.drawTiles({ tiles: mapData.tiles });
 
             this.user?.destroy();
@@ -78,7 +80,10 @@ export class MapScene extends Scene {
             return;
         }
         const cursor = this.input.keyboard.createCursorKeys();
-        const newPosition = await MapsService.moveUser(cursor);
+        const { newPosition, mapChanged } = await MapsService.moveUser(cursor);
+        if (mapChanged) {
+            this.loadMap();
+        }
         this.user.setPosition(newPosition.x, newPosition.y);
     }
 }

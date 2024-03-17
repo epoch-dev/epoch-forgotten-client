@@ -51,13 +51,24 @@ export class MapsService {
             ? MapMoveDirection.Down
             : undefined;
         if (!direction || this.lastMove + this.MOVE_INTERVAL > getCurrentTimeStamp()) {
-            return this.getUserPosition();
+            return {
+                newPosition: await this.getUserPosition(),
+                mapChanged: false,
+            };
         }
-        const res = await MapsClient.move({
-            direction,
-        });
+        const moveResult = (
+            await MapsClient.move({
+                direction,
+            })
+        ).data;
         this.lastMove = getCurrentTimeStamp();
-        this.userPosition = res.data.newPosition;
-        return this.getUserPosition();
+        this.userPosition = moveResult.newPosition;
+        if (moveResult.newMapData) {
+            await this.initialize();
+        }
+        return {
+            newPosition: await this.getUserPosition(),
+            mapChanged: moveResult.newMapData !== undefined,
+        };
     }
 }
