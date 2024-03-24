@@ -19,7 +19,7 @@ export class MapScene extends Scene {
     }
 
     create() {
-        this.loadMap().then();
+        void this.loadMap();
     }
 
     public async loadMap() {
@@ -72,7 +72,7 @@ export class MapScene extends Scene {
     }
 
     update() {
-        this.moveUser().then();
+        void this.moveUser();
     }
 
     private async moveUser() {
