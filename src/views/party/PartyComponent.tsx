@@ -1,40 +1,81 @@
+import style from './PartyComponent.module.scss';
 import { useEffect, useState } from 'react';
-import { CharacterDto } from '../../common/api/.generated';
+import { CharacterDto, PartySlot } from '../../common/api/.generated';
 import { CharactersClient } from '../../common/api/client';
 
 export const PartyComponent = () => {
     const [party, setParty] = useState<CharacterDto[]>([]);
+    const [roster, setRoster] = useState<CharacterDto[]>([]);
 
     useEffect(() => {
         void setupParty();
     }, []);
 
     const setupParty = async () => {
-        const partyData = (await CharactersClient.getParty()).data;
-        setParty(partyData);
+        const rosterData = (await CharactersClient.getRoster()).data;
+        setRoster(rosterData.filter((c) => c.partySlot === PartySlot.None));
+        setParty(rosterData.filter((c) => c.partySlot !== PartySlot.None));
+    };
+
+    const addToParty = async (characterId: string) => {
+        const character = roster.find((c) => c.id === characterId);
+        if (!character || party.length >= 3) {
+            return;
+        }
+        let slot: PartySlot = PartySlot.None;
+        if (!party.some((c) => c.partySlot === PartySlot.First)) {
+            slot = PartySlot.First;
+        } else if (!party.some((c) => c.partySlot === PartySlot.Second)) {
+            slot = PartySlot.Second;
+        } else if (!party.some((c) => c.partySlot === PartySlot.Third)) {
+            slot = PartySlot.Third;
+        } else {
+            return;
+        }
+        await CharactersClient.addToParty({ characterId, slot });
+        setParty((p) => [{ ...character, partySlot: slot }, ...p]);
+        setRoster((r) => r.filter((c) => c.id !== characterId));
+    };
+
+    const removeFromParty = async (characterId: string) => {
+        const character = party.find((c) => c.id === characterId);
+        if (!character) {
+            return;
+        }
+        await CharactersClient.removeFromParty({ characterId });
+        setParty((p) => p.filter((c) => c.id !== characterId));
+        setRoster((r) => [character, ...r]);
     };
 
     // dev only
-    const addToParty = async () => {
+    const _recruitCharacter = async () => {
         await CharactersClient.recruitCharacter({
-            characterName: 'character-story-1',
-            level: 13,
+            characterName: 'character-story-2',
+            level: 123,
             affinity: 2,
         });
         await setupParty();
     };
 
     return (
-        <>
-            Party Component
-            {party.map((character) => (
-                <li key={character.id}>
-                    {character.name} ({character.level})
-                </li>
-            ))}
-            <hr />
-            {/* TODO - remove, dev only */}
-            <button onClick={addToParty}>Extend</button>
-        </>
+        <section className={style.partyWrapper}>
+            <h2>Party</h2>
+            <div className="partyWrapper">
+                {party.map((character) => (
+                    <div onClick={() => removeFromParty(character.id)} key={character.id}>
+                        {character.name} ({character.level})
+                    </div>
+                ))}
+            </div>
+            <h2>Roster</h2>
+            <div className="rosterWrapper">
+                {roster.map((character) => (
+                    <div onClick={() => addToParty(character.id)} key={character.id}>
+                        {character.name} ({character.level})
+                    </div>
+                ))}
+            </div>
+            <button onClick={_recruitCharacter}>Recruit</button>
+        </section>
     );
 };
