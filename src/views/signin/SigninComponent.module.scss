@@ -1,0 +1,32 @@
+@import '../../common/styles/variables.scss';
+@import '../../common/styles/mixins.scss';
+
+.signinWrapper {
+    @include boxShadow;
+
+    width: 90%;
+    max-width: 40rem;
+    margin: 15vh auto;
+    padding: 2rem 1rem;
+    background: $color-dark;
+}
+
+.logoWrapper {
+    margin: auto;
+    text-align: center;
+
+    img {
+        animation: logoShine 5s;
+        animation-iteration-count: infinite;
+        animation-direction: alternate;
+    }
+}
+
+@keyframes logoShine {
+    0% {
+        filter: hue-rotate(0deg);
+    }
+    100% {
+        filter: hue-rotate(360deg);
+    }
+}

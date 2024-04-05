@@ -1,0 +1,19 @@
+:root {
+    height: 100vh;
+    background: linear-gradient(
+            90deg,
+            rgba(36, 22, 18, 0.8) 0%,
+            rgba(43, 43, 54, 0.9) 27%,
+            rgba(4, 7, 8, 0.8) 84%
+        ),
+        url('./images/brand/brand-bg.png');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+canvas {
+    position: absolute;
+    top: 10rem;
+    left: calc(50% - 550px);
+}

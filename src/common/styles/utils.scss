@@ -1,0 +1,64 @@
+@import './variables.scss';
+
+.title {
+    width: 100%;
+    margin: 2rem 0;
+    text-align: center;
+    font-size: 1.8rem;
+    line-height: 2rem;
+    color: lighten($color-primary, 10);
+}
+
+.subtitle {
+    width: 100%;
+    margin: 1rem 0;
+    text-align: center;
+    font-size: 1.4rem;
+    line-height: 1.5rem;
+    color: $color-light;
+}
+
+.btn {
+    width: 100%;
+    display: block;
+    padding: 2rem 0;
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    text-align: center;
+    color: $color-light;
+    background: darken($color-dark, 10);
+
+    &:hover {
+        cursor: pointer;
+        color: $color-primary;
+        background: darken($color-dark, 20);
+    }
+}
+
+.light {
+    color: $color-light;
+}
+
+.dark {
+    color: $color-dark;
+}
+
+.primary {
+    color: $color-primary;
+}
+
+.bold {
+    font-weight: 600;
+}
+
+.thin {
+    font-weight: 200;
+}
+
+.left {
+    text-align: left;
+}
+
+.gone {
+    display: none;
+}

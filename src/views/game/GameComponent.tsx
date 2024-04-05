@@ -9,7 +9,6 @@ export const GameComponent = () => {
     return (
         <>
             <main>
-                <h1>Epoch Forgotten</h1>
                 {view === GameView.World && <MapsComponent />}
                 {view === GameView.Party && <PartyComponent />}
             </main>
