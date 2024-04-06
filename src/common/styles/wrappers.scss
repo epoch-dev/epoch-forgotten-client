@@ -1,3 +1,6 @@
+@import './variables.scss';
+@import './mixins.scss';
+
 :root {
     height: 100vh;
     background: linear-gradient(
@@ -12,8 +15,43 @@
     background-size: cover;
 }
 
-canvas {
-    position: absolute;
-    top: 10rem;
-    left: calc(50% - 550px);
+.contentWrapper {
+    @include insetShadow();
+
+    max-width: 1100px;
+    width: 90%;
+    height: 600px;
+    margin: 10vh auto 1rem auto;
+    padding: 1rem;
+    background: $color-dark;
+    color: $color-light;
+
+    canvas {
+        margin: -1rem;
+    }
+}
+
+.navWrapper {
+    max-width: 1100px;
+    width: 90%;
+    margin: 0 auto;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+
+    .navItem {
+        width: 10rem;
+        padding: 0.7rem;
+        font-size: 20px;
+        background: $color-primary;
+        border: 2px solid $color-primary;
+        border-radius: 0.7rem;
+
+        &:hover {
+            cursor: pointer;
+            background: $color-light;
+            color: darken($color-primary, 10);
+            border: 2px solid darken($color-primary, 10);
+        }
+    }
 }

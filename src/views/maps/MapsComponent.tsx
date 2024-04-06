@@ -27,9 +27,5 @@ export const MapsComponent = () => {
         };
     }, []);
 
-    return (
-        <>
-            <h2>Current Map</h2>
-        </>
-    );
+    return <section id="sceneWrapper"></section>;
 };

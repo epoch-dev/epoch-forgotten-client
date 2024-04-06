@@ -1,0 +1,25 @@
+@import '../../common/styles/variables.scss';
+@import '../../common/styles/mixins.scss';
+
+.partyWrapper {
+    height: 12rem;
+    display: flex;
+    gap: 1rem;
+}
+
+.characterItem {
+    @include insetShadow($color-dark);
+
+    width: 20%;
+    padding: 1rem;
+    background: darken($color-light, 10);
+    color: $color-dark;
+
+    p {
+        margin: 0;
+    }
+
+    &:hover {
+        cursor: pointer;
+    }
+}

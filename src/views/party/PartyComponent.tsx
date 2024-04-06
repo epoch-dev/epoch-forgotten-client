@@ -47,6 +47,29 @@ export const PartyComponent = () => {
         setRoster((r) => [character, ...r]);
     };
 
+    const renderCharacter = (character: CharacterDto) => {
+        return (
+            <>
+                <p className="bold primary">
+                    {character.name} ({character.level})
+                </p>
+                <hr />
+                <p>
+                    Affinity: <b>{character.affinity}</b>
+                </p>
+                <p>
+                    Health: <b>{character.attributes.health}</b>
+                </p>
+                <p>
+                    Mana: <b>{character.attributes.mana}</b>
+                </p>
+                <p>
+                    Mana: <b>{character.attributes.mana}</b>
+                </p>
+            </>
+        );
+    };
+
     // dev only
     const _recruitCharacter = async () => {
         await CharactersClient.recruitCharacter({
@@ -58,24 +81,30 @@ export const PartyComponent = () => {
     };
 
     return (
-        <section className={style.partyWrapper}>
-            <h2>Party</h2>
-            <div className="partyWrapper">
+        <section>
+            <h2 className="subtitle primary">Party</h2>
+            <div className={style.partyWrapper}>
                 {party.map((character) => (
-                    <div onClick={() => removeFromParty(character.id)} key={character.id}>
-                        {character.name} ({character.level})
+                    <div
+                        onClick={() => removeFromParty(character.id)}
+                        key={character.id}
+                        className={style.characterItem}>
+                        {renderCharacter(character)}
                     </div>
                 ))}
             </div>
-            <h2>Roster</h2>
-            <div className="rosterWrapper">
+            <h2 className="subtitle primary">Roster</h2>
+            <div className={style.partyWrapper}>
                 {roster.map((character) => (
-                    <div onClick={() => addToParty(character.id)} key={character.id}>
-                        {character.name} ({character.level})
+                    <div
+                        onClick={() => addToParty(character.id)}
+                        key={character.id}
+                        className={style.characterItem}>
+                        {renderCharacter(character)}
                     </div>
                 ))}
             </div>
-            <button onClick={_recruitCharacter}>Recruit</button>
+            {/* <button onClick={_recruitCharacter}>Recruit</button> */}
         </section>
     );
 };
