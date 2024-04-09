@@ -1,3 +1,4 @@
+import style from './SigninComponent.module.scss';
 import { useState, ChangeEvent, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UsersClient } from '../../common/api/client';
@@ -14,6 +15,7 @@ export const SigninComponent = () => {
     });
     const [formErrors, setFormErrors] = useState<Partial<UserAuthDto>>();
     const navigate = useNavigate();
+    const particlesCount = Array.from({ length: 125 }, (_, index) => index + 1);
 
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
         const { id, value } = event.target;
@@ -45,29 +47,55 @@ export const SigninComponent = () => {
     };
 
     return (
-        <main>
-            <h2>Epoch Forgotten</h2>
-            <form onSubmit={handleSignin}>
-                <label htmlFor="username">Username:</label>
-                <input
-                    value={formData.username}
-                    onChange={handleInputChange}
-                    type="text"
-                    id="username"
-                    autoComplete="username"
-                />
-                {formErrors?.username}
-                <label htmlFor="password">Password:</label>
-                <input
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    type="password"
-                    id="password"
-                    autoComplete="current-password"
-                />
-                {formErrors?.password}
-                <button type="submit">Signin</button>
-            </form>
-        </main>
+        <>
+            <main className={style.signinWrapper}>
+                <h2 className="title">Epoch Forgotten</h2>
+                <figure className={style.logoWrapper}>
+                    <img src="./images/brand/brand.png" alt="logo" />
+                </figure>
+                <form onSubmit={handleSignin} className="formWrapper">
+                    <fieldset>
+                        <label htmlFor="username" className="formLabel">
+                            Username:
+                        </label>
+                        <input
+                            value={formData.username}
+                            onChange={handleInputChange}
+                            type="text"
+                            id="username"
+                            autoComplete="username"
+                            className="formInput"
+                        />
+                        {formErrors?.username && <p className="formError">{formErrors?.username}</p>}
+                    </fieldset>
+                    <fieldset>
+                        <label htmlFor="password" className="formLabel">
+                            Password:
+                        </label>
+                        <input
+                            value={formData.password}
+                            onChange={handleInputChange}
+                            type="password"
+                            id="password"
+                            autoComplete="current-password"
+                            className="formInput"
+                        />
+                        {formErrors?.password && <p className="formError">{formErrors?.password}</p>}
+                    </fieldset>
+                    <div className="formActionsWrapper">
+                        <button type="submit" className="formSubmitBtn">
+                            Signin
+                        </button>
+                    </div>
+                </form>
+            </main>
+            <div style={{ position: 'absolute', zIndex: 1 }}>
+                {particlesCount.map((index) => (
+                    <div className={style.particleWrapper} key={index}>
+                        <div className={style.particleItem}></div>
+                    </div>
+                ))}
+            </div>
+        </>
     );
 };

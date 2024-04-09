@@ -1,0 +1,85 @@
+@import './variables.scss';
+@import './mixins.scss';
+
+.formWrapper {
+    padding: 2rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    background: $color-dark;
+    color: $color-light;
+
+    fieldset {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        border: none;
+    }
+}
+
+.formLabel {
+    font-size: 16px;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    display: block;
+}
+
+.formInput {
+    @include boxShadowSm($color-primary);
+
+    width: 100%;
+    appearance: none;
+    padding: 0.5rem;
+    font-size: 16px;
+    border: 1px solid darken($color-light, 25);
+}
+
+.formActionsWrapper {
+    display: flex;
+    margin-top: 2rem;
+    gap: 1rem;
+
+    button {
+        width: 100%;
+    }
+}
+
+.formSubmitBtn {
+    @include boxShadowSm;
+
+    font-weight: 500;
+    font-size: 18px;
+    padding: 0.5rem 1rem;
+    text-align: center;
+    background: darken($color-primary, 10);
+    color: $color-light;
+
+    &:hover {
+        @include boxShadow;
+        cursor: pointer;
+        background: darken($color-primary, 15);
+    }
+}
+
+.formCancelBtn {
+    @include boxShadowSm;
+
+    font-weight: 500;
+    font-size: 18px;
+    padding: 0.5rem 1rem;
+    text-align: center;
+    background: darken($color-light, 10);
+
+    &:hover {
+        @include boxShadow;
+        cursor: pointer;
+        background: darken($color-light, 15);
+    }
+}
+
+.formError {
+    margin: 0.5rem 0 0 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: $color-error;
+}

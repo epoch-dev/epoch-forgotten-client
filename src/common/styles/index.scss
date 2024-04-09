@@ -1,11 +1,46 @@
 @import 'react-toastify/dist/ReactToastify.css';
+@import './variables.scss';
+@import './wrappers.scss';
+@import './forms.scss';
+@import './utils.scss';
 
 :root {
     font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
     line-height: 1.5;
     font-weight: 400;
+    letter-spacing: 0.5px;
     font-synthesis: none;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body {
+    padding: 0;
+    margin: 0;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+*::selection {
+    color: $color-light;
+    background: $color-primary;
+    outline: $color-dark;
+}
+
+*:focus {
+    outline: none;
+}
+
+button {
+    letter-spacing: 0.5px;
+    border: none;
+    transition: 0.5s all linear;
+}
+
+input {
+    letter-spacing: 0.5px;
 }

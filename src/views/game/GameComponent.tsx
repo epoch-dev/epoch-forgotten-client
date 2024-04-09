@@ -8,14 +8,13 @@ export const GameComponent = () => {
 
     return (
         <>
-            <main>
-                <h1>Epoch Forgotten</h1>
+            <main className='contentWrapper'>
                 {view === GameView.World && <MapsComponent />}
                 {view === GameView.Party && <PartyComponent />}
             </main>
-            <nav>
-                <button onClick={() => setView(GameView.World)}>World</button>
-                <button onClick={() => setView(GameView.Party)}>Party</button>
+            <nav className='navWrapper'>
+                <button onClick={() => setView(GameView.World)} className='navItem'>World</button>
+                <button onClick={() => setView(GameView.Party)} className='navItem'>Party</button>
             </nav>
         </>
     );
