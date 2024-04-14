@@ -1,4 +1,9 @@
-import { MapDataDto, MapMoveDirection, MapPoint } from '../../common/api/.generated';
+import {
+    MapDataDto,
+    MapMoveDirection,
+    MapMoveResultDtoEncounterData,
+    MapPoint,
+} from '../../common/api/.generated';
 import { MapsClient } from '../../common/api/client';
 import { getCurrentTimeStamp } from '../../common/utils';
 import { CursorKey } from './types';
@@ -40,7 +45,11 @@ export class MapsService {
         return this.userPosition!;
     }
 
-    public static async moveUser(cursor: CursorKey) {
+    public static async moveUser(cursor: CursorKey): Promise<{
+        newPosition: MapPoint;
+        mapChanged: boolean;
+        encounter: MapMoveResultDtoEncounterData | undefined;
+    }> {
         const direction = cursor.left.isDown
             ? MapMoveDirection.Left
             : cursor.right.isDown
@@ -54,6 +63,7 @@ export class MapsService {
             return {
                 newPosition: await this.getUserPosition(),
                 mapChanged: false,
+                encounter: undefined,
             };
         }
         const moveResult = (
@@ -69,6 +79,7 @@ export class MapsService {
         return {
             newPosition: await this.getUserPosition(),
             mapChanged: moveResult.newMapData !== undefined,
+            encounter: moveResult.encounterData,
         };
     }
 }

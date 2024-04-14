@@ -1,13 +1,20 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { MapScene } from './MapScene';
 import { MapsService } from './MapsService';
+import { useGameStore } from '../game/GameStore';
+import { GameView } from '../game/types';
 
 export const MapsComponent = () => {
-    const [, setMapScene] = useState<MapScene | undefined>();
+    const { view, setScene, setView, setEncounter } = useGameStore();
 
     useEffect(() => {
         MapsService.initialize();
-        const scene = new MapScene();
+        const scene = new MapScene({
+            onStartBattle: (encounter) => {
+                setView(GameView.Battle);
+                setEncounter(encounter);
+            },
+        });
         const game = new Phaser.Game({
             width: 1100,
             height: 600,
@@ -21,11 +28,11 @@ export const MapsComponent = () => {
             },
             parent: 'sceneWrapper',
         });
-        setMapScene(scene);
+        setScene(scene);
         return () => {
             game.destroy(true);
         };
     }, []);
 
-    return <section id="sceneWrapper"></section>;
+    return <section id="sceneWrapper" className={view !== GameView.World ? 'gone' : ''}></section>;
 };

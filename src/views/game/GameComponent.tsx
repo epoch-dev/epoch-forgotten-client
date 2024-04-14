@@ -1,21 +1,29 @@
-import { useState } from 'react';
 import { MapsComponent } from '../maps/MapsComponent';
 import { GameView } from './types';
 import { PartyComponent } from '../party/PartyComponent';
+import { useGameStore } from './GameStore';
+import { BattleComponent } from '../battle/BattleComponent';
 
 export const GameComponent = () => {
-    const [view, setView] = useState(GameView.World);
+    const { view, setView } = useGameStore();
 
     return (
         <>
-            <main className='contentWrapper'>
-                {view === GameView.World && <MapsComponent />}
+            <main className="contentWrapper">
+                <MapsComponent />
                 {view === GameView.Party && <PartyComponent />}
+                {view === GameView.Battle && <BattleComponent />}
             </main>
-            <nav className='navWrapper'>
-                <button onClick={() => setView(GameView.World)} className='navItem'>World</button>
-                <button onClick={() => setView(GameView.Party)} className='navItem'>Party</button>
-            </nav>
+            {view !== GameView.Battle && (
+                <nav className="navWrapper">
+                    <button onClick={() => setView(GameView.World)} className="navItem">
+                        World
+                    </button>
+                    <button onClick={() => setView(GameView.Party)} className="navItem">
+                        Party
+                    </button>
+                </nav>
+            )}
         </>
     );
 };

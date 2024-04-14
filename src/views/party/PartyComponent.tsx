@@ -63,9 +63,6 @@ export const PartyComponent = () => {
                 <p>
                     Mana: <b>{character.attributes.mana}</b>
                 </p>
-                <p>
-                    Mana: <b>{character.attributes.mana}</b>
-                </p>
             </>
         );
     };
@@ -73,8 +70,8 @@ export const PartyComponent = () => {
     // dev only
     const _recruitCharacter = async () => {
         await CharactersClient.recruitCharacter({
-            characterName: 'character-story-2',
-            level: 123,
+            characterName: 'character-story-1',
+            level: 7,
             affinity: 2,
         });
         await setupParty();
