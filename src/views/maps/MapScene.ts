@@ -2,18 +2,31 @@ import { Scene } from 'phaser';
 import { AssetsService } from '../../common/services/AssetsService';
 import { MapsService } from './MapsService';
 import { MapImage, MapTileSprite, UserSprite } from './types';
-import { MapMoveResultDtoEncounterData, MapTileDto, MapTileType } from '../../common/api/.generated';
+import {
+    MapMoveResultDtoEncounterData,
+    MapMoveResultDtoNpcData,
+    MapTileDto,
+    MapTileType,
+} from '../../common/api/.generated';
 
 export class MapScene extends Scene {
     public blockMovement = false;
     private tiles: MapTileSprite[] = [];
     private user?: UserSprite;
     private mapImageRef?: MapImage;
-    private onStartBattle: (encounter: MapMoveResultDtoEncounterData) => void;
+    private onEncounter: (encounter: MapMoveResultDtoEncounterData) => void;
+    private onNpc: (encounter: MapMoveResultDtoNpcData) => void;
 
-    constructor({ onStartBattle }: { onStartBattle: (encounter: MapMoveResultDtoEncounterData) => void }) {
+    constructor({
+        onEncounter,
+        onNpc,
+    }: {
+        onEncounter: (encounter: MapMoveResultDtoEncounterData) => void;
+        onNpc: (encounter: MapMoveResultDtoNpcData) => void;
+    }) {
         super({ key: 'WorldScene' });
-        this.onStartBattle = onStartBattle;
+        this.onEncounter = onEncounter;
+        this.onNpc = onNpc;
     }
 
     preload() {
@@ -83,20 +96,15 @@ export class MapScene extends Scene {
             return;
         }
         const cursor = this.input.keyboard.createCursorKeys();
-<<<<<<< HEAD
         const moveResult = await MapsService.moveUser(cursor);
         if (moveResult.mapChanged) {
-=======
-        const { newPosition, mapChanged } = await MapsService.moveUser(cursor, {
-            setDialoguedName: this.setDialoguedName,
-            setIsMovementBlocked: this.setIsMovementBlocked,
-        });
-        if (mapChanged) {
->>>>>>> 9e029ed (add dialogue view)
             this.loadMap();
         }
         if (moveResult.encounter) {
-            this.onStartBattle(moveResult.encounter);
+            this.onEncounter(moveResult.encounter);
+        }
+        if (moveResult.npc) {
+            this.onNpc(moveResult.npc);
         }
         this.user.setPosition(moveResult.newPosition.x, moveResult.newPosition.y);
     }

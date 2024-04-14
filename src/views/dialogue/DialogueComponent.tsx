@@ -2,13 +2,14 @@ import { useEffect, useState, KeyboardEvent, useRef } from 'react';
 import { DialogueService } from './DialogueService';
 import { NpcsClient } from '../../common/api/client';
 import { DialogueNode } from '../../common/api/.generated';
-import { DialogueComponentProps } from './types';
 import style from './DialogueComponent.module.scss';
+import { useGameStore } from '../game/GameStore';
+import { GameView } from '../game/types';
 
-const DialogueComponent = ({ dialoguedName, onComplete }: DialogueComponentProps) => {
+const DialogueComponent = () => {
+    const { npc, setView } = useGameStore();
     const [service, setService] = useState<DialogueService>();
     const [currentNode, setCurrentNode] = useState<DialogueNode>();
-    const [isComplete, setIsComplete] = useState(false);
     // const [isLastNode, setIsLastNode] = useState(false); // todo: would be useful?
     const [isLoading, setIsLoading] = useState(true);
     const [showOkButton, setShowOkButton] = useState(false);
@@ -16,26 +17,27 @@ const DialogueComponent = ({ dialoguedName, onComplete }: DialogueComponentProps
 
     useEffect(() => {
         ref.current?.focus();
-    }, [isLoading])
+    }, [isLoading]);
 
     useEffect(() => {
         const fetchAndStartDialogue = async () => {
             setIsLoading(true);
-
-            const npcDialogues = (await NpcsClient.getNpcDialogue(dialoguedName)).data;
+            if (!npc) {
+                return;
+            }
+            const npcDialogues = (await NpcsClient.getNpcDialogue(npc.npcName)).data;
             const newService = new DialogueService(npcDialogues, {
-                onNodeChange:
-                    (node) => {
-                        setCurrentNode(node);
-                        setShowOkButton(!(node && node.options));
-                    },
-                onComplete: () => setIsComplete(true),
+                onNodeChange: (node) => {
+                    setCurrentNode(node);
+                    setShowOkButton(!(node && node.options));
+                },
+                onComplete: () => setView(GameView.World),
             });
             newService.start();
 
             setService(newService);
             setIsLoading(false);
-        }
+        };
         fetchAndStartDialogue();
     }, []);
 
@@ -47,7 +49,7 @@ const DialogueComponent = ({ dialoguedName, onComplete }: DialogueComponentProps
         if (!currentNode?.options) {
             service?.proceedToNextNode();
         }
-    }
+    };
 
     const handleKeyPress = (event: KeyboardEvent) => {
         event.preventDefault();
@@ -55,8 +57,7 @@ const DialogueComponent = ({ dialoguedName, onComplete }: DialogueComponentProps
         if (pressedKey === ' ' || pressedKey === 'Spacebar') {
             event.preventDefault();
             handleOkClick();
-        }
-        else if (currentNode?.options && /^[1-9]$/.test(pressedKey)) {
+        } else if (currentNode?.options && /^[1-9]$/.test(pressedKey)) {
             const keyIndex = parseInt(pressedKey, 10) - 1;
             handleOptionClick(keyIndex);
         }
@@ -66,25 +67,19 @@ const DialogueComponent = ({ dialoguedName, onComplete }: DialogueComponentProps
         return <div>Loading dialogue...</div>;
     }
 
-    if (isComplete) {
-        // todo: dialog with inventory (or any other) changes
-        onComplete();
-    }
-
     return (
         <div className={style.dialogueContainer} onKeyDown={handleKeyPress} tabIndex={-1} ref={ref}>
             {currentNode && (
                 <div className={style.dialogueDialog}>
-                    <p>{currentNode.author}: {currentNode.text}</p>
+                    <p>
+                        {currentNode.author}: {currentNode.text}
+                    </p>
                     {currentNode.options && (
                         <>
                             <div>Options:</div>
                             {currentNode.options.map((option, index) => (
                                 <div key={option.id}>
-                                    <button
-                                        key={option.id}
-                                        onClick={() => handleOptionClick(index)}
-                                    >
+                                    <button key={option.id} onClick={() => handleOptionClick(index)}>
                                         {index + 1}: {option.text}
                                     </button>
                                 </div>
@@ -94,7 +89,9 @@ const DialogueComponent = ({ dialoguedName, onComplete }: DialogueComponentProps
                 </div>
             )}
             {showOkButton && (
-                <button id='ok-button' onClick={handleOkClick}>OK</button>
+                <button id="ok-button" onClick={handleOkClick}>
+                    OK
+                </button>
             )}
         </div>
     );

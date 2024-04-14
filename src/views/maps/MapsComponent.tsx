@@ -1,3 +1,4 @@
+import style from './MapsComponent.module.scss';
 import { useEffect } from 'react';
 import { MapScene } from './MapScene';
 import { MapsService } from './MapsService';
@@ -5,14 +6,18 @@ import { useGameStore } from '../game/GameStore';
 import { GameView } from '../game/types';
 
 export const MapsComponent = () => {
-    const { view, setScene, setView, setEncounter } = useGameStore();
+    const { view, setScene, setView, setEncounter, setNpc } = useGameStore();
 
     useEffect(() => {
         MapsService.initialize();
         const scene = new MapScene({
-            onStartBattle: (encounter) => {
+            onEncounter: (encounter) => {
                 setView(GameView.Battle);
                 setEncounter(encounter);
+            },
+            onNpc: (npc) => {
+                setView(GameView.Dialogue);
+                setNpc(npc);
             },
         });
         const game = new Phaser.Game({
@@ -34,9 +39,16 @@ export const MapsComponent = () => {
         };
     }, []);
 
-<<<<<<< HEAD
-    return <section id="sceneWrapper" className={view !== GameView.World ? 'gone' : ''}></section>;
-=======
-    return <section id="sceneWrapper" />;
->>>>>>> 9e029ed (add dialogue view)
+    const getSceneClass = () => {
+        switch (view) {
+            case GameView.Dialogue:
+                return style.blur;
+            case GameView.World:
+                return '';
+            default:
+                return 'gone';
+        }
+    };
+
+    return <section id="sceneWrapper" className={getSceneClass()}></section>;
 };

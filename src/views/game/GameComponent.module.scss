@@ -1,9 +1,0 @@
-.worldContainer {
-    position: relative;
-
-    &.isDialogueActive {
-        #mapWrapper {
-        filter: blur(3px);
-        }
-    }
-}

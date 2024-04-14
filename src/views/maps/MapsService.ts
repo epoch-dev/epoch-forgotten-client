@@ -2,6 +2,7 @@ import {
     MapDataDto,
     MapMoveDirection,
     MapMoveResultDtoEncounterData,
+    MapMoveResultDtoNpcData,
     MapPoint,
 } from '../../common/api/.generated';
 import { MapsClient } from '../../common/api/client';
@@ -49,21 +50,23 @@ export class MapsService {
         newPosition: MapPoint;
         mapChanged: boolean;
         encounter: MapMoveResultDtoEncounterData | undefined;
+        npc: MapMoveResultDtoNpcData | undefined;
     }> {
         const direction = cursor.left.isDown
             ? MapMoveDirection.Left
             : cursor.right.isDown
-                ? MapMoveDirection.Right
-                : cursor.up.isDown
-                    ? MapMoveDirection.Up
-                    : cursor.down.isDown
-                        ? MapMoveDirection.Down
-                        : undefined;
+            ? MapMoveDirection.Right
+            : cursor.up.isDown
+            ? MapMoveDirection.Up
+            : cursor.down.isDown
+            ? MapMoveDirection.Down
+            : undefined;
         if (!direction || this.lastMove + this.MOVE_INTERVAL > getCurrentTimeStamp()) {
             return {
                 newPosition: await this.getUserPosition(),
                 mapChanged: false,
                 encounter: undefined,
+                npc: undefined,
             };
         }
         const moveResult = (
@@ -75,14 +78,12 @@ export class MapsService {
         this.userPosition = moveResult.newPosition;
         if (moveResult.newMapData) {
             await this.initialize();
-        } else if (moveResult.npcData) {
-            setIsMovementBlocked(true);
-            setDialoguedName(moveResult.npcData.npcName);
         }
         return {
             newPosition: await this.getUserPosition(),
             mapChanged: moveResult.newMapData !== undefined,
             encounter: moveResult.encounterData,
+            npc: moveResult.npcData,
         };
     }
 }
