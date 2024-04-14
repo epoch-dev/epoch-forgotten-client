@@ -9,3 +9,9 @@ export type MapTileSprite = MapTileDto & {
 export type CursorKey = Phaser.Types.Input.Keyboard.CursorKeys;
 
 export type MapImage = Phaser.GameObjects.Image;
+
+export type MapsComponentProps = {
+    isMovementBlocked: boolean,
+    setIsMovementBlocked: (isBlocked: boolean) => void,
+    setDialoguedName: (name: string) => void,
+}

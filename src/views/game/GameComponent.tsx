@@ -3,6 +3,7 @@ import { GameView } from './types';
 import { PartyComponent } from '../party/PartyComponent';
 import { useGameStore } from './GameStore';
 import { BattleComponent } from '../battle/BattleComponent';
+import DialogueComponent from '../dialogue/DialogueComponent';
 
 export const GameComponent = () => {
     const { view, setView } = useGameStore();
@@ -13,6 +14,7 @@ export const GameComponent = () => {
                 <MapsComponent />
                 {view === GameView.Party && <PartyComponent />}
                 {view === GameView.Battle && <BattleComponent />}
+                {view === GameView.Dialogue && <DialogueComponent />}
             </main>
             {view !== GameView.Battle && (
                 <nav className="navWrapper">

@@ -2,6 +2,7 @@ import {
     MapDataDto,
     MapMoveDirection,
     MapMoveResultDtoEncounterData,
+    MapMoveResultDtoNpcData,
     MapPoint,
 } from '../../common/api/.generated';
 import { MapsClient } from '../../common/api/client';
@@ -49,6 +50,7 @@ export class MapsService {
         newPosition: MapPoint;
         mapChanged: boolean;
         encounter: MapMoveResultDtoEncounterData | undefined;
+        npc: MapMoveResultDtoNpcData | undefined;
     }> {
         const direction = cursor.left.isDown
             ? MapMoveDirection.Left
@@ -64,6 +66,7 @@ export class MapsService {
                 newPosition: await this.getUserPosition(),
                 mapChanged: false,
                 encounter: undefined,
+                npc: undefined,
             };
         }
         const moveResult = (
@@ -80,6 +83,7 @@ export class MapsService {
             newPosition: await this.getUserPosition(),
             mapChanged: moveResult.newMapData !== undefined,
             encounter: moveResult.encounterData,
+            npc: moveResult.npcData,
         };
     }
 }
