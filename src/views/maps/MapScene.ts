@@ -2,16 +2,18 @@ import { Scene } from 'phaser';
 import { AssetsService } from '../../common/services/AssetsService';
 import { MapsService } from './MapsService';
 import { MapImage, MapTileSprite, UserSprite } from './types';
-import { MapTileDto, MapTileType } from '../../common/api/.generated';
+import { MapMoveResultDtoEncounterData, MapTileDto, MapTileType } from '../../common/api/.generated';
 
 export class MapScene extends Scene {
+    public blockMovement = false;
     private tiles: MapTileSprite[] = [];
     private user?: UserSprite;
     private mapImageRef?: MapImage;
-    private blockMovement = false;
+    private onStartBattle: (encounter: MapMoveResultDtoEncounterData) => void;
 
-    constructor() {
+    constructor({ onStartBattle }: { onStartBattle: (encounter: MapMoveResultDtoEncounterData) => void }) {
         super({ key: 'WorldScene' });
+        this.onStartBattle = onStartBattle;
     }
 
     preload() {
@@ -80,10 +82,13 @@ export class MapScene extends Scene {
             return;
         }
         const cursor = this.input.keyboard.createCursorKeys();
-        const { newPosition, mapChanged } = await MapsService.moveUser(cursor);
-        if (mapChanged) {
+        const moveResult = await MapsService.moveUser(cursor);
+        if (moveResult.mapChanged) {
             this.loadMap();
         }
-        this.user.setPosition(newPosition.x, newPosition.y);
+        if (moveResult.encounter) {
+            this.onStartBattle(moveResult.encounter);
+        }
+        this.user.setPosition(moveResult.newPosition.x, moveResult.newPosition.y);
     }
 }
