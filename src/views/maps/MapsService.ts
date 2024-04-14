@@ -53,12 +53,12 @@ export class MapsService {
         const direction = cursor.left.isDown
             ? MapMoveDirection.Left
             : cursor.right.isDown
-            ? MapMoveDirection.Right
-            : cursor.up.isDown
-            ? MapMoveDirection.Up
-            : cursor.down.isDown
-            ? MapMoveDirection.Down
-            : undefined;
+                ? MapMoveDirection.Right
+                : cursor.up.isDown
+                    ? MapMoveDirection.Up
+                    : cursor.down.isDown
+                        ? MapMoveDirection.Down
+                        : undefined;
         if (!direction || this.lastMove + this.MOVE_INTERVAL > getCurrentTimeStamp()) {
             return {
                 newPosition: await this.getUserPosition(),
@@ -75,6 +75,9 @@ export class MapsService {
         this.userPosition = moveResult.newPosition;
         if (moveResult.newMapData) {
             await this.initialize();
+        } else if (moveResult.npcData) {
+            setIsMovementBlocked(true);
+            setDialoguedName(moveResult.npcData.npcName);
         }
         return {
             newPosition: await this.getUserPosition(),

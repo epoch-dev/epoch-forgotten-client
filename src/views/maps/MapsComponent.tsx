@@ -34,5 +34,9 @@ export const MapsComponent = () => {
         };
     }, []);
 
+<<<<<<< HEAD
     return <section id="sceneWrapper" className={view !== GameView.World ? 'gone' : ''}></section>;
+=======
+    return <section id="sceneWrapper" />;
+>>>>>>> 9e029ed (add dialogue view)
 };

@@ -36,6 +36,7 @@ export class MapScene extends Scene {
         setTimeout(() => {
             this.mapImageRef = this.add.image(width / 2, height / 2, `map-${mapData.name}`);
             this.drawTiles({ tiles: mapData.tiles });
+            this.cameras.main.setBounds(0, 0, width, height);
 
             this.user?.destroy();
             this.user = this.physics.add.sprite(userPosition.x, userPosition.y, 'user-icon').setDepth(1);
@@ -82,8 +83,16 @@ export class MapScene extends Scene {
             return;
         }
         const cursor = this.input.keyboard.createCursorKeys();
+<<<<<<< HEAD
         const moveResult = await MapsService.moveUser(cursor);
         if (moveResult.mapChanged) {
+=======
+        const { newPosition, mapChanged } = await MapsService.moveUser(cursor, {
+            setDialoguedName: this.setDialoguedName,
+            setIsMovementBlocked: this.setIsMovementBlocked,
+        });
+        if (mapChanged) {
+>>>>>>> 9e029ed (add dialogue view)
             this.loadMap();
         }
         if (moveResult.encounter) {
