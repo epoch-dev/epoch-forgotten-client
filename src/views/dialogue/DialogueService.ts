@@ -74,7 +74,9 @@ export class DialogueService {
     }
 
     public async sendDecisions() { // todo: for now sending from here
-        SoundService.getInstance().newQuest();
-        console.log(`Sending decisions: ${this.decisions}`)
+        if (this.decisions.length > 0) {
+            SoundService.getInstance().newQuest();
+            console.log(`Sending decisions: ${this.decisions}`)
+        }
     }
 }
