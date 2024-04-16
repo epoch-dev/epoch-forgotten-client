@@ -1,3 +1,5 @@
+@import '../styles/variables.scss';
+
 .muteButton {
     position: fixed;
     top: 10px;
@@ -11,6 +13,6 @@
     z-index: 100;
 
     &.muted {
-        background-color: red;
+        background-color: $color-error;
     }
 }

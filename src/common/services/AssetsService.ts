@@ -7,8 +7,8 @@ type IconName = keyof typeof ICONS;
 export class AssetsService {
     private static ICONS_BASE_URI = './images/icons';
     private static SCENES_BASE_URI = '/images/scenes';
-    private static MUSIC_BASE_URI = '/images/music';
-    private static SOUNDS_BASE_URI = '/images/sounds';
+    private static MUSIC_BASE_URI = '/audio/music';
+    private static SOUNDS_BASE_URI = '/audio/sounds';
 
     public static getIcon(iconName: IconName) {
         return `${this.ICONS_BASE_URI}/${ICONS[iconName]}`;
