@@ -1,29 +1,48 @@
 import { Howl } from 'howler';
 import { ToastService } from './ToastService.ts';
 
+export type PlayingTrack = {
+    name: string;
+    track: Howl;
+};
+
 export abstract class AudioService {
     protected readonly tracks: { [key: string]: Howl } = {};
-    protected abstract playingTrack: Howl | null;
+    protected abstract currentPlaying: PlayingTrack | null;
 
-    abstract loadTrack(name: string): void;
+    protected abstract loadTrack(name: string): void;
 
-    protected play(name: string, fadeDuration = 1000) {
-        if (this.playingTrack) {
+    protected playAnyVoice(name: string) {
+        const track = this.tracks[name];
+        if (!track) {
+            this.trackError(name);
+            return;
+        }
+        track.play();
+    }
+
+    protected playUniqueVoice(name: string, fadeDuration = 1000) {
+        if (this.currentPlaying?.name === name) {
+            return;
+        }
+        if (this.currentPlaying) {
             this.transition(fadeDuration);
         }
         const track = this.tracks[name];
-        if (track) {
-            track.volume(0);
-            track.play();
-            this.playingTrack = track;
-            track.fade(0, 1, fadeDuration);
-        } else {
+        if (!track) {
             this.trackError(name);
+            return;
         }
+        track.play();
+        if (this.currentPlaying) {
+            track.volume(0);
+            track.fade(0, 1, fadeDuration);
+        }
+        this.currentPlaying = { name, track };
     }
 
     protected stopCurrent(fadeDuration = 1000) {
-        if (this.playingTrack) {
+        if (this.currentPlaying) {
             this.transition(fadeDuration);
         }
     }
@@ -32,18 +51,31 @@ export abstract class AudioService {
         const track = this.tracks[name];
         if (track) {
             track.stop();
-            this.playingTrack = null;
+            this.currentPlaying = null;
         } else {
             this.trackError(name);
         }
     }
 
-    private transition(fadeDuration = 1000) {
-        this.playingTrack?.fade(1, 0, fadeDuration);
-        setTimeout(() => this.playingTrack?.stop(), fadeDuration);
+    private transition(fadeDuration = 3000) {
+        const currentTrack = this.currentPlaying?.track;
+        currentTrack?.fade(1, 0, fadeDuration);
+        setTimeout(() => currentTrack?.stop(), fadeDuration);
     }
 
     private trackError(name: string) {
         ToastService.error({ message: `No track found with name "${name}"` });
+    }
+
+    protected stopAllTracks() {
+        Howler.stop();
+    }
+
+    public mute() {
+        this.currentPlaying?.track.mute(true);
+    }
+
+    public unmute() {
+        this.currentPlaying?.track.mute(false);
     }
 }

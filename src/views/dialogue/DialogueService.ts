@@ -1,4 +1,5 @@
 import { DialogueNode, DialogueOption } from '../../common/api/.generated';
+import { SoundService } from '../../common/services/SoundService';
 
 export class DialogueService {
     private readonly decisions: DialogueOption['id'][];
@@ -73,6 +74,7 @@ export class DialogueService {
     }
 
     public async sendDecisions() { // todo: for now sending from here
+        SoundService.getInstance().newQuest();
         console.log(`Sending decisions: ${this.decisions}`)
     }
 }

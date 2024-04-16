@@ -8,14 +8,22 @@ import {
     SceneTileDto,
     SceneTileType,
 } from '../../common/api/.generated';
+import { MusicService } from '../../common/services/MusicService';
 
 export class SceneRenderer extends Scene {
     public blockMovement = false;
     private tiles: SceneTileSprite[] = [];
     private user?: UserSprite;
+<<<<<<< HEAD:src/views/scenes/SceneRenderer.ts
     private sceneImageRef?: SceneImage;
     private onEncounter: (encounter: SceneMoveResultDtoEncounterData) => void;
     private onNpc: (encounter: SceneMoveResultDtoNpcData) => void;
+=======
+    private mapImageRef?: MapImage;
+    private musicService = MusicService.getInstance();
+    private onEncounter: (encounter: MapMoveResultDtoEncounterData) => void;
+    private onNpc: (encounter: MapMoveResultDtoNpcData) => void;
+>>>>>>> 0955eba (working audio services):src/views/maps/MapScene.ts
 
     constructor({
         onEncounter,
@@ -45,6 +53,7 @@ export class SceneRenderer extends Scene {
         this.sceneImageRef?.destroy();
         this.load.image(`scene-${sceneData.name}`, AssetsService.getSceneUri(sceneData.imageUri));
         this.load.start();
+        this.musicService.startVillageMusic(); // todo: conditional handling
 
         setTimeout(() => {
             this.sceneImageRef = this.add.image(width / 2, height / 2, `scene-${sceneData.name}`);

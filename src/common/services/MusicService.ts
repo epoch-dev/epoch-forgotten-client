@@ -1,18 +1,19 @@
-import { AudioService } from './AudioService.ts';
+import { AudioService, PlayingTrack } from './AudioService.ts';
 import { Howl } from 'howler';
 import { AssetsService } from './AssetsService.ts';
 
 export class MusicService extends AudioService {
     private static instance: MusicService;
-    playingTrack: Howl | null = null;
+    currentPlaying: PlayingTrack | null = null;
 
     constructor() {
         super();
-        this.loadTrack('battle');
-        this.loadTrack('village');
+        this.stopAllTracks();
+        this.loadTrack('battle.wav');
+        this.loadTrack('village.wav');
     }
 
-    loadTrack(name: string) {
+    protected loadTrack(name: string) {
         this.tracks[name] = new Howl({
             src: AssetsService.getMusicUri(name),
             loop: true,
@@ -27,11 +28,11 @@ export class MusicService extends AudioService {
     }
 
     public startBattleMusic() {
-        this.play('battle');
+        this.playUniqueVoice('battle.wav');
     }
 
     public startVillageMusic() {
-        this.play('village');
+        this.playUniqueVoice('village.wav');
     }
 
 }

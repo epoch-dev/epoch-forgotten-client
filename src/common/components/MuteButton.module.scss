@@ -1,0 +1,16 @@
+.muteButton {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    padding: 5px 10px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 100;
+
+    &.muted {
+        background-color: red;
+    }
+}
