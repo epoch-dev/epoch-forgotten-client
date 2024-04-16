@@ -27,7 +27,7 @@ export const SigninComponent = () => {
         if (!validateForm()) {
             return;
         }
-        UsersClient.signin(formData).then((res) => {
+        UsersClient.signup(formData).then((res) => {
             StorageService.set({ key: 'user', data: res.data });
             ToastService.success({ message: 'Welcome back!' });
             navigate('game');

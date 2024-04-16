@@ -1,16 +1,15 @@
-import style from './MapsComponent.module.scss';
 import { useEffect } from 'react';
-import { MapScene } from './MapScene';
-import { MapsService } from './MapsService';
+import { SceneRenderer } from './SceneRenderer';
+import { ScenesService } from './ScenesService';
 import { useGameStore } from '../game/GameStore';
 import { GameView } from '../game/types';
 
-export const MapsComponent = () => {
+export const ScenesComponent = () => {
     const { view, setScene, setView, setEncounter, setNpc } = useGameStore();
 
     useEffect(() => {
-        MapsService.initialize();
-        const scene = new MapScene({
+        ScenesService.initialize();
+        const scene = new SceneRenderer({
             onEncounter: (encounter) => {
                 setView(GameView.Battle);
                 setEncounter(encounter);
@@ -42,7 +41,7 @@ export const MapsComponent = () => {
     const getSceneClass = () => {
         switch (view) {
             case GameView.Dialogue:
-                return style.blur;
+                return 'blur';
             case GameView.World:
                 return '';
             default:

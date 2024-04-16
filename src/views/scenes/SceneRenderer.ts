@@ -1,28 +1,24 @@
 import { Scene } from 'phaser';
 import { AssetsService } from '../../common/services/AssetsService';
-import { MapsService } from './MapsService';
-import { MapImage, MapTileSprite, UserSprite } from './types';
-import {
-    MapMoveResultDtoEncounterData,
-    MapMoveResultDtoNpcData,
-    MapTileDto,
-    MapTileType,
-} from '../../common/api/.generated';
+import { ScenesService } from './ScenesService';
+import { SceneImage, SceneTileSprite, UserSprite } from './types';
+import { SceneMoveResultDtoEncounterData, SceneMoveResultDtoNpcData, SceneTileDto, SceneTileType } from '../../common/api/.generated';
 
-export class MapScene extends Scene {
+
+export class SceneRenderer extends Scene {
     public blockMovement = false;
-    private tiles: MapTileSprite[] = [];
+    private tiles: SceneTileSprite[] = [];
     private user?: UserSprite;
-    private mapImageRef?: MapImage;
-    private onEncounter: (encounter: MapMoveResultDtoEncounterData) => void;
-    private onNpc: (encounter: MapMoveResultDtoNpcData) => void;
+    private sceneImageRef?: SceneImage;
+    private onEncounter: (encounter: SceneMoveResultDtoEncounterData) => void;
+    private onNpc: (encounter: SceneMoveResultDtoNpcData) => void;
 
     constructor({
         onEncounter,
         onNpc,
     }: {
-        onEncounter: (encounter: MapMoveResultDtoEncounterData) => void;
-        onNpc: (encounter: MapMoveResultDtoNpcData) => void;
+        onEncounter: (encounter: SceneMoveResultDtoEncounterData) => void;
+        onNpc: (encounter: SceneMoveResultDtoNpcData) => void;
     }) {
         super({ key: 'WorldScene' });
         this.onEncounter = onEncounter;
@@ -34,21 +30,21 @@ export class MapScene extends Scene {
     }
 
     create() {
-        void this.loadMap();
+        void this.loadScene();
     }
 
-    public async loadMap() {
-        const mapData = await MapsService.getMapData();
-        const { width, height } = await MapsService.getMapSize();
-        const userPosition = await MapsService.getUserPosition();
+    public async loadScene() {
+        const sceneData = await ScenesService.getSceneData();
+        const { width, height } = await ScenesService.getSceneSize();
+        const userPosition = await ScenesService.getUserPosition();
 
-        this.mapImageRef?.destroy();
-        this.load.image(`map-${mapData.name}`, AssetsService.getMapUri(mapData.imageUri));
+        this.sceneImageRef?.destroy();
+        this.load.image(`scene-${sceneData.name}`, AssetsService.getSceneUri(sceneData.imageUri));
         this.load.start();
 
         setTimeout(() => {
-            this.mapImageRef = this.add.image(width / 2, height / 2, `map-${mapData.name}`);
-            this.drawTiles({ tiles: mapData.tiles });
+            this.sceneImageRef = this.add.image(width / 2, height / 2, `scene-${sceneData.name}`);
+            this.drawTiles({ tiles: sceneData.tiles });
             this.cameras.main.setBounds(0, 0, width, height);
 
             this.user?.destroy();
@@ -60,7 +56,7 @@ export class MapScene extends Scene {
         }, 100);
     }
 
-    public drawTiles({ tiles }: { tiles: MapTileDto[] }) {
+    public drawTiles({ tiles }: { tiles: SceneTileDto[] }) {
         this.tiles.forEach((t) => t.spriteRef?.destroy());
         tiles.forEach((tile) => {
             const rect = this.getTileRect({ tile });
@@ -68,21 +64,21 @@ export class MapScene extends Scene {
         });
     }
 
-    private getTileRect({ tile }: { tile: MapTileDto }) {
+    private getTileRect({ tile }: { tile: SceneTileDto }) {
         switch (tile.type) {
-            case MapTileType.Route:
+            case SceneTileType.Route:
                 return this.add.rectangle(tile.position.x, tile.position.y, 9, 9, 0x22dd22, 0.1);
-            case MapTileType.SafeRoute:
+            case SceneTileType.SafeRoute:
                 return this.add.rectangle(tile.position.x, tile.position.y, 9, 9, 0x22ddaa, 0.1);
-            case MapTileType.Collision:
+            case SceneTileType.Collision:
                 return this.add.rectangle(tile.position.x, tile.position.y, 9, 9, 0x424242, 0.1);
-            case MapTileType.Passage:
+            case SceneTileType.Passage:
                 return this.add.rectangle(tile.position.x, tile.position.y, 9, 9, 0x2211dd, 0.7);
-            case MapTileType.Quest:
+            case SceneTileType.Quest:
                 return this.add.rectangle(tile.position.x, tile.position.y, 9, 9, 0xffff00, 0.7);
-            case MapTileType.Npc:
+            case SceneTileType.Npc:
                 return this.add.rectangle(tile.position.x, tile.position.y, 9, 9, 0xaaff77, 0.7);
-            case MapTileType.Encounter:
+            case SceneTileType.Encounter:
                 return this.add.rectangle(tile.position.x, tile.position.y, 9, 9, 0xdd1122, 0.7);
         }
     }
@@ -96,9 +92,9 @@ export class MapScene extends Scene {
             return;
         }
         const cursor = this.input.keyboard.createCursorKeys();
-        const moveResult = await MapsService.moveUser(cursor);
-        if (moveResult.mapChanged) {
-            this.loadMap();
+        const moveResult = await ScenesService.moveUser(cursor);
+        if (moveResult.sceneChanged) {
+            this.loadScene();
         }
         if (moveResult.encounter) {
             this.onEncounter(moveResult.encounter);

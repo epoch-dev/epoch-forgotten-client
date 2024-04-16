@@ -1,15 +1,15 @@
 import { create } from 'zustand';
 import { GameView } from './types';
 import { MapMoveResultDtoEncounterData, MapMoveResultDtoNpcData } from '../../common/api/.generated';
-import { MapScene } from '../maps/MapScene';
+import { SceneRenderer } from '../scenes/SceneRenderer';
 
 type GameStore = {
-    scene: MapScene | undefined;
+    scene: SceneRenderer | undefined;
     view: GameView;
     encounter: MapMoveResultDtoEncounterData | undefined;
     npc: MapMoveResultDtoNpcData | undefined;
     setView: (view: GameView) => void;
-    setScene: (scene: MapScene) => void;
+    setScene: (scene: SceneRenderer) => void;
     setEncounter: (encounter: MapMoveResultDtoEncounterData) => void;
     setNpc: (npc: MapMoveResultDtoNpcData) => void;
 };
@@ -19,7 +19,7 @@ export const useGameStore = create<GameStore>()((set) => ({
     view: GameView.World,
     encounter: undefined,
     npc: undefined,
-    setScene: (scene: MapScene) => set({ scene }),
+    setScene: (scene: SceneRenderer) => set({ scene }),
     setView: (view: GameView) =>
         set((state) => {
             if (state.scene) {

@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios';
-import { CharactersApi, ItemsApi, MapsApi, NpcsApi, UsersApi } from './.generated';
+import { CharactersApi, ItemsApi, ScenesApi, NpcsApi, UsersApi } from './.generated';
 import { API_PATH } from '../config';
 import { ToastService } from '../services/ToastService';
 import { StorageService } from '../services/StorageService';
@@ -29,6 +29,6 @@ axios.interceptors.response.use(
 
 export const UsersClient = new UsersApi(undefined, BASE_PATH, axios);
 export const ItemsClient = new ItemsApi(undefined, BASE_PATH, axios);
-export const MapsClient = new MapsApi(undefined, BASE_PATH, axios);
+export const ScenesClient = new ScenesApi(undefined, BASE_PATH, axios);
 export const CharactersClient = new CharactersApi(undefined, BASE_PATH, axios);
 export const NpcsClient = new NpcsApi(undefined, BASE_PATH, axios);
