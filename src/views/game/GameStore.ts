@@ -12,6 +12,7 @@ type GameStore = {
     setScene: (scene: SceneRenderer) => void;
     setEncounter: (encounter: SceneMoveResultDtoEncounterData) => void;
     setNpc: (npc: SceneMoveResultDtoNpcData) => void;
+    clear: () => void;
 };
 
 export const useGameStore = create<GameStore>()((set) => ({
@@ -32,4 +33,5 @@ export const useGameStore = create<GameStore>()((set) => ({
         }),
     setEncounter: (encounter: SceneMoveResultDtoEncounterData) => set({ encounter }),
     setNpc: (npc: SceneMoveResultDtoNpcData) => set({ npc }),
+    clear: () => set({ scene: undefined, view: GameView.World, encounter: undefined, npc: undefined }),
 }));

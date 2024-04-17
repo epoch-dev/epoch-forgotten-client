@@ -1,5 +1,7 @@
 import { SceneTileDto } from '../../common/api/.generated';
 
+export const TILE_SIZE = 10;
+
 export type UserSprite = Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
 
 export type SceneTileSprite = SceneTileDto & {
