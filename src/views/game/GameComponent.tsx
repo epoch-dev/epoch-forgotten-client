@@ -1,4 +1,4 @@
-import { MapsComponent } from '../maps/MapsComponent';
+import { ScenesComponent } from '../scenes/ScenesComponent';
 import { GameView } from './types';
 import { PartyComponent } from '../party/PartyComponent';
 import { useGameStore } from './GameStore';
@@ -11,7 +11,7 @@ export const GameComponent = () => {
     return (
         <>
             <main className="contentWrapper">
-                <MapsComponent />
+                <ScenesComponent />
                 {view === GameView.Party && <PartyComponent />}
                 {view === GameView.Battle && <BattleComponent />}
                 {view === GameView.Dialogue && <DialogueComponent />}
