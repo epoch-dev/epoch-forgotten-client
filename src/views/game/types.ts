@@ -3,4 +3,5 @@ export enum GameView {
     Party,
     Battle,
     Dialogue,
+    Intro,
 }

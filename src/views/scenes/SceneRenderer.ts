@@ -1,9 +1,13 @@
 import { Scene } from 'phaser';
 import { AssetsService } from '../../common/services/AssetsService';
 import { ScenesService } from './ScenesService';
-import { SceneImage, SceneTileSprite, UserSprite } from './types';
-import { SceneMoveResultDtoEncounterData, SceneMoveResultDtoNpcData, SceneTileDto, SceneTileType } from '../../common/api/.generated';
-
+import { SceneImage, SceneTileSprite, TILE_SIZE, UserSprite } from './types';
+import {
+    SceneMoveResultDtoEncounterData,
+    SceneMoveResultDtoNpcData,
+    SceneTileDto,
+    SceneTileType,
+} from '../../common/api/.generated';
 
 export class SceneRenderer extends Scene {
     public blockMovement = false;
@@ -45,11 +49,11 @@ export class SceneRenderer extends Scene {
         setTimeout(() => {
             this.sceneImageRef = this.add.image(width / 2, height / 2, `scene-${sceneData.name}`);
             this.drawTiles({ tiles: sceneData.tiles });
-            this.cameras.main.setBounds(0, 0, width, height);
-
+            
             this.user?.destroy();
             this.user = this.physics.add.sprite(userPosition.x, userPosition.y, 'user-icon').setDepth(1);
-
+            
+            this.cameras.main.setBounds(-TILE_SIZE / 2, -TILE_SIZE / 2, width + TILE_SIZE, height + TILE_SIZE);
             this.cameras.main.setSize(this.scale.width, this.scale.height);
             this.cameras.main.startFollow(this.user, true, 0.1, 0.1);
             this.cameras.main.setZoom(2);
