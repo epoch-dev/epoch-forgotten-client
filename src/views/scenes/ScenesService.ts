@@ -55,12 +55,12 @@ export class ScenesService {
         const direction = cursor.left.isDown
             ? SceneMoveDirection.Left
             : cursor.right.isDown
-            ? SceneMoveDirection.Right
-            : cursor.up.isDown
-            ? SceneMoveDirection.Up
-            : cursor.down.isDown
-            ? SceneMoveDirection.Down
-            : undefined;
+                ? SceneMoveDirection.Right
+                : cursor.up.isDown
+                    ? SceneMoveDirection.Up
+                    : cursor.down.isDown
+                        ? SceneMoveDirection.Down
+                        : undefined;
         if (!direction || this.lastMove + this.MOVE_INTERVAL > getCurrentTimeStamp()) {
             return {
                 newPosition: await this.getUserPosition(),

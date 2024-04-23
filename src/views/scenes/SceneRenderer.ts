@@ -8,6 +8,7 @@ import {
     SceneTileDto,
     SceneTileType,
 } from '../../common/api/.generated';
+import { MusicService } from '../../common/services/MusicService';
 
 export class SceneRenderer extends Scene {
     public blockMovement = false;
@@ -16,6 +17,7 @@ export class SceneRenderer extends Scene {
     private sceneImageRef?: SceneImage;
     private onEncounter: (encounter: SceneMoveResultDtoEncounterData) => void;
     private onNpc: (encounter: SceneMoveResultDtoNpcData) => void;
+    private musicService = MusicService.getInstance();
 
     constructor({
         onEncounter,
@@ -45,14 +47,15 @@ export class SceneRenderer extends Scene {
         this.sceneImageRef?.destroy();
         this.load.image(`scene-${sceneData.name}`, AssetsService.getSceneUri(sceneData.imageUri));
         this.load.start();
+        this.musicService.play(sceneData.musicUri);
 
         setTimeout(() => {
             this.sceneImageRef = this.add.image(width / 2, height / 2, `scene-${sceneData.name}`);
             this.drawTiles({ tiles: sceneData.tiles });
-            
+
             this.user?.destroy();
             this.user = this.physics.add.sprite(userPosition.x, userPosition.y, 'user-icon').setDepth(1);
-            
+
             this.cameras.main.setBounds(-TILE_SIZE / 2, -TILE_SIZE / 2, width + TILE_SIZE, height + TILE_SIZE);
             this.cameras.main.setSize(this.scale.width, this.scale.height);
             this.cameras.main.startFollow(this.user, true, 0.1, 0.1);

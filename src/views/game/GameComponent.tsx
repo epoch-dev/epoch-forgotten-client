@@ -7,6 +7,7 @@ import DialogueComponent from '../dialogue/DialogueComponent';
 import { useNavigate } from 'react-router-dom';
 import { StorageService } from '../../common/services/StorageService';
 import { IntroComponent } from '../intro/IntroComponent';
+import MuteButton from '../../common/components/MuteButton';
 
 export const GameComponent = () => {
     const navigate = useNavigate();
@@ -22,6 +23,7 @@ export const GameComponent = () => {
 
     return (
         <>
+            <MuteButton />
             <main className="contentWrapper">
                 <ScenesComponent />
                 {view === GameView.Party && <PartyComponent />}
