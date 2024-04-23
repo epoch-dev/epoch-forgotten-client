@@ -55,21 +55,12 @@ export class ScenesService {
         const direction = cursor.left.isDown
             ? SceneMoveDirection.Left
             : cursor.right.isDown
-<<<<<<< HEAD:src/views/scenes/ScenesService.ts
-            ? SceneMoveDirection.Right
-            : cursor.up.isDown
-            ? SceneMoveDirection.Up
-            : cursor.down.isDown
-            ? SceneMoveDirection.Down
-            : undefined;
-=======
-                ? MapMoveDirection.Right
+                ? SceneMoveDirection.Right
                 : cursor.up.isDown
-                    ? MapMoveDirection.Up
+                    ? SceneMoveDirection.Up
                     : cursor.down.isDown
-                        ? MapMoveDirection.Down
+                        ? SceneMoveDirection.Down
                         : undefined;
->>>>>>> 0955eba (working audio services):src/views/maps/MapsService.ts
         if (!direction || this.lastMove + this.MOVE_INTERVAL > getCurrentTimeStamp()) {
             return {
                 newPosition: await this.getUserPosition(),

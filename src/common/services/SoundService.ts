@@ -9,7 +9,6 @@ export class SoundService extends AudioService {
     constructor() {
         super();
         this.loadTrack('new-quest.wav');
-        this.loadTrack('lvl-up');
     }
 
     protected loadTrack(name: string) {
@@ -28,9 +27,4 @@ export class SoundService extends AudioService {
     public newQuest() {
         this.playAnyVoice('new-quest.wav');
     }
-
-    public lvlUp() {
-        this.playAnyVoice('lvl-up');
-    }
-
 }

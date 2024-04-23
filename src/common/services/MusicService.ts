@@ -10,7 +10,6 @@ export class MusicService extends AudioService {
         super();
         this.stopAllTracks();
         this.loadTrack('battle.wav');
-        this.loadTrack('village.ogg');
     }
 
     protected loadTrack(name: string) {
@@ -27,12 +26,13 @@ export class MusicService extends AudioService {
         return MusicService.instance;
     }
 
+    public play(name: string) {
+        if (!(name in this.tracks))
+            this.loadTrack(name);
+        this.playUniqueVoice(name);
+    }
+
     public startBattleMusic() {
         this.playUniqueVoice('battle.wav');
     }
-
-    public startVillageMusic() {
-        this.playUniqueVoice('village.ogg');
-    }
-
 }

@@ -4,13 +4,10 @@ import { PartyComponent } from '../party/PartyComponent';
 import { useGameStore } from './GameStore';
 import { BattleComponent } from '../battle/BattleComponent';
 import DialogueComponent from '../dialogue/DialogueComponent';
-<<<<<<< HEAD
 import { useNavigate } from 'react-router-dom';
 import { StorageService } from '../../common/services/StorageService';
 import { IntroComponent } from '../intro/IntroComponent';
-=======
 import MuteButton from '../../common/components/MuteButton';
->>>>>>> 0955eba (working audio services)
 
 export const GameComponent = () => {
     const navigate = useNavigate();
