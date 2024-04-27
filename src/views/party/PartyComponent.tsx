@@ -1,7 +1,10 @@
 import style from './PartyComponent.module.scss';
-import { useEffect, useState } from 'react';
+import { MouseEvent, useEffect, useState } from 'react';
 import { CharacterDto, PartySlot } from '../../common/api/.generated';
 import { CharactersClient } from '../../common/api/client';
+import { useGameStore } from '../game/GameStore';
+import { GameView } from '../game/types';
+import { AssetsService } from '../../common/services/AssetsService';
 
 export const PartyComponent = () => {
     const [party, setParty] = useState<CharacterDto[]>([]);
@@ -47,30 +50,10 @@ export const PartyComponent = () => {
         setRoster((r) => [character, ...r]);
     };
 
-    const renderCharacter = (character: CharacterDto) => {
-        return (
-            <>
-                <p className="bold primary">
-                    {character.name} ({character.level})
-                </p>
-                <hr />
-                <p>
-                    Affinity: <b>{character.affinity}</b>
-                </p>
-                <p>
-                    Health: <b>{character.attributes.health}</b>
-                </p>
-                <p>
-                    Mana: <b>{character.attributes.mana}</b>
-                </p>
-            </>
-        );
-    };
-
     // dev only
     const _recruitCharacter = async () => {
         await CharactersClient.recruitCharacter({
-            characterName: 'character-story-1',
+            characterName: 'Simon',
             level: 7,
             affinity: 2,
         });
@@ -79,29 +62,77 @@ export const PartyComponent = () => {
 
     return (
         <section>
-            <h2 className="subtitle primary">Party</h2>
+            <h2 className="subtitle dark">Party</h2>
             <div className={style.partyWrapper}>
                 {party.map((character) => (
                     <div
                         onClick={() => removeFromParty(character.id)}
                         key={character.id}
                         className={style.characterItem}>
-                        {renderCharacter(character)}
+                        <CharacterComponent character={character} />
                     </div>
                 ))}
             </div>
-            <h2 className="subtitle primary">Roster</h2>
+            <h2 className="subtitle dark">Roster</h2>
             <div className={style.partyWrapper}>
                 {roster.map((character) => (
                     <div
                         onClick={() => addToParty(character.id)}
                         key={character.id}
                         className={style.characterItem}>
-                        {renderCharacter(character)}
+                        <CharacterComponent character={character} />
                     </div>
                 ))}
             </div>
-            {/* <button onClick={_recruitCharacter}>Recruit</button> */}
+            <button onClick={_recruitCharacter}>Recruit</button>
         </section>
+    );
+};
+
+const CharacterComponent = ({ character }: { character: CharacterDto }) => {
+    const { setCharacter, setView } = useGameStore();
+
+    const navigateToSkills = (event: MouseEvent) => {
+        event.stopPropagation();
+        setCharacter(character);
+        setView(GameView.Skills);
+    };
+
+    const navigateToEquipment = (event: MouseEvent) => {
+        event.stopPropagation();
+        console.log('TODO - equipment page');
+    };
+
+    return (
+        <>
+            <p className="bold primary">
+                {character.name} | {character.level}
+            </p>
+            <hr />
+            <img
+                src={AssetsService.getCharacterUri(character.imageUri)}
+                alt={character.name}
+                draggable={false}
+            />
+            <hr />
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
+                <div className={style.characterNavIcon}>
+                    <img
+                        onClick={(e) => navigateToSkills(e)}
+                        src={AssetsService.getIcon('SKILLS')}
+                        style={{ width: '2rem', height: '2rem' }}
+                        draggable={false}
+                    />
+                </div>
+                <div className={style.characterNavIcon}>
+                    <img
+                        onClick={(e) => navigateToEquipment(e)}
+                        src={AssetsService.getIcon('EQUIPMENT')}
+                        style={{ width: '2rem', height: '2rem' }}
+                        draggable={false}
+                    />
+                </div>
+            </div>
+        </>
     );
 };

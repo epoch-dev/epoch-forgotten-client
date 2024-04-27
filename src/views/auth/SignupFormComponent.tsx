@@ -98,7 +98,7 @@ export const SignupFormComponent = () => {
             </fieldset>
             <div className="formActionsWrapper">
                 <button type="submit" className="formSubmitBtn">
-                    Signup
+                    Start New Journey
                 </button>
             </div>
         </form>

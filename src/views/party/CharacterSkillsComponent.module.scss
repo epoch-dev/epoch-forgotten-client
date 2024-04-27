@@ -1,0 +1,83 @@
+@import '../../common/styles/variables.scss';
+@import '../../common/styles/mixins.scss';
+
+.characterWrapper {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    p {
+        margin: 0;
+    }
+
+    img {
+        width: 100%;
+        max-width: 12rem;
+    }
+}
+
+.attributeItem {
+    @include textShadow($color-light);
+
+    position: relative;
+    width: 100%;
+    max-width: 12rem;
+    padding: 0 0.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba($color-light, 0.2);
+    border: 1px solid rgba($color-light, 0.2);
+
+    img {
+        position: absolute;
+        top: calc(1rem - 50%);
+        right: -1.5rem;
+        width: 18px;
+        height: auto;
+        z-index: 10;
+
+        &:hover {
+            cursor: pointer;
+            transform: scale(1.1) rotate(5deg);
+            transition: all 0.5s;
+        }
+    }
+}
+
+.skillsWrapper {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.skillItem {
+    width: 4rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    z-index: 10;
+
+    button {
+        width: 3rem;
+        height: 1rem;
+        padding: 0;
+        font-size: 12px;
+        line-height: 14px;
+    }
+}
+
+.skillHintItem {
+    list-style-position: inside;
+
+    p {
+        margin: 0.5rem 0;
+    }
+
+    li {
+        margin: 0 1rem;
+    }
+}

@@ -30,7 +30,7 @@ export const AuthComponent = () => {
                     or
                 </p>
                 <button onClick={toggleViewMode} type="button" className={`formSubmitBtn ${style.viewBtn}`}>
-                    {view === ViewMode.Signin ? 'Signup' : 'Signin'}
+                    {view === ViewMode.Signin ? 'Start New Journey' : 'Signin'}
                 </button>
             </main>
             <div style={{ position: 'absolute', zIndex: 1 }}>

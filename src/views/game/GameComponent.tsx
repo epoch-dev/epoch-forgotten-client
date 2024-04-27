@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { StorageService } from '../../common/services/StorageService';
 import { IntroComponent } from '../intro/IntroComponent';
 import MuteButton from '../../common/components/MuteButton';
+import { CharacterSkillComponent } from '../party/CharacterSkillsComponent';
 
 export const GameComponent = () => {
     const navigate = useNavigate();
@@ -27,6 +28,7 @@ export const GameComponent = () => {
             <main className="contentWrapper">
                 <ScenesComponent />
                 {view === GameView.Party && <PartyComponent />}
+                {view === GameView.Skills && <CharacterSkillComponent />}
                 {view === GameView.Battle && <BattleComponent />}
                 {view === GameView.Dialogue && <DialogueComponent />}
                 {view === GameView.Intro && <IntroComponent />}

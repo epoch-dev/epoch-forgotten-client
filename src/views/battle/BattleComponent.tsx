@@ -4,6 +4,7 @@ import { useGameStore } from '../game/GameStore';
 import { CharacterDto } from '../../common/api/.generated';
 import { CharactersClient } from '../../common/api/client';
 import { GameView } from '../game/types';
+import { AssetsService } from '../../common/services/AssetsService';
 
 export const BattleComponent = () => {
     // temp state - before battle data is available
@@ -30,10 +31,7 @@ export const BattleComponent = () => {
                     {party.map((ally) => (
                         <div key={ally.id} className={style.characterItem}>
                             <p>{ally.name}</p>
-                            <img
-                                src={`images/characters/${ally.imageUri}`}
-                                alt={ally.name}
-                            />
+                            <img src={AssetsService.getCharacterUri(ally.imageUri)} alt={ally.name} />
                         </div>
                     ))}
                 </div>
@@ -41,7 +39,7 @@ export const BattleComponent = () => {
                     {encounter?.enemies.map((enemy, enemyIndex) => (
                         <div key={enemyIndex} className={style.characterItem}>
                             <p>{enemy.label}</p>
-                            <img src={`images/enemies/${enemy.imageUri}`} alt={enemy.label} />
+                            <img src={AssetsService.getEnemyUri(enemy.imageUri)} alt={enemy.label} />
                         </div>
                     ))}
                 </div>

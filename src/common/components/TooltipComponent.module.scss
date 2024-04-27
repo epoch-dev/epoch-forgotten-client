@@ -1,0 +1,30 @@
+@import '../styles/variables.scss';
+
+.tooltipContainer {
+    width: 100%;
+    height: fit-content;
+    display: inline-block;
+    opacity: 0.9;
+    z-index: 100;
+    position: relative;
+}
+
+.tooltipWrapper {
+    width: 100%;
+    position: fixed;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: $color-dark;
+    color: $color-light;
+    border: 2px solid $color-light;
+    padding: 0.5rem;
+    border-radius: 1rem;
+    font-size: 14px;
+    z-index: 1000;
+    visibility: visible;
+
+    h2 {
+        line-height: 0.8;
+    }
+}
