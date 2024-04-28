@@ -1,19 +1,24 @@
-import { DialogueNode, DialogueOption } from '../../common/api/.generated';
+import { DialogueNode, Effects, NpcDialogueDto, NpcDialogueUpdatesDto } from '../../common/api/.generated';
+import { NpcsClient } from '../../common/api/client';
 import { SoundService } from '../../common/services/SoundService';
+import { ToastService } from '../../common/services/ToastService';
 
 export class DialogueService {
-    private readonly decisions: DialogueOption['id'][];
+    private readonly decisions: NpcDialogueUpdatesDto;
     private currentNodeIndex = 0;
     private dialogue;
     private onNodeChange;
     private onComplete;
+    private effectsAll: Effects[] = [];
 
     constructor(
-        dialogue: DialogueNode[],
+        name: string,
+        npcDialogue: NpcDialogueDto,
         { onNodeChange, onComplete }: { onNodeChange: (node: DialogueNode) => void; onComplete: () => void },
     ) {
-        this.dialogue = dialogue;
-        this.decisions = [];
+        this.dialogue = npcDialogue.nodes;
+        npcDialogue.effects && this.effectsAll.push(npcDialogue.effects);
+        this.decisions = { name, nodes: {} };
         this.onNodeChange = onNodeChange;
         this.onComplete = () => {
             onComplete();
@@ -33,7 +38,10 @@ export class DialogueService {
     public async handleUserInput(optionIndex: number) {
         const currentNode = this.dialogue[this.currentNodeIndex];
         const chosenOption = currentNode.options![optionIndex];
-        this.decisions.push(chosenOption.id);
+        if (chosenOption.flag || chosenOption.effects) {
+            chosenOption.effects && this.effectsAll.push(chosenOption.effects);
+            this.decisions.nodes[currentNode.id] = chosenOption.id;
+        }
 
         this.dialogue = this.filterNodes(this.dialogue, chosenOption.targetNodeId);
 
@@ -73,11 +81,18 @@ export class DialogueService {
         return nodes.findIndex((node) => node.id === chosenNodeId);
     }
 
-    public async sendDecisions() {
-        // todo: for now sending from here
-        if (this.decisions.length > 0) {
-            SoundService.getInstance().newQuest();
-            console.log(`Sending decisions: ${this.decisions}`);
+    public async sendDecisions() { // todo: for now sending from here
+        if (Object.keys(this.decisions.nodes).length > 0) {
+            await NpcsClient.updateFromDialogue(this.decisions);
+            for (const effects of this.effectsAll) {
+                if (effects.quest) {
+                    SoundService.getInstance().newQuest();
+                    ToastService.success({ message: 'Started new quest!' });
+                }
+                if (effects.items) {
+                    ToastService.success({ message: 'Received new items!' });
+                }
+            }
         }
     }
 }

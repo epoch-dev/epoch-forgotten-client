@@ -26,7 +26,7 @@ const DialogueComponent = () => {
                 return;
             }
             const npcDialogues = (await NpcsClient.getNpcDialogue(npc.npcName)).data;
-            const newService = new DialogueService(npcDialogues, {
+            const newService = new DialogueService(npc.npcName, npcDialogues, {
                 onNodeChange: (node) => {
                     setCurrentNode(node);
                     setShowOkButton(!(node && node.options));
@@ -63,13 +63,11 @@ const DialogueComponent = () => {
         }
     };
 
-    if (isLoading) {
-        return <div>Loading dialogue...</div>;
-    }
+    const LoadingDiv = () => <div className={style.dialogueDialog}>Loading dialogue...</div>;
 
     return (
         <div className={style.dialogueContainer} onKeyDown={handleKeyPress} tabIndex={-1} ref={ref}>
-            {currentNode && (
+            {isLoading ? <LoadingDiv /> : currentNode && (
                 <div className={style.dialogueDialog}>
                     <p>
                         {currentNode.author}: {currentNode.text}
