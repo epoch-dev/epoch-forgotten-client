@@ -23,8 +23,17 @@
     height: 600px;
     margin: 10vh auto 1rem auto;
     padding: 1rem;
-    background: $color-dark;
-    color: $color-light;
+    color: $color-dark;
+    background: linear-gradient(
+            90deg,
+            rgba($color-light, 0.3) 30%,
+            rgba($color-light, 0.4) 60%,
+            rgba($color-light, 0.3) 90%
+        ),
+        url('./images/ui/paper-bg.png');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
 
     canvas {
         margin: -1rem;

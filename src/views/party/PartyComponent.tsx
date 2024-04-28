@@ -2,6 +2,7 @@ import style from './PartyComponent.module.scss';
 import { useEffect, useState } from 'react';
 import { CharacterDto, PartySlot } from '../../common/api/.generated';
 import { CharactersClient } from '../../common/api/client';
+import { CharacterComponent } from './CharacterComponent';
 
 export const PartyComponent = () => {
     const [party, setParty] = useState<CharacterDto[]>([]);
@@ -47,61 +48,30 @@ export const PartyComponent = () => {
         setRoster((r) => [character, ...r]);
     };
 
-    const renderCharacter = (character: CharacterDto) => {
-        return (
-            <>
-                <p className="bold primary">
-                    {character.name} ({character.level})
-                </p>
-                <hr />
-                <p>
-                    Affinity: <b>{character.affinity}</b>
-                </p>
-                <p>
-                    Health: <b>{character.attributes.health}</b>
-                </p>
-                <p>
-                    Mana: <b>{character.attributes.mana}</b>
-                </p>
-            </>
-        );
-    };
-
-    // dev only
-    const _recruitCharacter = async () => {
-        await CharactersClient.recruitCharacter({
-            characterName: 'character-story-1',
-            level: 7,
-            affinity: 2,
-        });
-        await setupParty();
-    };
-
     return (
         <section>
-            <h2 className="subtitle primary">Party</h2>
+            <h2 className="subtitle dark">Party</h2>
             <div className={style.partyWrapper}>
                 {party.map((character) => (
                     <div
                         onClick={() => removeFromParty(character.id)}
                         key={character.id}
                         className={style.characterItem}>
-                        {renderCharacter(character)}
+                        <CharacterComponent character={character} />
                     </div>
                 ))}
             </div>
-            <h2 className="subtitle primary">Roster</h2>
+            <h2 className="subtitle dark">Roster</h2>
             <div className={style.partyWrapper}>
                 {roster.map((character) => (
                     <div
                         onClick={() => addToParty(character.id)}
                         key={character.id}
                         className={style.characterItem}>
-                        {renderCharacter(character)}
+                        <CharacterComponent character={character} />
                     </div>
                 ))}
             </div>
-            {/* <button onClick={_recruitCharacter}>Recruit</button> */}
         </section>
     );
 };

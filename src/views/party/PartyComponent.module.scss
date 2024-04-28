@@ -2,24 +2,58 @@
 @import '../../common/styles/mixins.scss';
 
 .partyWrapper {
-    height: 12rem;
     display: flex;
     gap: 1rem;
 }
 
 .characterItem {
-    @include insetShadow($color-dark);
+    @include boxShadow($color-dark);
 
-    width: 20%;
-    padding: 1rem;
+    width: 10rem;
+    height: 14rem;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
     background: darken($color-light, 10);
     color: $color-dark;
+    border: 2px solid $color-primary;
 
     p {
         margin: 0;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    hr {
+        width: 100%;
+        height: 0;
+        border-bottom: 1px solid darken($color-primary, 10);
+        margin: 0;
+        padding: 0;
+    }
+
+    img {
+        @include boxShadow($color-light);
+
+        width: 100%;
+        height: 7rem;
+        margin: 0 auto;
+        object-fit: cover;
     }
 
     &:hover {
         cursor: pointer;
+    }
+}
+
+.characterNavIcon {
+    @include boxShadowSm($color-dark);
+
+    max-height: 2rem;
+
+    &:hover {
+        @include boxShadow($color-dark);
     }
 }
