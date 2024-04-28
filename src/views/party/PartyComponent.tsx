@@ -50,16 +50,6 @@ export const PartyComponent = () => {
         setRoster((r) => [character, ...r]);
     };
 
-    // dev only
-    const _recruitCharacter = async () => {
-        await CharactersClient.recruitCharacter({
-            characterName: 'Simon',
-            level: 7,
-            affinity: 2,
-        });
-        await setupParty();
-    };
-
     return (
         <section>
             <h2 className="subtitle dark">Party</h2>
@@ -84,7 +74,6 @@ export const PartyComponent = () => {
                     </div>
                 ))}
             </div>
-            <button onClick={_recruitCharacter}>Recruit</button>
         </section>
     );
 };

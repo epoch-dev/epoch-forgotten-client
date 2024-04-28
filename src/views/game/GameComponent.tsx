@@ -8,7 +8,8 @@ import { useNavigate } from 'react-router-dom';
 import { StorageService } from '../../common/services/StorageService';
 import { IntroComponent } from '../intro/IntroComponent';
 import MuteButton from '../../common/components/MuteButton';
-import { CharacterSkillComponent } from '../party/CharacterSkillsComponent';
+import { SkillsComponent } from '../skills/SkillsComponent';
+import { DevComponent } from '../_dev/DevComponent';
 
 export const GameComponent = () => {
     const navigate = useNavigate();
@@ -27,8 +28,9 @@ export const GameComponent = () => {
             <MuteButton />
             <main className="contentWrapper">
                 <ScenesComponent />
+                {view === GameView._Dev && <DevComponent />}
                 {view === GameView.Party && <PartyComponent />}
-                {view === GameView.Skills && <CharacterSkillComponent />}
+                {view === GameView.Skills && <SkillsComponent />}
                 {view === GameView.Battle && <BattleComponent />}
                 {view === GameView.Dialogue && <DialogueComponent />}
                 {view === GameView.Intro && <IntroComponent />}
@@ -43,6 +45,9 @@ export const GameComponent = () => {
                     </button>
                     <button onClick={handleSignout} className="navItem">
                         Signout
+                    </button>
+                    <button onClick={() => setView(GameView._Dev)} className="navItem">
+                        Dev
                     </button>
                 </nav>
             )}

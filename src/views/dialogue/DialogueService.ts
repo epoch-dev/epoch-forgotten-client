@@ -10,7 +10,7 @@ export class DialogueService {
 
     constructor(
         dialogue: DialogueNode[],
-        { onNodeChange, onComplete }: { onNodeChange: (node: DialogueNode) => void, onComplete: () => void }
+        { onNodeChange, onComplete }: { onNodeChange: (node: DialogueNode) => void; onComplete: () => void },
     ) {
         this.dialogue = dialogue;
         this.decisions = [];
@@ -57,26 +57,27 @@ export class DialogueService {
 
     private filterNodes(nodes: DialogueNode[], chosenNodeId: string) {
         const nodeIdsToRemove = new Set();
-        nodes.forEach(node => {
+        nodes.forEach((node) => {
             if (node.options) {
-                node.options.forEach(option => {
+                node.options.forEach((option) => {
                     if (option.targetNodeId !== chosenNodeId) {
                         nodeIdsToRemove.add(option.targetNodeId);
                     }
                 });
             }
         });
-        return nodes.filter(node => !nodeIdsToRemove.has(node.id));
+        return nodes.filter((node) => !nodeIdsToRemove.has(node.id));
     }
 
     private getNextNodeIndex(nodes: DialogueNode[], chosenNodeId: string) {
-        return nodes.findIndex(node => node.id === chosenNodeId);
+        return nodes.findIndex((node) => node.id === chosenNodeId);
     }
 
-    public async sendDecisions() { // todo: for now sending from here
+    public async sendDecisions() {
+        // todo: for now sending from here
         if (this.decisions.length > 0) {
             SoundService.getInstance().newQuest();
-            console.log(`Sending decisions: ${this.decisions}`)
+            console.log(`Sending decisions: ${this.decisions}`);
         }
     }
 }

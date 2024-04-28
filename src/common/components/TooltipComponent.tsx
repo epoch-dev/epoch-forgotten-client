@@ -1,5 +1,5 @@
 import style from './TooltipComponent.module.scss';
-import { ReactNode, useRef, useState, useEffect, MouseEvent } from 'react';
+import { ReactNode, useState, useEffect, MouseEvent } from 'react';
 
 type TooltipConfig = {
     containerWidth?: string;
@@ -24,7 +24,6 @@ const DEFAULT_CONFIG: TooltipConfig = {
 };
 
 export const TooltipComponent = ({ children, hint, config }: TooltipComponentProps) => {
-    const hintRef = useRef<HTMLDivElement>(null);
     const [cssConfig, setCssConfig] = useState(DEFAULT_CONFIG);
     const [isVisible, setIsVisible] = useState(false);
 
@@ -61,7 +60,7 @@ export const TooltipComponent = ({ children, hint, config }: TooltipComponentPro
             style={{ width: cssConfig.containerWidth }}>
             {children}
             {isVisible && (
-                <div ref={hintRef} className={style.tooltipWrapper} style={cssConfig}>
+                <div className={style.tooltipWrapper} style={cssConfig}>
                     {hint}
                 </div>
             )}
