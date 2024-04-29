@@ -38,7 +38,7 @@ export class DialogueService {
     public async handleUserInput(optionIndex: number) {
         const currentNode = this.dialogue[this.currentNodeIndex];
         const chosenOption = currentNode.options![optionIndex];
-        if (chosenOption.flag || chosenOption.effects) {
+        if (chosenOption.flagValue || chosenOption.effects) {
             chosenOption.effects && this.effectsAll.push(chosenOption.effects);
             this.decisions.nodes[currentNode.id] = chosenOption.id;
         }
