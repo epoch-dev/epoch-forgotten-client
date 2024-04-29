@@ -52,7 +52,7 @@ export const SignupFormComponent = () => {
             newErrors.confirmPassword = 'Confirm password required';
         }
         if (formData.password !== formData.confirmPassword) {
-            newErrors.confirmPassword = "Passwords don't match";
+            newErrors.confirmPassword = 'Passwords don\'t match';
         }
         setFormErrors(newErrors);
         return isEmpty(newErrors);
