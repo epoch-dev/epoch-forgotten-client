@@ -3,6 +3,7 @@ export enum GameView {
     World,
     Party,
     Skills,
+    Equipment,
     Battle,
     Dialogue,
     Intro,

@@ -66,3 +66,23 @@
 .blur {
     filter: blur(3px);
 }
+
+.common {
+    color: $color-common;
+}
+
+.rare {
+    color: $color-rare;
+}
+
+.unique {
+    color: $color-unique;
+}
+
+.epic {
+    color: $color-epic;
+}
+
+.mythical {
+    color: $color-mythical;
+}
