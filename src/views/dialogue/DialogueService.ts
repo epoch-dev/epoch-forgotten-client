@@ -1,5 +1,5 @@
 import { DialogueNode, Effects, NpcDialogueDto, NpcDialogueUpdatesDto } from '../../common/api/.generated';
-import { NpcsClient } from '../../common/api/client';
+import { NpcsClient, questsClient } from '../../common/api/client';
 import { SoundService } from '../../common/services/SoundService';
 import { ToastService } from '../../common/services/ToastService';
 
@@ -87,7 +87,9 @@ export class DialogueService {
             for (const effects of this.effectsAll) {
                 if (effects.quest) {
                     SoundService.getInstance().newQuest();
-                    ToastService.success({ message: 'Started new quest!' });
+                    const quest = (await questsClient.getQuest(effects.quest.name, effects.quest.stageId)).data;
+                    console.log(quest);
+                    ToastService.success({ message: 'Started a new quest! ' + `"${quest.label}"` });
                 }
                 if (effects.items) {
                     ToastService.success({ message: 'Received new items!' });
