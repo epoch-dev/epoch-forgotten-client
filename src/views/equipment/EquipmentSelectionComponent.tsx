@@ -57,7 +57,6 @@ export const EquipmentSelectionComponent = ({
             characterId: character.id,
             itemId: currentItem.id,
         });
-        console.log(character);
         setCharacter(characterData.data);
         onClose();
     };

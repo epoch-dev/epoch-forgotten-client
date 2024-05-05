@@ -1,8 +1,8 @@
+import style from './DialogueComponent.module.scss';
 import { useEffect, useState, KeyboardEvent, useRef } from 'react';
 import { DialogueService } from './DialogueService';
 import { NpcsClient } from '../../common/api/client';
 import { DialogueNode } from '../../common/api/.generated';
-import style from './DialogueComponent.module.scss';
 import { useGameStore } from '../game/GameStore';
 import { GameView } from '../game/types';
 
@@ -10,7 +10,6 @@ const DialogueComponent = () => {
     const { npc, setView } = useGameStore();
     const [service, setService] = useState<DialogueService>();
     const [currentNode, setCurrentNode] = useState<DialogueNode>();
-    // const [isLastNode, setIsLastNode] = useState(false); // todo: would be useful?
     const [isLoading, setIsLoading] = useState(true);
     const [showOkButton, setShowOkButton] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
@@ -63,33 +62,37 @@ const DialogueComponent = () => {
         }
     };
 
-    const LoadingDiv = () => <div className={style.dialogueDialog}>Loading dialogue...</div>;
+    const LoadingDiv = () => <div className={style.dialogueItem}>Loading dialogue...</div>;
 
     return (
-        <div className={style.dialogueContainer} onKeyDown={handleKeyPress} tabIndex={-1} ref={ref}>
-            {isLoading ? <LoadingDiv /> : currentNode && (
-                <div className={style.dialogueDialog}>
-                    <p>
-                        {currentNode.author}: {currentNode.text}
-                    </p>
-                    {currentNode.options && (
-                        <>
-                            <div>Options:</div>
-                            {currentNode.options.map((option, index) => (
-                                <div key={option.id}>
-                                    <button key={option.id} onClick={() => handleOptionClick(index)}>
+        <div className={style.dialogueWrapper} onKeyDown={handleKeyPress} ref={ref}>
+            {isLoading ? (
+                <LoadingDiv />
+            ) : (
+                currentNode && (
+                    <div className={style.dialogueItem}>
+                        <p>
+                            {currentNode.author}: {currentNode.text}
+                        </p>
+                        {currentNode.options && (
+                            <>
+                                {currentNode.options.map((option, index) => (
+                                    <button
+                                        key={option.id}
+                                        onClick={() => handleOptionClick(index)}
+                                        className={style.dialogueBtn}>
                                         {index + 1}: {option.text}
                                     </button>
-                                </div>
-                            ))}
-                        </>
-                    )}
-                </div>
-            )}
-            {showOkButton && (
-                <button id="ok-button" onClick={handleOkClick}>
-                    OK
-                </button>
+                                ))}
+                            </>
+                        )}
+                        {showOkButton && (
+                            <button onClick={handleOkClick} className={style.dialogueBtn}>
+                                Ok
+                            </button>
+                        )}
+                    </div>
+                )
             )}
         </div>
     );

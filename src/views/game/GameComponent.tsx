@@ -21,6 +21,7 @@ export const GameComponent = () => {
     const handleSignout = () => {
         StorageService.clear();
         clear();
+        // TODO - stop all music
         navigate('/');
     };
 

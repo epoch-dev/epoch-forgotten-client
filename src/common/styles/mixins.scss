@@ -12,6 +12,6 @@
     box-shadow: inset 2px 2px 10px 0px $color;
 }
 
-@mixin textShadow($color: $color) {
+@mixin textShadow($color: $color-dark) {
     text-shadow: $color 2px 2px 4px;
 }
