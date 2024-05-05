@@ -11,7 +11,7 @@ export const IntroComponent = () => {
     const { setView } = useGameStore();
 
     const handleNameChoice = async () => {
-        await Promise.all([CharactersClient.recruitMainCharacter({ name }), ScenesService.initialize()]);
+        await Promise.all([CharactersClient.createMainCharacter({ name }), ScenesService.initialize()]);
         ToastService.success({ message: 'Let the journey begin' });
         setView(GameView.World);
     };

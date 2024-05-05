@@ -53,7 +53,7 @@ export const EquipmentSelectionComponent = ({
         if (!currentItem) {
             return;
         }
-        const characterData = await CharactersClient.uneEquipItem({
+        const characterData = await CharactersClient.unEquipItem({
             characterId: character.id,
             itemId: currentItem.id,
         });
