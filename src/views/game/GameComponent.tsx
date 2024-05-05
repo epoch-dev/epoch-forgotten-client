@@ -10,6 +10,7 @@ import { IntroComponent } from '../intro/IntroComponent';
 import MuteButton from '../../common/components/MuteButton';
 import { SkillsComponent } from '../skills/SkillsComponent';
 import { DevComponent } from '../_dev/DevComponent';
+import { EquipmentComponent } from '../equipment/EquipmentComponent';
 
 export const GameComponent = () => {
     const navigate = useNavigate();
@@ -20,6 +21,7 @@ export const GameComponent = () => {
     const handleSignout = () => {
         StorageService.clear();
         clear();
+        // TODO - stop all music
         navigate('/');
     };
 
@@ -31,6 +33,7 @@ export const GameComponent = () => {
                 {view === GameView._Dev && <DevComponent />}
                 {view === GameView.Party && <PartyComponent />}
                 {view === GameView.Skills && <SkillsComponent />}
+                {view === GameView.Equipment && <EquipmentComponent />}
                 {view === GameView.Battle && <BattleComponent />}
                 {view === GameView.Dialogue && <DialogueComponent />}
                 {view === GameView.Intro && <IntroComponent />}

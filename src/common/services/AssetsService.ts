@@ -3,6 +3,7 @@ const ICONS = {
     SKILLS: 'skills-icon.svg',
     EQUIPMENT: 'equipment-icon.svg',
     PLUS: 'plus-icon.svg',
+    BLANK: 'blank-icon.png',
 } as const;
 
 type IconName = keyof typeof ICONS;
@@ -15,6 +16,7 @@ export class AssetsService {
     private static CHARACTERS_BASE_URI = '/images/characters';
     private static ENEMIES_BASE_URI = '/images/enemies';
     private static SKILLS_BASE_URI = '/images/skills';
+    private static ITEMS_BASE_URI = '/images/items';
 
     public static getIcon(iconName: IconName) {
         return `${this.ICONS_BASE_URI}/${ICONS[iconName]}`;
@@ -42,5 +44,9 @@ export class AssetsService {
 
     public static getSkillUri(skillUri: string) {
         return `${this.SKILLS_BASE_URI}/${skillUri}`;
+    }
+
+    public static getItemUri(itemUri: string) {
+        return `${this.ITEMS_BASE_URI}/${itemUri}`;
     }
 }

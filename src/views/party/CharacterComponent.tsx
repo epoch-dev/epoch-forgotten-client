@@ -16,7 +16,8 @@ export const CharacterComponent = ({ character }: { character: CharacterDto }) =
 
     const navigateToEquipment = (event: MouseEvent) => {
         event.stopPropagation();
-        console.log('TODO - equipment page');
+        setCharacter(character);
+        setView(GameView.Equipment);
     };
 
     return (

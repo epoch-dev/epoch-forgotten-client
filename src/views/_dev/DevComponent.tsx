@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { CharactersClient } from '../../common/api/client';
+import { CharactersClient, ItemsClient } from '../../common/api/client';
 import { ToastService } from '../../common/services/ToastService';
 
 /**
@@ -8,6 +8,8 @@ import { ToastService } from '../../common/services/ToastService';
 export const DevComponent = () => {
     const charNameRef = useRef<HTMLInputElement>(null);
     const charLevelRef = useRef<HTMLInputElement>(null);
+    const itemNameRef = useRef<HTMLInputElement>(null);
+    const itemQuantityRef = useRef<HTMLInputElement>(null);
 
     const recruitCharacter = async () => {
         await CharactersClient.recruitCharacter({
@@ -18,6 +20,14 @@ export const DevComponent = () => {
         ToastService.success({ message: `${charNameRef.current!.value} recruited` });
     };
 
+    const addItem = async () => {
+        await ItemsClient.addItem({
+            name: itemNameRef.current!.value,
+            quantity: +itemQuantityRef.current!.value,
+        });
+        ToastService.success({ message: `${itemNameRef.current!.value} added` });
+    };
+
     return (
         <>
             <section className="formWrapper">
@@ -25,6 +35,13 @@ export const DevComponent = () => {
                 <input ref={charNameRef} type="text" placeholder="name" />
                 <input ref={charLevelRef} type="number" placeholder="level" />
                 <button onClick={recruitCharacter}>Recruit</button>
+            </section>
+            <hr />
+            <section className="formWrapper">
+                <b>Add Item</b>
+                <input ref={itemNameRef} type="text" placeholder="name" />
+                <input ref={itemQuantityRef} type="number" placeholder="quantity" />
+                <button onClick={addItem}>Add</button>
             </section>
         </>
     );
