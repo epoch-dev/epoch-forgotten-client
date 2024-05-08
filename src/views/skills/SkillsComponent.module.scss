@@ -54,6 +54,17 @@
     gap: 1rem;
 }
 
+.skillsHeaderWrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    img {
+        margin-top: 0.25rem;
+        cursor: pointer;
+    }
+}
+
 .skillItem {
     width: 4rem;
     display: flex;

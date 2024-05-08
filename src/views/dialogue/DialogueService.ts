@@ -4,18 +4,19 @@ import { SoundService } from '../../common/services/SoundService';
 import { ToastService } from '../../common/services/ToastService';
 
 export class DialogueService {
-    private readonly decisions: NpcDialogueUpdatesDto;
-    private currentNodeIndex = 0;
-    private dialogue;
-    private onNodeChange;
-    private onComplete;
-    private effectsAll: Effects[] = [];
+    private static decisions: NpcDialogueUpdatesDto;
+    private static currentNodeIndex = 0;
+    private static dialogue: DialogueNode[] = [];
+    private static onNodeChange: (node: DialogueNode) => void;
+    private static onComplete: () => void;
+    private static effectsAll: Effects[] = [];
 
-    constructor(
+    public static setup(
         name: string,
         npcDialogue: NpcDialogueDto,
         { onNodeChange, onComplete }: { onNodeChange: (node: DialogueNode) => void; onComplete: () => void },
     ) {
+        this.currentNodeIndex = 0;
         this.dialogue = npcDialogue.nodes;
         npcDialogue.effects && this.effectsAll.push(npcDialogue.effects);
         this.decisions = { name, nodes: {} };
@@ -26,16 +27,20 @@ export class DialogueService {
         };
     }
 
-    public async start() {
+    public static getCurrentNode() {
+        return this.dialogue[this.currentNodeIndex];
+    }
+
+    public static async start() {
         await this.handleDialogue();
     }
 
-    private async handleDialogue() {
+    private static async handleDialogue() {
         const currentNode = this.dialogue[this.currentNodeIndex];
         this.onNodeChange(currentNode);
     }
 
-    public async handleUserInput(optionIndex: number) {
+    public static async handleUserInput(optionIndex: number) {
         const currentNode = this.dialogue[this.currentNodeIndex];
         const chosenOption = currentNode.options![optionIndex];
         if (chosenOption.flagValue || chosenOption.effects) {
@@ -54,7 +59,7 @@ export class DialogueService {
         }
     }
 
-    public async proceedToNextNode() {
+    public static async proceedToNextNode() {
         this.currentNodeIndex++;
         if (this.currentNodeIndex < this.dialogue.length) {
             this.onNodeChange(this.dialogue[this.currentNodeIndex]);
@@ -63,7 +68,7 @@ export class DialogueService {
         }
     }
 
-    private filterNodes(nodes: DialogueNode[], chosenNodeId: string) {
+    private static filterNodes(nodes: DialogueNode[], chosenNodeId: string) {
         const nodeIdsToRemove = new Set();
         nodes.forEach((node) => {
             if (node.options) {
@@ -77,11 +82,12 @@ export class DialogueService {
         return nodes.filter((node) => !nodeIdsToRemove.has(node.id));
     }
 
-    private getNextNodeIndex(nodes: DialogueNode[], chosenNodeId: string) {
+    private static getNextNodeIndex(nodes: DialogueNode[], chosenNodeId: string) {
         return nodes.findIndex((node) => node.id === chosenNodeId);
     }
 
-    public async sendDecisions() { // todo: for now sending from here
+    public static async sendDecisions() {
+        // todo: for now sending from here
         if (Object.keys(this.decisions.nodes).length > 0) {
             await NpcsClient.updateFromDialogue(this.decisions);
             for (const effects of this.effectsAll) {

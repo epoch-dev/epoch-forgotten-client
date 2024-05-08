@@ -69,31 +69,50 @@ export const EquipmentComponent = () => {
                 />
                 <hr />
                 <p className={style.statisticLabel}>
-                    Health: <b>{character.attributes.health}</b>
+                    Health: <b>{character.statistics.health}</b>
                 </p>
                 <p className={style.statisticLabel}>
-                    Mana: <b>{character.attributes.mana}</b>
+                    Mana: <b>{character.statistics.mana}</b>
                 </p>
                 <hr />
                 <p className={style.statisticLabel}>
-                    P. Attack: <b>{'110'}</b>
+                    P. Attack: <b>{character.statistics.pAtk}</b>
                 </p>
                 <p className={style.statisticLabel}>
-                    M. Attack: <b>{'70'}</b>
+                    M. Attack: <b>{character.statistics.mAtk}</b>
                 </p>
                 <p className={style.statisticLabel}>
-                    P. Defense: <b>{'80'}</b>
+                    P. Defense: <b>{character.statistics.pDef}</b>
                 </p>
                 <p className={style.statisticLabel}>
-                    M. Defense: <b>{'40'}</b>
+                    M. Defense: <b>{character.statistics.mDef}</b>
+                </p>
+                <hr />
+                <p className={style.statisticLabel}>
+                    Speed: <b>{character.statistics.speed}</b>
                 </p>
                 <p className={style.statisticLabel}>
-                    Speed: <b>{'55'}</b>
+                    Dodge Chance: <b>{100 * character.statistics.dodge}%</b>
+                </p>
+                <hr />
+                <p className={style.statisticLabel}>
+                    Critical Chance: <b>{100 * character.statistics.critChance}%</b>
+                </p>
+                <p className={style.statisticLabel}>
+                    Critical Power: <b>{100 * character.statistics.critChance}%</b>
                 </p>
             </div>
 
             <div className={style.equipmentWrapper}>
-                <h2>Equipment</h2>
+                <div className={style.equipmentHeaderWrapper}>
+                    <h2>Equipment |</h2>
+                    <img
+                        onClick={() => setView(GameView.Skills)}
+                        src={AssetsService.getIcon('SKILLS')}
+                        style={{ width: '1.6rem' }}
+                        draggable={false}
+                    />
+                </div>
                 <div className={style.itemsWrapper}>
                     <div
                         onClick={() => showEquipmentSelection('Charm', ['Charm'], character.equipment.charm)}
@@ -160,9 +179,7 @@ export const EquipmentComponent = () => {
                         )}
                     </div>
                     <div
-                        onClick={() =>
-                            showEquipmentSelection('Footwear', ['Legs'], character.equipment.legs)
-                        }
+                        onClick={() => showEquipmentSelection('Footwear', ['Legs'], character.equipment.legs)}
                         className={style.equipmentItem}
                         style={{ gridRow: 3, gridColumn: 2 }}>
                         {character.equipment.legs ? (

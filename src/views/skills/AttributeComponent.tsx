@@ -1,7 +1,8 @@
 import style from './SkillsComponent.module.scss';
-import { CharacterStats } from '../../common/api/.generated';
 import { AssetsService } from '../../common/services/AssetsService';
 import { useGameStore } from '../game/GameStore';
+import { CharacterAttrs, CharacterImproveAttributeDtoAttributeEnum } from '../../common/api/.generated';
+import { CharactersClient } from '../../common/api/client';
 
 export const AttributeComponent = ({
     label,
@@ -10,7 +11,7 @@ export const AttributeComponent = ({
 }: {
     label: string;
     amount: number;
-    name?: keyof CharacterStats;
+    name?: keyof CharacterAttrs;
 }) => {
     const { character, setCharacter } = useGameStore();
 
@@ -20,18 +21,16 @@ export const AttributeComponent = ({
 
     const canUpgrade = name && name !== 'health' && name !== 'mana' && character.attributePoints > 0;
 
-    const handleUpgrade = () => {
-        // TODO - implement on backend
+    const handleUpgrade = async () => {
         if (!name || character.attributePoints <= 0) {
             return;
         }
+        const updatedCharacterData = await CharactersClient.improveAttribute({
+            characterId: character.id,
+            attribute: name as CharacterImproveAttributeDtoAttributeEnum,
+        });
         setCharacter({
-            ...character,
-            attributes: {
-                ...character.attributes,
-                [name]: character.attributes[name] + 1,
-            },
-            attributePoints: character.attributePoints - 1,
+            ...updatedCharacterData.data,
         });
     };
 

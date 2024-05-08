@@ -41,8 +41,8 @@ export const SkillsComponent = () => {
                     draggable={false}
                 />
                 <hr />
-                <AttributeComponent label="Health" amount={character.attributes.health} name={'health'} />
-                <AttributeComponent label="Mana" amount={character.attributes.mana} name={'mana'} />
+                <AttributeComponent label="Health" amount={character.statistics.health} name={'health'} />
+                <AttributeComponent label="Mana" amount={character.statistics.mana} name={'mana'} />
                 <AttributeComponent label="Strength" amount={character.attributes.str} name={'str'} />
                 <AttributeComponent label="Dexterity" amount={character.attributes.dex} name={'dex'} />
                 <AttributeComponent label="Poi" amount={character.attributes.poi} name={'poi'} />
@@ -52,7 +52,15 @@ export const SkillsComponent = () => {
                 <AttributeComponent label="Skill points:" amount={character.skillPoints} />
             </div>
             <div className={style.skillsWrapper}>
-                <h2>Skill Tree</h2>
+                <div className={style.skillsHeaderWrapper}>
+                    <h2>Skill Tree |</h2>
+                    <img
+                        onClick={() => setView(GameView.Equipment)}
+                        src={AssetsService.getIcon('EQUIPMENT')}
+                        style={{ width: '1.6rem' }}
+                        draggable={false}
+                    />
+                </div>
                 {skills?.map((skill) => (
                     <SkillComponent key={skill.name} skill={skill} />
                 ))}
