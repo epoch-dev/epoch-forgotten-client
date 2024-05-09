@@ -16,9 +16,7 @@ const DialogueComponent = () => {
 
     useEffect(() => {
         void fetchAndStartDialogue();
-        // return () => {
-        //     window.removeEventListener('keydown', handleKeyPress, true);
-        // };
+        void fetchAndStartDialogue();
     }, [npc]);
 
     useEffect(() => {
