@@ -1,67 +1,72 @@
 import style from './DialogueComponent.module.scss';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, KeyboardEvent, useRef } from 'react';
 import { DialogueService } from './DialogueService';
 import { NpcsClient } from '../../common/api/client';
+import { DialogueNode } from '../../common/api/.generated';
 import { useGameStore } from '../game/GameStore';
 import { GameView } from '../game/types';
-import { DialogueNode } from '../../common/api/.generated';
 
 const DialogueComponent = () => {
     const { npc, setView } = useGameStore();
+    const [service, setService] = useState<DialogueService>();
     const [currentNode, setCurrentNode] = useState<DialogueNode>();
+    const [isLoading, setIsLoading] = useState(true);
     const [showOkButton, setShowOkButton] = useState(false);
+    const ref = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        ref.current?.focus();
+    }, [isLoading]);
 
     useEffect(() => {
         const fetchAndStartDialogue = async () => {
+            setIsLoading(true);
             if (!npc) {
-                setView(GameView.World);
                 return;
             }
             const npcDialogues = (await NpcsClient.getNpcDialogue(npc.npcName)).data;
-            DialogueService.setup(npc.npcName, npcDialogues, {
+            const newService = new DialogueService(npc.npcName, npcDialogues, {
                 onNodeChange: (node) => {
-                    setShowOkButton(!(node && node.options));
                     setCurrentNode(node);
+                    setShowOkButton(!(node && node.options));
                 },
-                onComplete: () => {
-                    setView(GameView.World);
-                    window.removeEventListener('keydown', handleKeyPress, true);
-                },
+                onComplete: () => setView(GameView.World),
             });
-            DialogueService.start();
-            window.addEventListener('keydown', handleKeyPress, true);
-        };
+            newService.start();
 
+            setService(newService);
+            setIsLoading(false);
+        };
         fetchAndStartDialogue();
-
-        return () => {
-            window.removeEventListener('keydown', handleKeyPress, true);
-        };
-    }, [npc, setView]);
+    }, []);
 
     const handleOptionClick = async (optionIndex: number) => {
-        await DialogueService.handleUserInput(optionIndex);
+        await service?.handleUserInput(optionIndex);
     };
 
     const handleOkClick = async () => {
-        if (!DialogueService.getCurrentNode()?.options) {
-            DialogueService.proceedToNextNode();
+        if (!currentNode?.options) {
+            service?.proceedToNextNode();
         }
     };
 
     const handleKeyPress = (event: KeyboardEvent) => {
+        event.preventDefault();
         const pressedKey = event.key;
         if (pressedKey === ' ' || pressedKey === 'Spacebar') {
+            event.preventDefault();
             handleOkClick();
-        } else if (DialogueService.getCurrentNode()?.options && /^[1-9]$/.test(pressedKey)) {
+        } else if (currentNode?.options && /^[1-9]$/.test(pressedKey)) {
             const keyIndex = parseInt(pressedKey, 10) - 1;
             handleOptionClick(keyIndex);
         }
     };
 
+    const LoadingDiv = () => <div className={style.dialogueItem}>Loading dialogue...</div>;
+
     return (
-        <div className={style.dialogueWrapper}>
-            {currentNode && (
+        <div className={style.dialogueWrapper} onKeyDown={handleKeyPress} tabIndex={-1} ref={ref}>
+            {isLoading ? <LoadingDiv /> : currentNode && (
                 <div className={style.dialogueItem}>
                     <p>
                         {currentNode.author}: {currentNode.text}
@@ -72,15 +77,20 @@ const DialogueComponent = () => {
                                 <button
                                     key={option.id}
                                     onClick={() => handleOptionClick(index)}
-                                    className={style.dialogueBtn}>
+                                    className={style.dialogueBtn}
+                                >
                                     {index + 1}: {option.text}
                                 </button>
                             ))}
                         </>
                     )}
                     {showOkButton && (
-                        <button onClick={handleOkClick} className={style.dialogueBtn}>
-                            Ok
+                        <button
+                            id="ok-button"
+                            onClick={handleOkClick}
+                            className={style.dialogueBtn}
+                        >
+                            OK
                         </button>
                     )}
                 </div>
