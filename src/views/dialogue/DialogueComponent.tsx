@@ -1,5 +1,5 @@
 import style from './DialogueComponent.module.scss';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { DialogueService } from './DialogueService';
 import { NpcsClient } from '../../common/api/client';
 import { useGameStore } from '../game/GameStore';
@@ -8,44 +8,52 @@ import { DialogueNode } from '../../common/api/.generated';
 
 const DialogueComponent = () => {
     const { npc, setView } = useGameStore();
+    const [service, setService] = useState<DialogueService>();
     const [currentNode, setCurrentNode] = useState<DialogueNode>();
     const [showOkButton, setShowOkButton] = useState(false);
+    const currentNodeRef = useRef<DialogueNode>();
+    const serviceRef = useRef<DialogueService>();
 
     useEffect(() => {
-        const fetchAndStartDialogue = async () => {
-            if (!npc) {
+        void fetchAndStartDialogue();
+        // return () => {
+        //     window.removeEventListener('keydown', handleKeyPress, true);
+        // };
+    }, [npc]);
+
+    useEffect(() => {
+        currentNodeRef.current = currentNode;
+        serviceRef.current = service;
+    }, [currentNode, service]);
+
+    const fetchAndStartDialogue = async () => {
+        if (!npc) {
+            setView(GameView.World);
+            return;
+        }
+        const npcDialogues = (await NpcsClient.getNpcDialogue(npc.npcName)).data;
+        const serviceInstance = new DialogueService(npc.npcName, npcDialogues, {
+            onNodeChange: (node) => {
+                setShowOkButton(!(node && node.options));
+                setCurrentNode(node);
+            },
+            onComplete: () => {
                 setView(GameView.World);
-                return;
-            }
-            const npcDialogues = (await NpcsClient.getNpcDialogue(npc.npcName)).data;
-            DialogueService.setup(npc.npcName, npcDialogues, {
-                onNodeChange: (node) => {
-                    setShowOkButton(!(node && node.options));
-                    setCurrentNode(node);
-                },
-                onComplete: () => {
-                    setView(GameView.World);
-                    window.removeEventListener('keydown', handleKeyPress, true);
-                },
-            });
-            DialogueService.start();
-            window.addEventListener('keydown', handleKeyPress, true);
-        };
-
-        fetchAndStartDialogue();
-
-        return () => {
-            window.removeEventListener('keydown', handleKeyPress, true);
-        };
-    }, [npc, setView]);
+                window.removeEventListener('keydown', handleKeyPress, true);
+            },
+        });
+        serviceInstance.start();
+        setService(serviceInstance);
+        window.addEventListener('keydown', handleKeyPress, true);
+    };
 
     const handleOptionClick = async (optionIndex: number) => {
-        await DialogueService.handleUserInput(optionIndex);
+        serviceRef.current?.handleUserInput(optionIndex);
     };
 
     const handleOkClick = async () => {
-        if (!DialogueService.getCurrentNode()?.options) {
-            DialogueService.proceedToNextNode();
+        if (!serviceRef.current?.getCurrentNode().options) {
+            serviceRef.current?.proceedToNextNode();
         }
     };
 
@@ -53,7 +61,7 @@ const DialogueComponent = () => {
         const pressedKey = event.key;
         if (pressedKey === ' ' || pressedKey === 'Spacebar') {
             handleOkClick();
-        } else if (DialogueService.getCurrentNode()?.options && /^[1-9]$/.test(pressedKey)) {
+        } else if (currentNodeRef.current?.options && /^[1-9]$/.test(pressedKey)) {
             const keyIndex = parseInt(pressedKey, 10) - 1;
             handleOptionClick(keyIndex);
         }
