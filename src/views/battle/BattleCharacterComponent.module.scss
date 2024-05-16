@@ -1,0 +1,56 @@
+@import '../../common/styles/variables.scss';
+@import '../../common/styles/mixins.scss';
+
+.characterItem {
+    position: relative;
+    width: 90px;
+    font-size: 12px;
+    opacity: 0.9;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+        opacity: 1;
+        cursor: pointer;
+    }
+
+    img {
+        width: 5rem;
+        animation: bounceAnimation 5s infinite;
+    }
+}
+
+.characterActive {
+    @include insetShadow($color-dark);
+}
+
+.targetActive {
+    @include insetShadow($color-error);
+}
+
+.characterDead {
+    opacity: 0.5;
+
+    &:hover {
+        opacity: 0.6;
+        cursor: auto;
+    }
+
+    img {
+        animation: none;
+        filter: grayscale(100%);
+    }
+}
+
+@keyframes bounceAnimation {
+    0%,
+    100% {
+        transform: translateY(1px);
+    }
+    50% {
+        transform: translateY(-4px);
+    }
+}
