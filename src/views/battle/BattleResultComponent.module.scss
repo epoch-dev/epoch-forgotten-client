@@ -1,0 +1,70 @@
+@import '../../common/styles/variables.scss';
+@import '../../common/styles/mixins.scss';
+
+.battleResultsWrapper {
+    width: 100%;
+    height: 600px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding-top: 2rem;
+    text-align: center;
+    font-size: 20px;
+    color: $color-light;
+    background: rgba($color-dark, 0.9);
+    z-index: 100;
+
+    h1 {
+        letter-spacing: 4px;
+    }
+
+    hr {
+        width: 80%;
+    }
+
+    p {
+        margin: 0;
+    }
+
+    * {
+        animation: fadeInAnimation 1.5s ease-in-out forwards;
+    }
+}
+
+.victory {
+    @include insetShadow($color-primary);
+}
+
+.defeat {
+    @include insetShadow($color-error);
+}
+
+.itemsWrapper {
+    margin-top: 1rem;
+
+    p {
+        font-size: 16px;
+    }
+}
+
+.closeBtn {
+    margin-top: 2rem;
+    font-size: 24px;
+    color: $color-light;
+
+    &:hover {
+        cursor: pointer;
+        text-decoration: underline;
+    }
+}
+
+@keyframes fadeInAnimation {
+    from {
+        opacity: 0;
+        transform: translateX(-2rem);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
