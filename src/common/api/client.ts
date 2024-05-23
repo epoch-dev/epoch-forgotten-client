@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios';
-import { CharactersApi, ItemsApi, ScenesApi, NpcsApi, UsersApi, SkillsApi, BattleApi } from './.generated';
+import { CharactersApi, ItemsApi, ScenesApi, NpcsApi, UsersApi, SkillsApi, BattleApi, QuestsApi } from './.generated';
 import { API_PATH } from '../config';
 import { ToastService } from '../services/ToastService';
 import { StorageService } from '../services/StorageService';
@@ -34,3 +34,4 @@ export const CharactersClient = new CharactersApi(undefined, BASE_PATH, axios);
 export const NpcsClient = new NpcsApi(undefined, BASE_PATH, axios);
 export const SkillsClient = new SkillsApi(undefined, BASE_PATH, axios);
 export const battleClient = new BattleApi(undefined, BASE_PATH, axios);
+export const questsClient = new QuestsApi(undefined, BASE_PATH, axios);
