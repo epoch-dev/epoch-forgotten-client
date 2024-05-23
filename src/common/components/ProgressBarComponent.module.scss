@@ -1,14 +1,15 @@
+@import '../styles/variables.scss';
+
 .progressBar {
-    width: 100%;
+    width: 90%;
     height: 0.5rem;
-    background-color: #ddd;
+    background-color: $color-light;
     border-radius: 0.25rem;
     overflow: hidden;
-    margin-top: 0.5rem;
 }
 
 .progressFill {
     height: 100%;
-    background-color: #76c7c0;
+    background-color: $color-mythical;
     transition: width 0.3s ease-in-out;
 }
