@@ -1,7 +1,4 @@
-@import '../../common/styles/mixins.scss';
-
 .loading-screen {
-    @include boxShadow();
     position: absolute;
     top: 0;
     left: 0;
