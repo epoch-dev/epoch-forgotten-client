@@ -5,6 +5,7 @@ import { NpcsClient } from '../../common/api/client';
 import { DialogueNode } from '../../common/api/.generated';
 import { useGameStore } from '../game/GameStore';
 import { GameView } from '../game/types';
+import LoadingOverlay from '../../common/components/LoadingOverlay';
 
 const DialogueComponent = () => {
     const { npc, setView } = useGameStore();
@@ -62,11 +63,9 @@ const DialogueComponent = () => {
         }
     };
 
-    const LoadingDiv = () => <div className={style.dialogueItem}>Loading dialogue...</div>;
-
     return (
         <div className={style.dialogueWrapper} onKeyDown={handleKeyPress} tabIndex={-1} ref={ref}>
-            {isLoading ? <LoadingDiv /> : currentNode && (
+            {isLoading ? <LoadingOverlay /> : currentNode && (
                 <div className={style.dialogueItem}>
                     <p>
                         {currentNode.author}: {currentNode.text}

@@ -2,9 +2,10 @@ import style from './JournalComponent.module.scss';
 import { useEffect, useState } from 'react';
 import { questsClient } from '../../common/api/client';
 import { QuestsDtoInner } from '../../common/api/.generated';
+import LoadingOverlay from '../../common/components/LoadingOverlay';
 
 const JournalComponent = () => {
-    const [quests, setQuests] = useState<QuestsDtoInner[]>([]);
+    const [quests, setQuests] = useState<QuestsDtoInner[] | undefined>();
 
     useEffect(() => {
         void setupQuests();
@@ -19,7 +20,7 @@ const JournalComponent = () => {
         <>
             <h1 className={style.header}>Journal</h1>
             <div className={style.questsWrapper}>
-                {quests.map((quest) => (
+                {!quests ? <LoadingOverlay /> : quests.map((quest) => (
                     <div key={quest.label} className={`${style.questItem} ${quest.main ? style.mainQuest : ''}`}>
                         <p className={`${style.subtitle} ${style.dark}`}>{quest.label}</p>
                         {quest.stages.map((stage) => {

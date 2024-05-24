@@ -1,0 +1,28 @@
+@import '../../common/styles/mixins.scss';
+
+.loading-screen {
+    @include boxShadow();
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading-spinner {
+    width: 75px;
+    height: 75px;
+    border: 5px solid transparent;
+    border-top-color: rgb(245, 243, 153);
+    border-radius: 50%;
+    animation: spin 1s infinite linear;
+}
+
+@keyframes spin {
+    100% {
+        transform: rotate(360deg);
+    }
+}
