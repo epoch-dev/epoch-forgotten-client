@@ -11,29 +11,56 @@ const JournalComponent = () => {
     }, []);
 
     const setupQuests = async () => {
-        const questsData = await questsClient.getUnlockedQuests();
-        setQuests(questsData.data);
+        const questsResponse = await questsClient.getUnlockedQuests();
+        setQuests([...questsResponse.data, ...questsResponse.data, ...questsResponse.data, ...questsResponse.data]);
     };
 
     return (
         <>
-            <h1>Journal</h1>
+            <h1 className={style.header}>Journal</h1>
             <div className={style.questsWrapper}>
                 {quests.map((quest) => (
-                    <div className={style.questItem}>
-                        <p className="subtitle dark">{quest.label}</p>
-                        {quest.stages.map((stage, stageInd) => (
-                            <>
-                                <i className={`${stageInd === quest.stages.length - 1 ? 'bold' : ''}`}>
-                                    {stage.description}
-                                </i>
-                                <p>Rewards: {stage.rewards?.exp + 'Exp'}</p>
-                            </>
-                        ))}
+                    <div key={quest.label} className={`${style.questItem} ${quest.main ? style.mainQuest : ''}`}>
+                        <p className={`${style.subtitle} ${style.dark}`}>{quest.label}</p>
+                        {quest.stages.map((stage) => {
+                            const unlockedEntity = quest.unlocked.find(entity => entity.id === stage.id);
+                            console.log(unlockedEntity)
+                            return (
+                                <div key={stage.id} className={style.stageItem}>
+                                    <p className={style.objective}>{stage.objective}</p>
+                                    <p className={style.description}>
+                                        {stage.description}
+                                    </p>
+                                    {stage.goals && (
+                                        <div className={style.goals}>
+                                            <p className={style.goalsHeader}>Goals:</p>
+                                            <ul className={style.goalsList}>
+                                                {stage.goals.map((goal, index) => {
+                                                    const progress = unlockedEntity?.progresses ? unlockedEntity.progresses[index] : 0;
+                                                    return (
+                                                        <li key={index} className={style.goalItem}>
+                                                            {goal.type}: {goal.label} (Progress: {progress}/{goal.target})
+                                                        </li>
+                                                    );
+                                                })}
+                                            </ul>
+                                        </div>
+                                    )}
+                                    {stage.rewards && (
+                                        <p className={style.rewards}>
+                                            Rewards: {stage.rewards?.gold && `${stage.rewards.gold} Gold, `}
+                                            {stage.rewards?.exp && `${stage.rewards.exp} Exp`}
+                                        </p>
+                                    )}
+                                    <p className={`${style.state} ${style[unlockedEntity!.state]}`}>
+                                        {unlockedEntity!.state}
+                                    </p>
+                                </div>
+                            )
+                        })}
                     </div>
                 ))}
             </div>
-            <p>{JSON.stringify(quests)}</p>
         </>
     );
 };
