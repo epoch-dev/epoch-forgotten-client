@@ -22,7 +22,8 @@ export class DialogueService {
         this.onNodeChange = onNodeChange;
         this.onComplete = () => {
             onComplete();
-            this.sendDecisions();
+            this.sendDialogueUpdates();
+            this.showEffects();
         };
     }
 
@@ -81,20 +82,25 @@ export class DialogueService {
         return nodes.findIndex((node) => node.id === chosenNodeId);
     }
 
-    public async sendDecisions() { // todo: for now sending from here
-        if (Object.keys(this.decisions.nodes).length > 0) {
+    public async sendDialogueUpdates() { // todo: for now sending from here
+        if (this.shouldUpdateService()) {
             await NpcsClient.updateFromDialogue(this.decisions);
-            for (const effects of this.effectsAll) {
-                if (effects.quest) {
-                    SoundService.getInstance().newQuest();
-                    const quest = (await questsClient.getQuest(effects.quest.name, effects.quest.stageId)).data;
-                    console.log(quest);
-                    ToastService.success({ message: 'Started a new quest! ' + `"${quest.label}"` });
-                }
-                if (effects.items) {
-                    ToastService.success({ message: 'Received new items!' });
-                }
+        }
+    }
+
+    private shouldUpdateService = () => Object.keys(this.decisions.nodes).length > 0 || Object.keys(this.effectsAll).length > 0;
+
+    private async showEffects() {
+        for (const effects of this.effectsAll) {
+            if (effects.quest) {
+                SoundService.getInstance().newQuest();
+                const quest = (await questsClient.getQuest(effects.quest.name, effects.quest.stageId)).data;
+                ToastService.success({ message: 'Started a new quest! ' + `"${quest.label}"` });
+            }
+            if (effects.items) {
+                ToastService.success({ message: 'Received new items!' });
             }
         }
     }
+
 }

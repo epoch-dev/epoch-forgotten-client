@@ -12,7 +12,7 @@ const JournalComponent = () => {
 
     const setupQuests = async () => {
         const questsResponse = await questsClient.getUnlockedQuests();
-        setQuests([...questsResponse.data, ...questsResponse.data, ...questsResponse.data, ...questsResponse.data]);
+        setQuests(questsResponse.data);
     };
 
     return (
