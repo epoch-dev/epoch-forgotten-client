@@ -2,7 +2,7 @@
 @import '../../common/styles/mixins.scss';
 
 .header {
-    font-size: 2em;
+    font-size: 2rem;
     margin-bottom: 1.25rem;
     text-align: center;
 }
@@ -49,7 +49,7 @@
         }
 
         .objective {
-            font-size: 1.2em;
+            font-size: 1.2rem;
             margin-bottom: 5px;
             font-weight: bold;
         }
@@ -72,11 +72,11 @@
                 padding-left: 20px;
 
                 .goalItem {
-                    font-size: 0.9em;
+                    font-size: 0.9rem;
                     color: rgb(85, 85, 85);
 
                     .progress {
-                        font-size: 0.9em;
+                        font-size: 0.9rem;
                         color: rgb(51, 51, 51);
                     }
                 }
@@ -84,15 +84,15 @@
         }
 
         .rewards {
-            font-size: 0.9em;
+            font-size: 0.9rem;
             color: rgb(85, 85, 85);
         }
 
         .state {
-            font-size: 0.8em;
+            font-size: 0.8rem;
             color: rgb(66, 66, 66);
-            margin-top: 5px;
-            padding-left: 5px;
+            margin-top: 0.35rem;
+            padding-left: 0.35rem;
 
             &.Unlocked {
                 background-color: rgb(224, 247, 250);
