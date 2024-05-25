@@ -16,16 +16,24 @@ const JournalComponent = () => {
         setQuests(questsResponse.data);
     };
 
-    const StageProgress = ({ index, progresses, goal }: { index: number; progresses: number[] | undefined; goal: QuestGoal }) => {
+    const StageProgress = ({
+        index,
+        progresses,
+        goal,
+    }: {
+        index: number;
+        progresses: number[] | undefined;
+        goal: QuestGoal;
+    }) => {
         const progress = progresses ? progresses[index] : 0;
         return (
             <li key={index} className={style.goalItem}>
                 {goal.type}: {goal.label} (Progress: {progress}/{goal.target})
             </li>
         );
-    }
+    };
 
-    const StageGoals = ({ goals, progresses }: { goals: QuestGoal[]; progresses: number[] | undefined; }) => (
+    const StageGoals = ({ goals, progresses }: { goals: QuestGoal[]; progresses: number[] | undefined }) => (
         <div className={style.goals}>
             <p className={style.goalsHeader}>Goals:</p>
             <ul className={style.goalsList}>
@@ -34,10 +42,10 @@ const JournalComponent = () => {
                 ))}
             </ul>
         </div>
-    )
+    );
 
     const StageItem = ({ stage, unlocked }: { stage: QuestStage; unlocked: QuestUnlockedEntity[] }) => {
-        const unlockedEntity = unlocked.find(entity => entity.id === stage.id);
+        const unlockedEntity = unlocked.find((entity) => entity.id === stage.id);
         return (
             <div className={style.stageItem}>
                 <p className={style.objective}>{stage.objective}</p>
@@ -65,15 +73,17 @@ const JournalComponent = () => {
         </div>
     );
 
+    if (!quests) {
+        return <LoadingOverlay />;
+    }
+
     return (
         <>
             <h1 className={style.header}>Journal</h1>
             <div className={style.questsWrapper}>
-                {!quests ? <LoadingOverlay /> :
-                    quests.map((quest) => (
-                        <QuestItem key={quest.label} quest={quest} />
-                    ))
-                }
+                {quests.map((quest) => (
+                    <QuestItem key={quest.label} quest={quest} />
+                ))}
             </div>
         </>
     );

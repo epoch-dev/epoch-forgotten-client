@@ -13,3 +13,5 @@ export const wait = (durationMs: number) => {
 export const generateRandomId = () => {
     return Array.from({ length: 12 }, () => Math.floor(Math.random() * 10)).join('');
 };
+
+export const getLevelExperience = (level: number) => Math.round(50 + 50 * Math.pow(level - 1, 1.67));

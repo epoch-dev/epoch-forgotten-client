@@ -4,6 +4,8 @@ import { CharacterDto } from '../../common/api/.generated';
 import { AssetsService } from '../../common/services/AssetsService';
 import { useGameStore } from '../game/GameStore';
 import { GameView } from '../game/types';
+import { TooltipComponent } from '../../common/components/TooltipComponent';
+import { getLevelExperience } from '../../common/utils';
 
 export const CharacterComponent = ({ character }: { character: CharacterDto }) => {
     const { setCharacter, setView } = useGameStore();
@@ -22,9 +24,16 @@ export const CharacterComponent = ({ character }: { character: CharacterDto }) =
 
     return (
         <>
-            <p className="bold primary">
-                {character.name} | {character.level}
-            </p>
+            <TooltipComponent
+                hint={
+                    <p>
+                        {character.exp} / {getLevelExperience(character.level + 1)} Experience
+                    </p>
+                }>
+                <p className="bold primary">
+                    {character.name} | {character.level}
+                </p>
+            </TooltipComponent>
             <hr />
             <img
                 src={AssetsService.getCharacterUri(character.imageUri)}

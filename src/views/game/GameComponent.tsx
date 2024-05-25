@@ -29,7 +29,9 @@ export const GameComponent = () => {
     return (
         <>
             <MuteButton />
-            <main className="contentWrapper">
+            <main
+                className="contentWrapper"
+                style={{ ...(view === GameView.World && { overflow: 'hidden' }) }}>
                 <ScenesComponent />
                 {view === GameView._Dev && <DevComponent />}
                 {view === GameView.Party && <PartyComponent />}
