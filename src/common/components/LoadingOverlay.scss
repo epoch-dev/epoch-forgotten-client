@@ -1,3 +1,5 @@
+@import '../styles/variables.scss';
+
 .loading-screen {
     position: absolute;
     top: 0;
@@ -10,10 +12,10 @@
 }
 
 .loading-spinner {
-    width: 75px;
-    height: 75px;
+    width: 5rem;
+    height: 5rem;
     border: 5px solid transparent;
-    border-top-color: rgb(245, 243, 153);
+    border-top-color: $color-primary;
     border-radius: 50%;
     animation: spin 1s infinite linear;
 }

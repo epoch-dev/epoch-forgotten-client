@@ -12,7 +12,7 @@
     align-items: center;
 
     .dialogueItem {
-        @include boxShadow();
+        @include boxShadow;
         position: absolute;
         bottom: 60px;
         padding: 1rem;

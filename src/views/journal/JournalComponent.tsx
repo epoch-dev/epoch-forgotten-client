@@ -22,10 +22,9 @@ const JournalComponent = () => {
             <div className={style.questsWrapper}>
                 {!quests ? <LoadingOverlay /> : quests.map((quest) => (
                     <div key={quest.label} className={`${style.questItem} ${quest.main ? style.mainQuest : ''}`}>
-                        <p className={`${style.subtitle} ${style.dark}`}>{quest.label}</p>
+                        <p className={`${style.subtitle} dark`}>{quest.label}</p>
                         {quest.stages.map((stage) => {
                             const unlockedEntity = quest.unlocked.find(entity => entity.id === stage.id);
-                            console.log(unlockedEntity)
                             return (
                                 <div key={stage.id} className={style.stageItem}>
                                     <p className={style.objective}>{stage.objective}</p>
