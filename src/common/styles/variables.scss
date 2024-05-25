@@ -2,6 +2,7 @@ $mobile-res: 768px;
 
 $color-primary: rgb(131 101 94);
 $color-light: rgb(223 221 220);
+$color-grey: rgb(85, 85, 85);
 $color-dark: rgb(24 30 42);
 $color-error: rgb(199 62 54);
 $color-success: rgb(55 188 54);
@@ -11,3 +12,6 @@ $color-rare: rgb(30, 144, 255);
 $color-unique: rgb(238, 130, 238);
 $color-epic: rgb(218, 165, 32);
 $color-mythical: rgb(255, 69, 0);
+
+$color-transparent-standard: rgba(249, 249, 249, 0.26);
+$color-transparent-special: rgba(255, 251, 204, 0.25);

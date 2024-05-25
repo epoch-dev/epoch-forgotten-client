@@ -18,8 +18,8 @@
 .questItem {
     @include boxShadow;
     height: fit-content;
-    background: rgba(249, 249, 249, 0.26);
-    border: 1px solid rgb(221, 221, 221);
+    background: $color-transparent-standard;
+    border: 1px solid $color-light;
     border-radius: 0.5rem;
     padding-top: 5rem;
     padding-bottom: 5rem;
@@ -29,7 +29,7 @@
     transition: background-color 1s ease, border-color 1s ease;
 
     &.mainQuest {
-        background: rgba(255, 251, 204, 0.25);
+        background: $color-transparent-special;
         border: 2px solid $color-epic;
     }
 
@@ -40,7 +40,7 @@
     }
 
     .stageItem {
-        border-top: 1px solid rgb(238, 238, 238);
+        border-top: 1px solid $color-light;
 
         &:first-of-type {
             border-top: none;
@@ -50,47 +50,42 @@
 
         .objective {
             font-size: 1.2rem;
-            margin-bottom: 5px;
+            margin-bottom: 0.3rem;
             font-weight: bold;
         }
 
         .description {
             font-style: italic;
-            margin-bottom: 5px;
+            margin-bottom: 0.3rem;
         }
 
         .goals {
-            margin-bottom: 10px;
+            margin-bottom: 0.625rem;
 
             .goalsHeader {
                 font-weight: bold;
-                margin-bottom: 5px;
+                margin-bottom: 0.3rem;
             }
 
             .goalsList {
                 list-style-type: disc;
-                padding-left: 20px;
+                padding-left: 1.25rem;
 
                 .goalItem {
                     font-size: 0.9rem;
-                    color: rgb(85, 85, 85);
-
-                    .progress {
-                        font-size: 0.9rem;
-                        color: rgb(51, 51, 51);
-                    }
+                    color: $color-grey;
                 }
             }
         }
 
         .rewards {
             font-size: 0.9rem;
-            color: rgb(85, 85, 85);
+            color: $color-grey;
         }
 
         .state {
             font-size: 0.8rem;
-            color: rgb(66, 66, 66);
+            color: $color-grey;
             margin-top: 0.35rem;
             padding-left: 0.35rem;
 
