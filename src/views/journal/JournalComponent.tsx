@@ -56,16 +56,14 @@ const JournalComponent = () => {
         );
     };
 
-    const QuestItem = ({ quest }: { quest: QuestsDtoInner }) => {
-        return (
-            <div className={`${style.questItem} ${quest.main ? style.mainQuest : ''}`}>
-                <p className={`${style.subtitle} dark`}>{quest.label}</p>
-                {quest.stages.map((stage) => (
-                    <StageItem key={stage.id} stage={stage} unlocked={quest.unlocked} />
-                ))}
-            </div>
-        );
-    };
+    const QuestItem = ({ quest }: { quest: QuestsDtoInner }) => (
+        <div className={`${style.questItem} ${quest.main ? style.mainQuest : ''}`}>
+            <p className={`${style.subtitle} dark`}>{quest.label}</p>
+            {quest.stages.map((stage) => (
+                <StageItem key={stage.id} stage={stage} unlocked={quest.unlocked} />
+            ))}
+        </div>
+    );
 
     return (
         <>
