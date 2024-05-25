@@ -1,0 +1,117 @@
+@import '../../common/styles/variables.scss';
+@import '../../common/styles/mixins.scss';
+
+.header {
+    font-size: 2rem;
+    margin-bottom: 1.25rem;
+    text-align: center;
+}
+
+.questsWrapper {
+    padding: 0 0.625rem;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.questItem {
+    @include boxShadow;
+    height: fit-content;
+    background: $color-transparent-standard;
+    border: 1px solid $color-light;
+    border-radius: 0.5rem;
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+    padding-left: 10rem;
+    padding-right: 10rem;
+    margin: 0.625rem 0;
+    // TODO - fix transitions
+    transition: background-color 1s ease, border-color 1s ease;
+
+    &.mainQuest {
+        background: $color-transparent-special;
+        border: 2px solid $color-epic;
+    }
+
+    .subtitle {
+        font-size: 1.5em;
+        margin-top: 0.625rem;
+        font-weight: bold;
+    }
+
+    .stageItem {
+        border-top: 1px solid $color-light;
+
+        &:first-of-type {
+            border-top: none;
+            padding-top: 0;
+            margin-top: 0;
+        }
+
+        .objective {
+            font-size: 1.2rem;
+            margin-bottom: 0.3rem;
+            font-weight: bold;
+        }
+
+        .description {
+            font-style: italic;
+            margin-bottom: 0.3rem;
+        }
+
+        .goals {
+            margin-bottom: 0.625rem;
+
+            .goalsHeader {
+                font-weight: bold;
+                margin-bottom: 0.3rem;
+            }
+
+            .goalsList {
+                list-style-type: disc;
+                padding-left: 1.25rem;
+
+                .goalItem {
+                    font-size: 0.9rem;
+                    color: $color-grey;
+                }
+            }
+        }
+
+        .rewards {
+            font-size: 0.9rem;
+            color: $color-grey;
+        }
+
+        .state {
+            font-size: 0.8rem;
+            color: $color-grey;
+            margin-top: 0.35rem;
+            padding-left: 0.35rem;
+
+            &.Unlocked {
+                background-color: rgb(224, 247, 250);
+                border-left: 4px solid rgb(0, 172, 193);
+            }
+
+            &.In-progress {
+                background-color: rgb(255, 249, 196);
+                border-left: 4px solid rgb(251, 192, 45);
+            }
+
+            &.Failed {
+                background-color: rgb(255, 235, 238);
+                border-left: 4px solid rgb(211, 47, 47);
+            }
+
+            &.On-hold {
+                background-color: rgb(243, 229, 245);
+                border-left: 4px solid rgb(142, 36, 170);
+            }
+
+            &.Completed {
+                background-color: rgb(232, 245, 233);
+                border-left: 4px solid $color-success;
+            }
+        }
+    }
+}

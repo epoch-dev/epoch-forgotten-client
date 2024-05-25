@@ -11,6 +11,7 @@ import MuteButton from '../../common/components/MuteButton';
 import { SkillsComponent } from '../skills/SkillsComponent';
 import { DevComponent } from '../_dev/DevComponent';
 import { EquipmentComponent } from '../equipment/EquipmentComponent';
+import JournalComponent from '../journal/JournalComponent';
 
 export const GameComponent = () => {
     const navigate = useNavigate();
@@ -28,7 +29,9 @@ export const GameComponent = () => {
     return (
         <>
             <MuteButton />
-            <main className="contentWrapper">
+            <main
+                className="contentWrapper"
+                style={{ ...(view === GameView.World && { overflow: 'hidden' }) }}>
                 <ScenesComponent />
                 {view === GameView._Dev && <DevComponent />}
                 {view === GameView.Party && <PartyComponent />}
@@ -37,6 +40,7 @@ export const GameComponent = () => {
                 {view === GameView.Battle && <BattleComponent />}
                 {view === GameView.Dialogue && <DialogueComponent />}
                 {view === GameView.Intro && <IntroComponent />}
+                {view === GameView.Journal && <JournalComponent />}
             </main>
             {canNavigate && (
                 <nav className="navWrapper">
@@ -46,11 +50,14 @@ export const GameComponent = () => {
                     <button onClick={() => setView(GameView.Party)} className="navItem">
                         Party
                     </button>
+                    <button onClick={() => setView(GameView.Journal)} className="navItem">
+                        Journal
+                    </button>
                     <button onClick={handleSignout} className="navItem">
                         Signout
                     </button>
                     <button onClick={() => setView(GameView._Dev)} className="navItem">
-                        Dev
+                        _Dev
                     </button>
                 </nav>
             )}

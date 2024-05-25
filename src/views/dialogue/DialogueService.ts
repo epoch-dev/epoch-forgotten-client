@@ -1,5 +1,5 @@
 import { DialogueNode, Effects, NpcDialogueDto, NpcDialogueUpdatesDto } from '../../common/api/.generated';
-import { NpcsClient } from '../../common/api/client';
+import { NpcsClient, questsClient } from '../../common/api/client';
 import { SoundService } from '../../common/services/SoundService';
 import { ToastService } from '../../common/services/ToastService';
 
@@ -22,7 +22,8 @@ export class DialogueService {
         this.onNodeChange = onNodeChange;
         this.onComplete = () => {
             onComplete();
-            this.sendDecisions();
+            this.sendDialogueUpdates();
+            this.showEffects();
         };
     }
 
@@ -81,17 +82,23 @@ export class DialogueService {
         return nodes.findIndex((node) => node.id === chosenNodeId);
     }
 
-    public async sendDecisions() { // todo: for now sending from here
-        if (Object.keys(this.decisions.nodes).length > 0) {
+    public async sendDialogueUpdates() { // todo: for now sending from here
+        if (this.shouldUpdateService()) {
             await NpcsClient.updateFromDialogue(this.decisions);
-            for (const effects of this.effectsAll) {
-                if (effects.quest) {
-                    SoundService.getInstance().newQuest();
-                    ToastService.success({ message: 'Started new quest!' });
-                }
-                if (effects.items) {
-                    ToastService.success({ message: 'Received new items!' });
-                }
+        }
+    }
+
+    private shouldUpdateService = () => Object.keys(this.decisions.nodes).length > 0 || Object.keys(this.effectsAll).length > 0;
+
+    private async showEffects() {
+        for (const effects of this.effectsAll) {
+            if (effects.quest) {
+                SoundService.getInstance().newQuest();
+                const quest = (await questsClient.getQuest(effects.quest.name, effects.quest.stageId)).data;
+                ToastService.success({ message: 'Started a new quest! ' + `"${quest.label}"` });
+            }
+            if (effects.items) {
+                ToastService.success({ message: 'Received new items!' });
             }
         }
     }

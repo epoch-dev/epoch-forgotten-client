@@ -2,7 +2,7 @@
 @import '../../common/styles/mixins.scss';
 
 .dialogueWrapper {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
@@ -12,8 +12,9 @@
     align-items: center;
 
     .dialogueItem {
-        @include boxShadow();
-
+        @include boxShadow;
+        position: absolute;
+        bottom: 60px;
         padding: 1rem;
         max-width: 80%;
         background-color: rgba($color-dark, 0.8);
