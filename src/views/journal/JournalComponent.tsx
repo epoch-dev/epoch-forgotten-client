@@ -71,13 +71,11 @@ const JournalComponent = () => {
         <>
             <h1 className={style.header}>Journal</h1>
             <div className={style.questsWrapper}>
-                {!quests ? (
-                    <LoadingOverlay />
-                ) : (
+                {!quests ? <LoadingOverlay /> :
                     quests.map((quest) => (
                         <QuestItem key={quest.label} quest={quest} />
                     ))
-                )}
+                }
             </div>
         </>
     );
