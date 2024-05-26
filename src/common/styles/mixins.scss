@@ -16,11 +16,11 @@
     text-shadow: $color 2px 2px 4px;
 }
 
-@mixin fadeInAnimation($time: 0.5s) {
+@mixin fadeInAnimation($time: 0.5s, $length: 1.25rem) {
     @keyframes fadeIn {
         from {
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY($length);
         }
         to {
             opacity: 1;
