@@ -15,3 +15,17 @@
 @mixin textShadow($color: $color-dark) {
     text-shadow: $color 2px 2px 4px;
 }
+
+@mixin fadeInAnimation($time: 0.5s) {
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    animation: fadeIn $time ease-out;
+}
