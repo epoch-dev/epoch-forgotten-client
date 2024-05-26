@@ -23,7 +23,6 @@ export class DialogueService {
         this.onComplete = () => {
             onComplete();
             this.sendDialogueUpdates();
-            this.showEffects();
         };
     }
 
@@ -85,6 +84,7 @@ export class DialogueService {
     public async sendDialogueUpdates() { // todo: for now sending from here
         if (this.shouldUpdateService()) {
             await NpcsClient.updateFromDialogue(this.decisions);
+            this.showEffects();
         }
     }
 
