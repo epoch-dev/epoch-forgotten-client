@@ -2,7 +2,7 @@ import style from './SkillsComponent.module.scss';
 import { AssetsService } from '../../common/services/AssetsService';
 import { useGameStore } from '../game/GameStore';
 import { CharacterAttrs, CharacterImproveAttributeDtoAttributeEnum } from '../../common/api/.generated';
-import { CharactersClient } from '../../common/api/client';
+import { charactersClient } from '../../common/api/client';
 
 export const AttributeComponent = ({
     label,
@@ -25,7 +25,7 @@ export const AttributeComponent = ({
         if (!name || character.attributePoints <= 0) {
             return;
         }
-        const updatedCharacterData = await CharactersClient.improveAttribute({
+        const updatedCharacterData = await charactersClient.improveAttribute({
             characterId: character.id,
             attribute: name as CharacterImproveAttributeDtoAttributeEnum,
         });

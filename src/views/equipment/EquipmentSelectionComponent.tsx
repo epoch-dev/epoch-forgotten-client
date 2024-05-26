@@ -1,6 +1,6 @@
 import style from './EquipmentSelectionComponent.module.scss';
 import { CharacterEquipItemDtoTargetEnum, ItemDto, ItemType } from '../../common/api/.generated';
-import { CharactersClient, ItemsClient } from '../../common/api/client';
+import { charactersClient, itemsClient } from '../../common/api/client';
 import { useGameStore } from '../game/GameStore';
 import { useEffect, useState } from 'react';
 import { ItemComponent } from './ItemComponent';
@@ -32,7 +32,7 @@ export const EquipmentSelectionComponent = ({
     }
 
     const fetchItems = async () => {
-        const itemsData = await ItemsClient.getItems();
+        const itemsData = await itemsClient.getItems();
         setItems(itemsData.data.filter((i) => types.includes(i.type)));
     };
 
@@ -40,7 +40,7 @@ export const EquipmentSelectionComponent = ({
         if (item.characterId) {
             return;
         }
-        const characterData = await CharactersClient.equipItem({
+        const characterData = await charactersClient.equipItem({
             characterId: character.id,
             itemId: item.id,
             target,
@@ -53,7 +53,7 @@ export const EquipmentSelectionComponent = ({
         if (!currentItem) {
             return;
         }
-        const characterData = await CharactersClient.unEquipItem({
+        const characterData = await charactersClient.unEquipItem({
             characterId: character.id,
             itemId: currentItem.id,
         });

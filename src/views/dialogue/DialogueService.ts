@@ -1,5 +1,5 @@
 import { DialogueNode, Effects, NpcDialogueDto, NpcDialogueUpdatesDto } from '../../common/api/.generated';
-import { NpcsClient, questsClient } from '../../common/api/client';
+import { npcsClient, questsClient } from '../../common/api/client';
 import { SoundService } from '../../common/services/SoundService';
 import { ToastService } from '../../common/services/ToastService';
 
@@ -84,7 +84,7 @@ export class DialogueService {
 
     public async sendDialogueUpdates() { // todo: for now sending from here
         if (this.shouldUpdateService()) {
-            await NpcsClient.updateFromDialogue(this.decisions);
+            await npcsClient.updateFromDialogue(this.decisions);
         }
     }
 

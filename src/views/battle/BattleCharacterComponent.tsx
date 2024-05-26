@@ -4,6 +4,7 @@ import { TooltipComponent } from '../../common/components/TooltipComponent';
 import { AssetsService } from '../../common/services/AssetsService';
 import { ProgressBarComponent } from '../../common/components/ProgressBarComponent';
 import { generateRandomId } from '../../common/utils';
+import { CSS_COLOR } from '../../common/styles';
 
 export const BattleCharacterComponent = ({
     character,
@@ -69,6 +70,7 @@ export const BattleCharacterComponent = ({
                 <ProgressBarComponent
                     current={character.statistics.health}
                     max={character.statistics.maxHealth}
+                    fillColor={CSS_COLOR.MYTHICAL}
                 />
             </div>
         </TooltipComponent>

@@ -18,6 +18,8 @@ import { ScenesService } from '../scenes/ScenesService';
 import { AssetsService } from '../../common/services/AssetsService';
 import { BattleResultComponent } from './BattleResultComponent';
 
+const ANIMATION_TIME_MS = 1000;
+
 export const BattleComponent = () => {
     const { setView } = useGameStore();
     const [scene, setScene] = useState<SceneDataDto | undefined>();
@@ -105,12 +107,12 @@ export const BattleComponent = () => {
                 }
                 target.statistics.health = Math.max(
                     0,
-                    Math.min(target.statistics.health, target.statistics.maxHealth),
+                    Math.round(Math.min(target.statistics.health, target.statistics.maxHealth)),
                 );
                 updateCharacters(target);
             });
             updateCharacters(character);
-            await wait(1000); // animating
+            await wait(ANIMATION_TIME_MS); // animating
         }
         setAnimatedSkill(undefined);
 
@@ -133,7 +135,7 @@ export const BattleComponent = () => {
                 scene ? { backgroundImage: `url(${AssetsService.getSceneUri(scene?.battleImageUri)})` } : {}
             }>
             <p className={style.infoItem}>{hint}</p>
-            <BattleResultComponent victory={victory} defeat={defeat} />
+            {(victory || defeat) && <BattleResultComponent victory={victory} />}
             <div className={style.fieldWrapper}>
                 <div className={style.alliesWrapper}>
                     {party.map((character) => (

@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { CharactersClient, ItemsClient } from '../../common/api/client';
+import { charactersClient, itemsClient } from '../../common/api/client';
 import { ToastService } from '../../common/services/ToastService';
 
 /**
@@ -12,7 +12,7 @@ export const DevComponent = () => {
     const itemQuantityRef = useRef<HTMLInputElement>(null);
 
     const recruitCharacter = async () => {
-        await CharactersClient.recruitCharacter({
+        await charactersClient.recruitCharacter({
             characterName: charNameRef.current!.value,
             level: +charLevelRef.current!.value,
             affinity: 0,
@@ -21,7 +21,7 @@ export const DevComponent = () => {
     };
 
     const addItem = async () => {
-        await ItemsClient.addItem({
+        await itemsClient.addItem({
             name: itemNameRef.current!.value,
             quantity: +itemQuantityRef.current!.value,
         });

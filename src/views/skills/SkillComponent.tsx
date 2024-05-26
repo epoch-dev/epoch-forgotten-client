@@ -3,7 +3,7 @@ import { TooltipComponent } from '../../common/components/TooltipComponent';
 import { AssetsService } from '../../common/services/AssetsService';
 import { SkillDto } from '../../common/api/.generated';
 import { useGameStore } from '../game/GameStore';
-import { SkillsClient } from '../../common/api/client';
+import { skillsClient } from '../../common/api/client';
 import { ToastService } from '../../common/services/ToastService';
 
 export const SkillComponent = ({ skill }: { skill: SkillDto }) => {
@@ -16,7 +16,7 @@ export const SkillComponent = ({ skill }: { skill: SkillDto }) => {
     const canLearn = !skill.learned && character.skillPoints > 0;
 
     const learnSkill = async (skill: SkillDto) => {
-        await SkillsClient.learnSkill({ characterId: character.id, skillName: skill.name });
+        await skillsClient.learnSkill({ characterId: character.id, skillName: skill.name });
         ToastService.success({ message: `${skill.label} learned` });
         setCharacter({
             ...character,

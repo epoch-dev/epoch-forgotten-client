@@ -27,7 +27,7 @@
     }
 
     * {
-        animation: fadeInAnimation 1.5s ease-in-out forwards;
+        animation: fadeInAnimation 1s ease-in-out forwards;
     }
 }
 
@@ -39,11 +39,46 @@
     @include insetShadow($color-error);
 }
 
+.resultsWrapper {
+    width: 100%;
+    max-width: 40rem;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+}
+
 .itemsWrapper {
     margin-top: 1rem;
 
     p {
         font-size: 16px;
+    }
+}
+
+.partyWrapper {
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 1rem;
+}
+
+.characterItem {
+    width: 12rem;
+    display: flex;
+    gap: 1rem;
+
+    .characterLevel {
+        width: 7rem;
+
+        p {
+            margin: 0.5rem auto;
+        }
+    }
+
+    img {
+        width: 4rem;
+        object-fit: contain;
     }
 }
 

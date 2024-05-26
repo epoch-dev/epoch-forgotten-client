@@ -1,7 +1,7 @@
 import { useState, ChangeEvent, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserAuthDto } from '../../common/api/.generated';
-import { UsersClient } from '../../common/api/client';
+import { usersClient } from '../../common/api/client';
 import { StorageService } from '../../common/services/StorageService';
 import { ToastService } from '../../common/services/ToastService';
 import { isEmpty } from '../../common/utils';
@@ -24,7 +24,7 @@ export const SigninFormComponent = () => {
         if (!validateForm()) {
             return;
         }
-        const res = await UsersClient.signin({
+        const res = await usersClient.signin({
             username: formData.username,
             password: formData.password,
         });
