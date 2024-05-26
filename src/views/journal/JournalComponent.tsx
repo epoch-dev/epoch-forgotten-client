@@ -38,7 +38,7 @@ const JournalComponent = () => {
             <p className={style.goalsHeader}>Goals:</p>
             <ul className={style.goalsList}>
                 {goals.map((goal, index) => (
-                    <StageProgress index={index} goal={goal} progresses={progresses} />
+                    <StageProgress key={index} index={index} goal={goal} progresses={progresses} />
                 ))}
             </ul>
         </div>

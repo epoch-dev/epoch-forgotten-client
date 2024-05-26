@@ -18,6 +18,7 @@ export const GameComponent = () => {
     const { view, setView, clear } = useGameStore();
 
     const canNavigate = view !== GameView.Battle && view !== GameView.Intro;
+    const overflowHidden = (view === GameView.World || view === GameView.Dialogue) ? { overflow: 'hidden' } : {};
 
     const handleSignout = () => {
         StorageService.clear();
@@ -29,9 +30,7 @@ export const GameComponent = () => {
     return (
         <>
             <MuteButton />
-            <main
-                className="contentWrapper"
-                style={{ ...(view === GameView.World && { overflow: 'hidden' }) }}>
+            <main className="contentWrapper" style={{ ...overflowHidden }}>
                 <ScenesComponent />
                 {view === GameView._Dev && <DevComponent />}
                 {view === GameView.Party && <PartyComponent />}
