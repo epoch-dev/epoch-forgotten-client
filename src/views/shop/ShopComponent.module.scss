@@ -91,6 +91,18 @@
                         border-radius: 5px;
                         cursor: pointer;
                         margin-top: 0.62rem;
+
+                        &:hover,
+                        &:focus {
+                            color: lighten($color-primary, 10);
+                            background-color: rgba($color-dark, 0.9);
+                            border-bottom: 1px solid $color-primary;
+                        }
+                        
+                        &:disabled {
+                            background: rgba($color-grey, 0.8);
+                            cursor: auto;
+                        }
                     }
                 }
                 
