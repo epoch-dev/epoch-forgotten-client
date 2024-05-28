@@ -1,4 +1,4 @@
-import { DialogueNode, Effects, NpcDialogueDto, NpcDialogueUpdatesDto } from '../../common/api/.generated';
+import { DialogueNode, Effects, NpcDialogue, NpcDialogueUpdatesDto } from '../../common/api/.generated';
 import { npcsClient, questsClient } from '../../common/api/client';
 import { SoundService } from '../../common/services/SoundService';
 import { ToastService } from '../../common/services/ToastService';
@@ -13,7 +13,7 @@ export class DialogueService {
 
     constructor(
         name: string,
-        npcDialogue: NpcDialogueDto,
+        npcDialogue: NpcDialogue,
         { onNodeChange, onComplete }: { onNodeChange: (node: DialogueNode) => void; onComplete: () => void },
     ) {
         this.dialogue = npcDialogue.nodes;

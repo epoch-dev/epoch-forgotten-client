@@ -1,0 +1,100 @@
+@import '../../common/styles/variables.scss';
+@import '../../common/styles/mixins.scss';
+
+.shopViewOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+
+    .shopView {
+        @include boxShadowSm;
+        background: rgba($color-light, 0.6);
+        border-radius: 0.62rem;
+        padding: 1.25rem;
+        width: 85%;
+        position: relative;
+        max-height: 32rem;
+        overflow-y: auto;
+
+        .closeShopButton {
+            position: absolute;
+            top: 0.62rem;
+            right: 0.62rem;
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            cursor: pointer;
+        }
+
+        .shopItems {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+
+            .shopItem {
+                background: #f9f9f9;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                padding: 0.62rem;
+                width: 12.5rem;
+                text-align: center;
+            
+                &.Common {
+                    background: rgba($color-common, 0.5);
+                }
+            
+                &.Rare {
+                    background: rgba($color-rare, 0.5);
+                }
+            
+                &.Epic {
+                    background: rgba($color-epic, 0.5);
+                }
+            
+                &.Mythical {
+                    background: rgba($color-mythical, 0.5);
+                }
+            
+                .shopItemImageContainer {
+                    display: flex;
+                    justify-content: center;
+                    align-items: end;
+                    width: 100%;
+                    padding-top: 100%;
+                    position: relative;
+                    overflow: hidden;
+
+                    .shopItemImage {
+                        position: absolute;
+                        height: 100%;
+                        object-fit: cover;
+                    }
+                }
+
+                .shopItemDetails {
+                    flex-grow: 1;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                
+                    .buyButton {
+                        background: rgba($color-primary, 0.8);
+                        color: $color-dark;
+                        border: none;
+                        padding: 0.62rem;
+                        border-radius: 5px;
+                        cursor: pointer;
+                        margin-top: 0.62rem;
+                    }
+                }
+                
+            }
+        }
+    }
+}
