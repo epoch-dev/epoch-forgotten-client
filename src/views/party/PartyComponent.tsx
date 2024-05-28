@@ -1,7 +1,7 @@
 import style from './PartyComponent.module.scss';
 import { useEffect, useState } from 'react';
 import { CharacterDto, PartySlot } from '../../common/api/.generated';
-import { CharactersClient } from '../../common/api/client';
+import { charactersClient } from '../../common/api/client';
 import { CharacterComponent } from './CharacterComponent';
 
 export const PartyComponent = () => {
@@ -13,7 +13,7 @@ export const PartyComponent = () => {
     }, []);
 
     const setupParty = async () => {
-        const rosterData = (await CharactersClient.getRoster()).data;
+        const rosterData = (await charactersClient.getRoster()).data;
         setRoster(rosterData.filter((c) => c.partySlot === PartySlot.None));
         setParty(rosterData.filter((c) => c.partySlot !== PartySlot.None));
     };
@@ -33,7 +33,7 @@ export const PartyComponent = () => {
         } else {
             return;
         }
-        await CharactersClient.addToParty({ characterId, slot });
+        await charactersClient.addToParty({ characterId, slot });
         setParty((p) => [{ ...character, partySlot: slot }, ...p]);
         setRoster((r) => r.filter((c) => c.id !== characterId));
     };
@@ -43,14 +43,14 @@ export const PartyComponent = () => {
         if (!character) {
             return;
         }
-        await CharactersClient.removeFromParty({ characterId });
+        await charactersClient.removeFromParty({ characterId });
         setParty((p) => p.filter((c) => c.id !== characterId));
         setRoster((r) => [character, ...r]);
     };
 
     return (
         <section>
-            <h2 className="subtitle dark">Party</h2>
+            <h2 className="subtitle dark">Active</h2>
             <div className={style.partyWrapper}>
                 {party.map((character) => (
                     <div

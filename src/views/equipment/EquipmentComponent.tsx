@@ -1,7 +1,7 @@
 import style from './EquipmentComponent.module.scss';
 import { useEffect, useState } from 'react';
 import { useGameStore } from '../game/GameStore';
-import { CharactersClient } from '../../common/api/client';
+import { charactersClient } from '../../common/api/client';
 import { CharacterEquipItemDtoTargetEnum, ItemDto, ItemType } from '../../common/api/.generated';
 import { GameView } from '../game/types';
 import { AssetsService } from '../../common/services/AssetsService';
@@ -22,7 +22,7 @@ export const EquipmentComponent = () => {
     }
 
     const fetchEquipment = async () => {
-        const characterData = await CharactersClient.getDetail(character.id);
+        const characterData = await charactersClient.getDetail(character.id);
         setCharacter(characterData.data);
     };
 

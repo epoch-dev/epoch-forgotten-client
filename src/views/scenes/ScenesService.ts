@@ -5,7 +5,7 @@ import {
     SceneMoveResultDtoNpcData,
     ScenePoint,
 } from '../../common/api/.generated';
-import { ScenesClient } from '../../common/api/client';
+import { scenesClient } from '../../common/api/client';
 import { getCurrentTimeStamp } from '../../common/utils';
 import { CursorKey } from './types';
 
@@ -16,7 +16,7 @@ export class ScenesService {
     private static MOVE_INTERVAL = 250;
 
     public static async initialize() {
-        const data = (await ScenesClient.currentScene()).data;
+        const data = (await scenesClient.currentScene()).data;
         this.sceneData = data;
         this.userPosition = data.userPosition;
     }
@@ -70,7 +70,7 @@ export class ScenesService {
             };
         }
         const moveResult = (
-            await ScenesClient.move({
+            await scenesClient.move({
                 direction,
             })
         ).data;

@@ -1,5 +1,5 @@
 import style from './IntroComponent.module.scss';
-import { CharactersClient } from '../../common/api/client';
+import { charactersClient } from '../../common/api/client';
 import { useState } from 'react';
 import { useGameStore } from '../game/GameStore';
 import { ToastService } from '../../common/services/ToastService';
@@ -11,7 +11,7 @@ export const IntroComponent = () => {
     const { setView } = useGameStore();
 
     const handleNameChoice = async () => {
-        await Promise.all([CharactersClient.createMainCharacter({ name }), ScenesService.initialize()]);
+        await Promise.all([charactersClient.createMainCharacter({ name }), ScenesService.initialize()]);
         ToastService.success({ message: 'Let the journey begin' });
         setView(GameView.World);
     };

@@ -1,7 +1,7 @@
 import style from './DialogueComponent.module.scss';
 import { useEffect, useState, KeyboardEvent, useRef } from 'react';
 import { DialogueService } from './DialogueService';
-import { NpcsClient } from '../../common/api/client';
+import { npcsClient } from '../../common/api/client';
 import { DialogueNode } from '../../common/api/.generated';
 import { useGameStore } from '../game/GameStore';
 import { GameView } from '../game/types';
@@ -25,7 +25,7 @@ const DialogueComponent = () => {
             if (!npc) {
                 return;
             }
-            const npcDialogues = (await NpcsClient.getNpcDialogue(npc.npcName)).data;
+            const npcDialogues = (await npcsClient.getNpcDialogue(npc.npcName)).data;
             const newService = new DialogueService(npc.npcName, npcDialogues, {
                 onNodeChange: (node) => {
                     setCurrentNode(node);

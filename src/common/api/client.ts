@@ -27,11 +27,11 @@ axios.interceptors.response.use(
     },
 );
 
-export const UsersClient = new UsersApi(undefined, BASE_PATH, axios);
-export const ItemsClient = new ItemsApi(undefined, BASE_PATH, axios);
-export const ScenesClient = new ScenesApi(undefined, BASE_PATH, axios);
-export const CharactersClient = new CharactersApi(undefined, BASE_PATH, axios);
-export const NpcsClient = new NpcsApi(undefined, BASE_PATH, axios);
-export const SkillsClient = new SkillsApi(undefined, BASE_PATH, axios);
+export const usersClient = new UsersApi(undefined, BASE_PATH, axios);
+export const itemsClient = new ItemsApi(undefined, BASE_PATH, axios);
+export const scenesClient = new ScenesApi(undefined, BASE_PATH, axios);
+export const charactersClient = new CharactersApi(undefined, BASE_PATH, axios);
+export const npcsClient = new NpcsApi(undefined, BASE_PATH, axios);
+export const skillsClient = new SkillsApi(undefined, BASE_PATH, axios);
 export const battleClient = new BattleApi(undefined, BASE_PATH, axios);
 export const questsClient = new QuestsApi(undefined, BASE_PATH, axios);
