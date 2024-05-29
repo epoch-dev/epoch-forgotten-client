@@ -1,12 +1,12 @@
 import style from './ShopComponent.module.scss';
-import { Item } from "../../common/api/.generated";
+import type { Item } from "../../common/api/.generated";
 import { AssetsService } from '../../common/services/AssetsService';
-import { ItemsClient, UsersClient } from '../../common/api/client';
 import { useGameStore } from '../game/GameStore';
 import { useEffect, useState } from 'react';
 import { ToastService } from '../../common/services/ToastService';
 import { TooltipComponent } from '../../common/components/TooltipComponent';
 import LoadingOverlay from '../../common/components/LoadingOverlay';
+import { ShopService } from './ShopService';
 
 const ShopComponent = ({ npcShop, onClose }: { npcShop: Item[]; onClose: () => void }) => {
     const [gold, setGold] = useState(0);
@@ -16,8 +16,7 @@ const ShopComponent = ({ npcShop, onClose }: { npcShop: Item[]; onClose: () => v
     }, []);
 
     const getGold = async () => {
-        const user = (await UsersClient.whoami()).data;
-        setGold(user.gold);
+        setGold(await ShopService.getGold());
     };
 
     return (
@@ -47,7 +46,7 @@ const ShopItem = ({ item, gold, updateGold }: { item: Item; gold: number; update
         }
         setBuying(true);
         try {
-            await ItemsClient.buyItem({ name: item.name, quantity: 1, npcName: npc.npcName });
+            await ShopService.buyItem(item.name, npc.npcName);
             await updateGold();
             ToastService.success({ message: 'Item bought' })
         } catch (error) {
@@ -79,7 +78,7 @@ const ShopItem = ({ item, gold, updateGold }: { item: Item; gold: number; update
                     draggable={false}
                 />
                 <button
-                    className={`btn ${style.buyButton}`}
+                    className={style.buyButton}
                     onClick={buyItem}
                     disabled={buyDisabled}
                 >
