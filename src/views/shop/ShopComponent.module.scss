@@ -17,33 +17,80 @@
         background: rgba($color-light, 0.6);
         border-radius: 0.62rem;
         padding: 1.25rem;
-        width: 85%;
+        width: 90%;
         position: relative;
         max-height: 32rem;
         overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
 
         .closeShopButton {
             position: absolute;
             top: 0.62rem;
             right: 0.62rem;
-            background: none;
-            border: none;
+            width: 2.5rem;
+            height: 2.5rem;
+            background: rgba($color-dark, 0.8);
+            border: 2px solid rgba($color-light, 0.8);
+            border-radius: 50%;
             font-size: 1.25rem;
+            color: $color-light;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             cursor: pointer;
+
+            &:hover,
+            &:focus {
+                color: lighten($color-primary, 10);
+                background-color: rgba($color-dark, 0.9);
+                transform: scale(1.1);
+            }
+        }
+
+        .shopHeader {
+            position: sticky;
+            top: 0;
+            background: rgba($color-light, 0.9);
+            border-bottom: 2px solid rgba($color-dark, 0.2);
+            margin-bottom: 1.5rem;
+            padding: 10px;
+            width: 75%;
+            text-align: center;
+            z-index: 10;
+
+            .goldAmount {
+                font-size: 1.2rem;
+                font-weight: bold;
+                color: $color-mythical;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                &::before {
+                    content: '💰';
+                    margin-right: 4px;
+                }
+            }
         }
 
         .shopItems {
             display: flex;
             flex-wrap: wrap;
-            gap: 20px;
+            text-align: center;
+            gap: 1.25rem;
+            min-height: 24rem;
 
             .shopItem {
                 background: #f9f9f9;
                 border: 1px solid #ddd;
                 border-radius: 5px;
                 padding: 0.62rem;
-                width: 12.5rem;
-                text-align: center;
+                height: fit-content;
+                align-items: center;
+                display: flex;
+                flex-direction: column;
             
                 &.Common {
                     background: rgba($color-common, 0.5);
@@ -61,51 +108,31 @@
                     background: rgba($color-mythical, 0.5);
                 }
             
-                .shopItemImageContainer {
-                    display: flex;
-                    justify-content: center;
-                    align-items: end;
-                    width: 100%;
-                    padding-top: 100%;
-                    position: relative;
-                    overflow: hidden;
-
-                    .shopItemImage {
-                        position: absolute;
-                        height: 100%;
-                        object-fit: cover;
-                    }
+                .shopItemImage {
+                    height: 8rem;
                 }
 
-                .shopItemDetails {
-                    flex-grow: 1;
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: space-between;
-                
-                    .buyButton {
-                        background: rgba($color-primary, 0.8);
-                        color: $color-dark;
-                        border: none;
-                        padding: 0.62rem;
-                        border-radius: 5px;
-                        cursor: pointer;
-                        margin-top: 0.62rem;
+                .buyButton {
+                    background: rgba($color-primary, 0.8);
+                    color: $color-dark;
+                    border: none;
+                    padding: 0.3rem;
+                    padding-left: 1.5rem;
+                    padding-right: 1.5rem;
+                    border-radius: 5px;
+                    cursor: pointer;
 
-                        &:hover,
-                        &:focus {
-                            color: lighten($color-primary, 10);
-                            background-color: rgba($color-dark, 0.9);
-                            border-bottom: 1px solid $color-primary;
-                        }
-                        
-                        &:disabled {
-                            background: rgba($color-grey, 0.8);
-                            cursor: auto;
-                        }
+                    &:hover,
+                    &:focus {
+                        color: lighten($color-primary, 10);
+                        background-color: rgba($color-dark, 0.9);
+                    }
+                    
+                    &:disabled {
+                        background: rgba($color-grey, 0.8);
+                        cursor: auto;
                     }
                 }
-                
             }
         }
     }
