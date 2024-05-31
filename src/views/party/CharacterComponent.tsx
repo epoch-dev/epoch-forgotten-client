@@ -42,17 +42,15 @@ export const CharacterComponent = ({ character }: { character: CharacterDto }) =
             />
             <hr />
             <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
-                <div className={style.characterNavIcon}>
+                <div className={style.characterNavIcon} onClick={(e) => navigateToSkills(e)}>
                     <img
-                        onClick={(e) => navigateToSkills(e)}
                         src={AssetsService.getIcon('SKILLS')}
                         style={{ width: '2rem', height: '2rem' }}
                         draggable={false}
                     />
                 </div>
-                <div className={style.characterNavIcon}>
+                <div className={style.characterNavIcon} onClick={(e) => navigateToEquipment(e)}>
                     <img
-                        onClick={(e) => navigateToEquipment(e)}
                         src={AssetsService.getIcon('EQUIPMENT')}
                         style={{ width: '2rem', height: '2rem' }}
                         draggable={false}

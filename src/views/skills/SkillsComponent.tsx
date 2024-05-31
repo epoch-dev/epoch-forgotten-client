@@ -54,12 +54,13 @@ export const SkillsComponent = () => {
             <div className={style.skillsWrapper}>
                 <div className={style.skillsHeaderWrapper}>
                     <h2>Skill Tree |</h2>
-                    <img
-                        onClick={() => setView(GameView.Equipment)}
-                        src={AssetsService.getIcon('EQUIPMENT')}
-                        style={{ width: '1.6rem' }}
-                        draggable={false}
-                    />
+                    <div onClick={() => setView(GameView.Equipment)}>
+                        <img
+                            src={AssetsService.getIcon('EQUIPMENT')}
+                            style={{ width: '1.6rem' }}
+                            draggable={false}
+                        />
+                    </div>
                 </div>
                 {skills?.map((skill) => (
                     <SkillComponent key={skill.name} skill={skill} />

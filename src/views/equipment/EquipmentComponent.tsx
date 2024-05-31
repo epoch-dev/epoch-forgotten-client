@@ -106,12 +106,13 @@ export const EquipmentComponent = () => {
             <div className={style.equipmentWrapper}>
                 <div className={style.equipmentHeaderWrapper}>
                     <h2>Equipment |</h2>
-                    <img
-                        onClick={() => setView(GameView.Skills)}
-                        src={AssetsService.getIcon('SKILLS')}
-                        style={{ width: '1.6rem' }}
-                        draggable={false}
-                    />
+                    <div onClick={() => setView(GameView.Skills)}>
+                        <img
+                            src={AssetsService.getIcon('SKILLS')}
+                            style={{ width: '1.6rem' }}
+                            draggable={false}
+                        />
+                    </div>
                 </div>
                 <div className={style.itemsWrapper}>
                     <div
