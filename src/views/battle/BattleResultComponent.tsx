@@ -73,14 +73,23 @@ const CharacterLevelComponent = ({
     expGain: number;
 }) => {
     const [level, setLevel] = useState(levelInfo.oldLevel);
-    const [exp, setExp] = useState(levelInfo.oldExp - getLevelExperience(levelInfo.oldLevel));
-    const [nextLevelExp, setNextLevelExp] = useState(
-        getLevelExperience(levelInfo.oldLevel + 1) - getLevelExperience(levelInfo.oldLevel),
-    );
+    const [exp, setExp] = useState(levelInfo.oldExp);
+    const [nextLevelExp, setNextLevelExp] = useState(getLevelExperience(levelInfo.oldLevel + 1));
 
     useEffect(() => {
         if (level < levelInfo.oldLevel + levelInfo.gainedLevels) {
             void handleLevelUp();
+        } else {
+            const exp =
+                levelInfo.oldLevel > 1
+                    ? levelInfo.oldExp + expGain - getLevelExperience(levelInfo.oldLevel)
+                    : levelInfo.oldExp + expGain;
+            setExp(exp);
+            const nextLevel =
+                levelInfo.oldLevel > 1
+                    ? getLevelExperience(levelInfo.oldLevel + 1) - getLevelExperience(levelInfo.oldLevel)
+                    : getLevelExperience(levelInfo.oldLevel);
+            setNextLevelExp(nextLevel);
         }
     }, [level]);
 
