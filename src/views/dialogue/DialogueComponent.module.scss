@@ -40,6 +40,7 @@
     }
 
     .dialogueBtn {
+        @include btnEffects;
         width: 100%;
         padding: 0.25rem;
         border-radius: 0.25rem;
@@ -48,10 +49,10 @@
         color: $color-light;
         background-color: rgba($color-dark, 0.7);
         border-bottom: 1px solid $color-dark;
-        @include btnEffects;
     }
 
     .shopButton {
+        @include btnEffects;
         position: absolute;
         bottom: 2rem;
         left: 2rem;
@@ -62,6 +63,5 @@
         color: $color-light;
         background-color: rgba($color-dark, 0.85);
         border-bottom: 1px solid $color-dark;
-        @include btnEffects;
     }
 }
