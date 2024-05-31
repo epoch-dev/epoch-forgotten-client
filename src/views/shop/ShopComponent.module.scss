@@ -71,18 +71,22 @@
                 }
 
                 &.Common {
+                    @include insetShadow($color-common);
                     border: 5px solid rgba($color-common, 0.7);
                 }
 
                 &.Rare {
+                    @include insetShadow($color-rare);
                     border: 5px solid rgba($color-rare, 0.7);
                 }
 
                 &.Epic {
+                    @include insetShadow($color-epic);
                     border: 5px solid rgba($color-epic, 0.7);
                 }
 
                 &.Mythical {
+                    @include insetShadow($color-mythical);
                     border: 5px solid rgba($color-mythical, 0.7);
                 }
 
