@@ -9,55 +9,100 @@ import LoadingOverlay from '../../common/components/LoadingOverlay';
 import { ShopService } from './ShopService';
 
 const ShopComponent = ({ npcShop, onClose }: { npcShop: Item[]; onClose: () => void }) => {
+    const { npc } = useGameStore();
     const [gold, setGold] = useState(0);
+    const [totalCost, setTotalCost] = useState(0);
+    const [checkout, setCheckout] = useState<{ [key: string]: number }>({});
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         void getGold();
     }, []);
 
     const getGold = async () => {
+        setLoading(true);
         setGold(await ShopService.getGold());
+        setLoading(false);
     };
+
+    const addToCheckout = (itemName: string, price: number, quantity: number) => {
+        setTotalCost(prevCost => prevCost + price);
+        setCheckout(prevCheckout => ({
+            ...prevCheckout,
+            [itemName]: quantity,
+        }));
+    };
+
+    const buyAll = async () => {
+        setLoading(true);
+        if (!npc) {
+            return;
+        }
+        try {
+            const buyItemsDto = [];
+            for (const [itemName, quantity] of Object.entries(checkout)) {
+                buyItemsDto.push({ name: itemName, quantity, npcName: npc.npcName })
+            }
+            await ShopService.buyItems(buyItemsDto);
+            setGold(prevGold => prevGold - totalCost);
+            setTotalCost(0);
+            setCheckout({});
+            ToastService.success({ message: 'Items bought' });
+        } catch (error) {
+            ToastService.error({ message: 'Error buying items' });
+        }
+        setLoading(false);
+    };
+
+    const buyDisabled = totalCost > gold;
 
     return (
         <div className={style.shopViewOverlay}>
             <div className={style.shopView}>
+                {loading && <LoadingOverlay />}
                 <button className={style.closeShopButton} onClick={onClose}>x</button>
-                <div className={style.shopHeader}>
-                    <div className={style.goldAmount}>Gold: {gold}</div>
-                </div>
                 <div className={style.shopItems}>
                     {npcShop.map((shopItem, index) => (
-                        <ShopItem key={index} item={shopItem} gold={gold} updateGold={getGold} />
+                        <ShopItem
+                            key={index}
+                            item={shopItem}
+                            checkout={checkout}
+                            addToCheckout={addToCheckout}
+                        />
                     ))}
+                </div>
+                <div className={style.shopPanel}>
+                    <button
+                        className={style.buyButton}
+                        onClick={buyAll}
+                        disabled={buyDisabled || !totalCost}
+                    >
+                        {!buyDisabled ? `Buy (${totalCost})` : 'Not enough gold'}
+                    </button>
+                    <div className={style.goldAmount}>Gold: {gold}</div>
                 </div>
             </div>
         </div>
     );
 };
 
-const ShopItem = ({ item, gold, updateGold }: { item: Item; gold: number; updateGold: () => Promise<void> }) => {
-    const { npc } = useGameStore();
-    const [buying, setBuying] = useState(false);
+const ShopItem = ({ item, checkout, addToCheckout }: {
+    item: Item;
+    checkout: { [key: string]: number };
+    addToCheckout: (itemName: string, price: number, quantity: number) => void;
+}) => {
 
-    const buyItem = async () => {
-        if (!npc) {
+    const quantity = checkout[item.name] ?? 0;
+    const buyDisabled = !item.price;
+    const disabledStyle = buyDisabled ? style.disabled : '';
+    const showOverlay = quantity > 0 || buyDisabled;
+
+    const handleImageClick = () => {
+        if (buyDisabled) {
             return;
         }
-        setBuying(true);
-        try {
-            await ShopService.buyItem(item.name, npc.npcName);
-            await updateGold();
-            ToastService.success({ message: 'Item bought' })
-        } catch (error) {
-            ToastService.error({ message: 'Error buying item' })
-        } finally {
-            setBuying(false);
-        }
-    }
-
-    const hasEnoughGold = item.price && gold >= item.price;
-    const buyDisabled = buying || !item.price || !hasEnoughGold;
+        addToCheckout(item.name, item.price!, quantity + 1);
+    };
 
     const ShopItemTooltipContent = () => (
         <>
@@ -69,21 +114,19 @@ const ShopItem = ({ item, gold, updateGold }: { item: Item; gold: number; update
 
     return (
         <TooltipComponent hint={<ShopItemTooltipContent />}>
-            <div className={`${style.shopItem} ${style[item.rarity]}`}>
-                {buying && <LoadingOverlay />}
+            <div
+                className={`${style.shopItem} ${style[item.rarity]} ${disabledStyle}`}
+                onClick={handleImageClick}
+            >
+                {showOverlay && <div className={style.shopItemOverlay}>
+                    {!buyDisabled ? quantity : 'Not availible'}
+                </div>}
                 <img
                     className={style.shopItemImage}
                     src={AssetsService.getItemUri(item.imageUri)}
                     alt={item.name}
                     draggable={false}
                 />
-                <button
-                    className={style.buyButton}
-                    onClick={buyItem}
-                    disabled={buyDisabled}
-                >
-                    {item.price ? hasEnoughGold ? 'Buy' : 'Not enough gold' : 'Not availible'}
-                </button>
             </div>
         </TooltipComponent>
     );

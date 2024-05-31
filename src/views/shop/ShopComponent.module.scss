@@ -10,11 +10,11 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
 
     .shopView {
         @include boxShadowSm;
-        background: rgba($color-light, 0.6);
+
+        background: rgba($color-light-grey, 0.65);
         border-radius: 0.62rem;
         padding: 1.25rem;
         width: 90%;
@@ -22,8 +22,7 @@
         max-height: 32rem;
         overflow-y: auto;
         display: flex;
-        flex-direction: column;
-        align-items: center;
+        gap: 5rem;
 
         .closeShopButton {
             position: absolute;
@@ -49,92 +48,113 @@
             }
         }
 
-        .shopHeader {
-            position: sticky;
-            top: 0;
-            background: rgba($color-light, 0.9);
-            border-bottom: 2px solid rgba($color-dark, 0.2);
-            margin-bottom: 1.5rem;
-            padding: 10px;
-            width: 75%;
+        .shopItems {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(5rem, max-content));
+            gap: 1rem 3rem;
             text-align: center;
-            z-index: 10;
+            min-height: 24rem;
+            width: 70%;
 
-            .goldAmount {
-                font-size: 1.2rem;
-                font-weight: bold;
-                color: $color-mythical;
-                display: flex;
-                align-items: center;
-                justify-content: center;
+            .shopItem {
+                position: relative;
+                border: 5px solid #ddd;
+                border-radius: 5px;
+                cursor: pointer;
+                user-select: none;
 
-                &::before {
-                    content: '💰';
-                    margin-right: 4px;
+                width: 8rem;
+                height: 8rem;
+
+                &.disabled {
+                    cursor: auto;
+                }
+
+                &.Common {
+                    border: 5px solid rgba($color-common, 0.7);
+                }
+
+                &.Rare {
+                    border: 5px solid rgba($color-rare, 0.7);
+                }
+
+                &.Epic {
+                    border: 5px solid rgba($color-epic, 0.7);
+                }
+
+                &.Mythical {
+                    border: 5px solid rgba($color-mythical, 0.7);
+                }
+
+                &:hover,
+                &:focus {
+                    color: lighten($color-primary, 10);
+                    background-color: rgba($color-dark, 0.9);
+                }
+
+                &:disabled {
+                    background: rgba($color-grey, 0.8);
+                    cursor: auto;
+                }
+
+                .shopItemImage {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
+                }
+
+
+                .shopItemOverlay {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-color: rgba(0, 0, 0, 0.5);
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    color: white;
                 }
             }
         }
 
-        .shopItems {
+        .shopPanel {
+            position: sticky;
             display: flex;
-            flex-wrap: wrap;
-            text-align: center;
-            gap: 1.25rem;
-            min-height: 24rem;
+            flex-direction: column;
+            gap: 2rem;
+            top: 5rem;
 
-            .shopItem {
-                background: #f9f9f9;
-                border: 1px solid #ddd;
+            .buyButton {
+                background: rgba($color-primary, 0.8);
+                color: $color-dark;
+                border: none;
+                padding: 0.3rem;
                 border-radius: 5px;
-                padding: 0.62rem;
-                height: fit-content;
-                align-items: center;
+                cursor: pointer;
+                font-size: 1.2rem;
+                line-height: 1.7rem;
+
+                &:hover {
+                    color: lighten($color-primary, 10);
+                    background-color: rgba($color-dark, 0.9);
+                }
+                
+                &:disabled {
+                    background: rgba($color-grey, 0.8);
+                    cursor: auto;
+                }
+            }
+
+            .goldAmount {
+                font-size: 1.2rem;
+                font-weight: bold;
+                color: $color-dark;
                 display: flex;
-                flex-direction: column;
-            
-                &.Common {
-                    background: rgba($color-common, 0.5);
-                }
-            
-                &.Rare {
-                    background: rgba($color-rare, 0.5);
-                }
-            
-                &.Epic {
-                    background: rgba($color-epic, 0.5);
-                }
-            
-                &.Mythical {
-                    background: rgba($color-mythical, 0.5);
-                }
-            
-                .shopItemImage {
-                    height: 8rem;
-                }
-
-                .buyButton {
-                    background: rgba($color-primary, 0.8);
-                    color: $color-dark;
-                    border: none;
-                    padding: 0.3rem;
-                    padding-left: 1.5rem;
-                    padding-right: 1.5rem;
-                    border-radius: 5px;
-                    cursor: pointer;
-                    font-size: 1.2rem;
-                    line-height: 1.7rem;
-
-                    &:hover,
-                    &:focus {
-                        color: lighten($color-primary, 10);
-                        background-color: rgba($color-dark, 0.9);
-                    }
-                    
-                    &:disabled {
-                        background: rgba($color-grey, 0.8);
-                        cursor: auto;
-                    }
-                }
+                align-items: center;
+                justify-content: center;
             }
         }
     }

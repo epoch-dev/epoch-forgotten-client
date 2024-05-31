@@ -1,3 +1,4 @@
+import { ItemBuyDto } from "../../common/api/.generated";
 import { itemsClient, usersClient } from "../../common/api/client";
 
 export class ShopService {
@@ -6,7 +7,7 @@ export class ShopService {
         return user.gold;
     }
 
-    public static async buyItem(itemName: string, npcName: string) {
-        await itemsClient.buyItem({ name: itemName, quantity: 1, npcName });
+    public static async buyItems(dto: ItemBuyDto[]) {
+        await itemsClient.buyItems(dto);
     }
 }
