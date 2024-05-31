@@ -106,12 +106,12 @@ const DialogueComponent = () => {
                     )}
                 </div>
             )}
-            <button
+            {npcShop && <button
                 className={style.shopButton}
                 onClick={() => setDisplayShop(true)}
             >
                 Shop {/*todo: nice icon :)*/}
-            </button>
+            </button>}
         </div>
     );
 };
