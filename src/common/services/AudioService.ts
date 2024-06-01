@@ -9,6 +9,7 @@ export type PlayingTrack = {
 export abstract class AudioService {
     protected readonly tracks: { [key: string]: Howl } = {};
     protected abstract currentPlaying: PlayingTrack | null;
+    protected volume: number = 1;
 
     protected abstract loadTrack(name: string): void;
 
@@ -21,12 +22,12 @@ export abstract class AudioService {
         track.play();
     }
 
-    protected playUniqueVoice(name: string, fadeDuration = 1000) {
+    protected playUniqueVoice(name: string) {
         if (this.currentPlaying?.name === name) {
             return;
         }
         if (this.currentPlaying) {
-            this.transition(fadeDuration);
+            this.transition();
         }
         const track = this.tracks[name];
         if (!track) {
@@ -36,14 +37,15 @@ export abstract class AudioService {
         track.play();
         if (this.currentPlaying) {
             track.volume(0);
-            track.fade(0, 1, fadeDuration);
+            track.fade(0, this.volume, 5000);
         }
         this.currentPlaying = { name, track };
     }
 
-    protected stopCurrent(fadeDuration = 1000) {
+    public stopCurrent(fadeDuration = 1000) {
         if (this.currentPlaying) {
             this.transition(fadeDuration);
+            this.currentPlaying = null;
         }
     }
 
@@ -57,9 +59,9 @@ export abstract class AudioService {
         }
     }
 
-    private transition(fadeDuration = 3000) {
+    private transition(fadeDuration = 2000) {
         const currentTrack = this.currentPlaying?.track;
-        currentTrack?.fade(1, 0, fadeDuration);
+        currentTrack?.fade(this.volume, 0, fadeDuration);
         setTimeout(() => currentTrack?.stop(), fadeDuration);
     }
 

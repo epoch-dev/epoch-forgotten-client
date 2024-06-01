@@ -5,6 +5,7 @@ import { AssetsService } from './AssetsService.ts';
 export class MusicService extends AudioService {
     private static instance: MusicService;
     currentPlaying: PlayingTrack | null = null;
+    volume: number = 1;
 
     constructor() {
         super();
@@ -27,12 +28,16 @@ export class MusicService extends AudioService {
     }
 
     public play(name: string) {
-        if (!(name in this.tracks))
+        if (!(name in this.tracks)) {
             this.loadTrack(name);
+        }
         this.playUniqueVoice(name);
+        this.currentPlaying?.track.volume(this.volume);
     }
 
-    public startBattleMusic() {
-        this.playUniqueVoice('battle.wav');
+    public setVolume(value: number) {
+        value /= 100;
+        this.volume = value;
+        this.currentPlaying?.track.volume(value);
     }
 }
