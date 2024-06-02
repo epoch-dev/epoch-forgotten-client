@@ -31,7 +31,6 @@ export const GameComponent = () => {
 
     return (
         <>
-            <MusicPanel />
             <main className="contentWrapper" style={{ ...overflowHidden }}>
                 <ScenesComponent />
                 {view === GameView._Dev && <DevComponent />}
@@ -62,6 +61,9 @@ export const GameComponent = () => {
                     </button>
                 </nav>
             )}
+            <aside>
+                <MusicPanel />
+            </aside>
         </>
     );
 };
