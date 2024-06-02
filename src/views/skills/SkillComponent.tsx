@@ -5,18 +5,22 @@ import { SkillDto } from '../../common/api/.generated';
 import { useGameStore } from '../game/GameStore';
 import { skillsClient } from '../../common/api/client';
 import { ToastService } from '../../common/services/ToastService';
+import { SoundService } from '../../common/services/SoundService';
 
 export const SkillComponent = ({ skill }: { skill: SkillDto }) => {
     const { character, setCharacter } = useGameStore();
+
 
     if (!character) {
         return <></>;
     }
 
+    const soundService = SoundService.getInstance();
     const canLearn = !skill.learned && character.skillPoints > 0;
 
     const learnSkill = async (skill: SkillDto) => {
         await skillsClient.learnSkill({ characterId: character.id, skillName: skill.name });
+        soundService.newSkill();
         ToastService.success({ message: `${skill.label} learned` });
         setCharacter({
             ...character,

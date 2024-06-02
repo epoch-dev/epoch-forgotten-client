@@ -1,0 +1,94 @@
+@import '../../common/styles/variables.scss';
+@import '../../common/styles/mixins.scss';
+
+.fixedMusicButton {
+    position: fixed;
+    top: 0.62rem;
+    left: 0.62rem;
+    padding: 5px 10px;
+    background-color: #333;
+    color: #fff;
+    cursor: pointer;
+    z-index: 100;
+    border: 2px solid $color-primary;
+    border-radius: 0.7rem;
+
+    &:hover {
+        background-color: $color-primary;
+        transform: translateY(-1px);
+    }
+}
+
+.musicPanel {
+    @include boxShadow;
+    position: fixed;
+    width: 14rem;
+    top: 3rem;
+    left: 0.62rem;
+    background: rgba($color-light, 0.8);
+    padding: 1rem;
+    border-radius: 0.62rem;
+    z-index: 1000;
+
+    .controlPanel {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        .muteButton {
+            @include boxShadowSm;
+            background-color: $color-primary;
+            color: white;
+            border: none;
+            padding: 0.62rem 1.25rem;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+
+            &.muted {
+                background-color: $color-error;
+            }
+
+            &:hover {
+                transform: translateY(-1px);
+            }
+        }
+
+        .volumeControl {
+            margin-top: 1rem;
+            width: 100%;
+            display: flex;
+            align-items: center;
+
+            label {
+                margin-right: 0.62rem;
+                font-weight: bold;
+            }
+
+            input[type=range] {
+                flex: 1;
+                -webkit-appearance: none;
+                height: 7px;
+                border-radius: 5px;
+                border: 0.5px solid $color-primary;
+                background: linear-gradient(to right, rgb(219, 37, 37), rgb(134, 247, 2));
+                cursor: pointer;
+
+                &::-webkit-slider-thumb {
+                    -webkit-appearance: none;
+                    width: 1rem;
+                    height: 1rem;
+                    border-radius: 50%;
+                    background: white;
+                    border: 2px solid $color-success;
+                    cursor: pointer;
+                }
+
+                &::-webkit-slider-thumb:hover {
+                    background: $color-light;
+                }
+            }
+        }
+    }
+}
+

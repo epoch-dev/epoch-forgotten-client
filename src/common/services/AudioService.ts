@@ -7,8 +7,12 @@ export type PlayingTrack = {
 };
 
 export abstract class AudioService {
+    private readonly transitionFadeDuration = 2000;
+    private readonly fadeInDuration = 5000;
+
     protected readonly tracks: { [key: string]: Howl } = {};
     protected abstract currentPlaying: PlayingTrack | null;
+    protected volume: number = 1;
 
     protected abstract loadTrack(name: string): void;
 
@@ -21,12 +25,12 @@ export abstract class AudioService {
         track.play();
     }
 
-    protected playUniqueVoice(name: string, fadeDuration = 1000) {
+    protected playUniqueVoice(name: string) {
         if (this.currentPlaying?.name === name) {
             return;
         }
         if (this.currentPlaying) {
-            this.transition(fadeDuration);
+            this.transition();
         }
         const track = this.tracks[name];
         if (!track) {
@@ -36,14 +40,15 @@ export abstract class AudioService {
         track.play();
         if (this.currentPlaying) {
             track.volume(0);
-            track.fade(0, 1, fadeDuration);
+            track.fade(0, this.volume, this.fadeInDuration);
         }
         this.currentPlaying = { name, track };
     }
 
-    protected stopCurrent(fadeDuration = 1000) {
+    public stopCurrent() {
         if (this.currentPlaying) {
-            this.transition(fadeDuration);
+            this.transition();
+            this.currentPlaying = null;
         }
     }
 
@@ -57,10 +62,10 @@ export abstract class AudioService {
         }
     }
 
-    private transition(fadeDuration = 3000) {
+    private transition() {
         const currentTrack = this.currentPlaying?.track;
-        currentTrack?.fade(1, 0, fadeDuration);
-        setTimeout(() => currentTrack?.stop(), fadeDuration);
+        currentTrack?.fade(this.volume, 0, this.transitionFadeDuration);
+        setTimeout(() => currentTrack?.stop(), this.transitionFadeDuration);
     }
 
     private trackError(name: string) {

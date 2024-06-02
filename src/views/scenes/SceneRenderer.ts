@@ -12,6 +12,7 @@ import { MusicService } from '../../common/services/MusicService';
 
 export class SceneRenderer extends Scene {
     public blockMovement = false;
+    public musicUri?: string;
     private tiles: SceneTileSprite[] = [];
     private user?: UserSprite;
     private sceneImageRef?: SceneImage;
@@ -47,6 +48,8 @@ export class SceneRenderer extends Scene {
         this.sceneImageRef?.destroy();
         this.load.image(`scene-${sceneData.name}`, AssetsService.getSceneUri(sceneData.imageUri));
         this.load.start();
+
+        this.musicUri = sceneData.musicUri;
         this.musicService.play(sceneData.musicUri);
 
         setTimeout(() => {

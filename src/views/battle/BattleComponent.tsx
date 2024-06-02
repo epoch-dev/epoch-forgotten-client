@@ -17,6 +17,7 @@ import { wait } from '../../common/utils';
 import { ScenesService } from '../scenes/ScenesService';
 import { AssetsService } from '../../common/services/AssetsService';
 import { BattleResultComponent } from './BattleResultComponent';
+import { MusicService } from '../../common/services/MusicService';
 
 const ANIMATION_TIME_MS = 1000;
 
@@ -33,15 +34,16 @@ export const BattleComponent = () => {
     const [defeat, setDefeat] = useState(false);
 
     const characterCommand = commands.find((c) => c.characterId === selectedCharacter?.id);
+    const musicService = MusicService.getInstance();
 
     const hint =
         victory || defeat
             ? ''
             : !selectedCharacter
-            ? 'Select character'
-            : !selectedSkill
-            ? 'Select skill'
-            : 'Select target';
+                ? 'Select character'
+                : !selectedSkill
+                    ? 'Select skill'
+                    : 'Select target';
 
     useEffect(() => {
         void loadScene();
@@ -51,6 +53,7 @@ export const BattleComponent = () => {
     const loadScene = async () => {
         const sceneData = await ScenesService.getSceneData();
         setScene(sceneData);
+        musicService.play(sceneData.battleMusicUri);
     };
 
     const loadBattle = async () => {
@@ -181,12 +184,11 @@ export const BattleComponent = () => {
                                     }>
                                     <button
                                         onClick={() => setSelectedSkill(skill)}
-                                        className={`${style.skillItem} ${
-                                            selectedSkill?.name === skill.name ||
+                                        className={`${style.skillItem} ${selectedSkill?.name === skill.name ||
                                             (!selectedSkill && characterCommand?.skillName === skill.name)
-                                                ? style.skillActive
-                                                : ''
-                                        }`}>
+                                            ? style.skillActive
+                                            : ''
+                                            }`}>
                                         {skill.label}
                                     </button>
                                 </TooltipComponent>

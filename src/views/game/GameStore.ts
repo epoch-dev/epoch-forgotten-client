@@ -6,6 +6,7 @@ import {
     SceneMoveResultDtoEncounterData,
     SceneMoveResultDtoNpcData,
 } from '../../common/api/.generated';
+import { MusicService } from '../../common/services/MusicService';
 
 type GameStore = {
     scene: SceneRenderer | undefined;
@@ -30,6 +31,10 @@ export const useGameStore = create<GameStore>()((set) => ({
     setScene: (scene: SceneRenderer) => set({ scene }),
     setView: (view: GameView) =>
         set((state) => {
+            const musicUri = state.scene?.musicUri;
+            if (view === GameView.World && musicUri) {
+                MusicService.getInstance().play(musicUri)
+            }
             if (state.scene) {
                 state.scene.blockMovement = view !== GameView.World;
             }

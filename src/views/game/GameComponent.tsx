@@ -7,29 +7,30 @@ import DialogueComponent from '../dialogue/DialogueComponent';
 import { useNavigate } from 'react-router-dom';
 import { StorageService } from '../../common/services/StorageService';
 import { IntroComponent } from '../intro/IntroComponent';
-import MuteButton from '../../common/components/MuteButton';
 import { SkillsComponent } from '../skills/SkillsComponent';
 import { DevComponent } from '../_dev/DevComponent';
 import { EquipmentComponent } from '../equipment/EquipmentComponent';
 import JournalComponent from '../journal/JournalComponent';
+import { MusicService } from '../../common/services/MusicService';
+import MusicPanel from '../music/MusicPanel';
 
 export const GameComponent = () => {
     const navigate = useNavigate();
     const { view, setView, clear } = useGameStore();
 
+    const musicService = MusicService.getInstance();
     const canNavigate = view !== GameView.Battle && view !== GameView.Intro;
     const overflowHidden = (view === GameView.World || view === GameView.Dialogue) ? { overflow: 'hidden' } : {};
 
     const handleSignout = () => {
         StorageService.clear();
         clear();
-        // TODO - stop all music
         navigate('/');
+        musicService.stopCurrent();
     };
 
     return (
         <>
-            <MuteButton />
             <main className="contentWrapper" style={{ ...overflowHidden }}>
                 <ScenesComponent />
                 {view === GameView._Dev && <DevComponent />}
@@ -60,6 +61,9 @@ export const GameComponent = () => {
                     </button>
                 </nav>
             )}
+            <aside>
+                <MusicPanel />
+            </aside>
         </>
     );
 };
