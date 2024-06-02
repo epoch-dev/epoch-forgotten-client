@@ -3,6 +3,7 @@ import { AssetsService } from '../../common/services/AssetsService';
 import { useGameStore } from '../game/GameStore';
 import { CharacterAttrs, CharacterImproveAttributeDtoAttributeEnum } from '../../common/api/.generated';
 import { charactersClient } from '../../common/api/client';
+import { SoundService } from '../../common/services/SoundService';
 
 export const AttributeComponent = ({
     label,
@@ -19,6 +20,7 @@ export const AttributeComponent = ({
         return <></>;
     }
 
+    const soundService = SoundService.getInstance();
     const canUpgrade = name && name !== 'health' && name !== 'mana' && character.attributePoints > 0;
 
     const handleUpgrade = async () => {
@@ -29,6 +31,7 @@ export const AttributeComponent = ({
             characterId: character.id,
             attribute: name as CharacterImproveAttributeDtoAttributeEnum,
         });
+        soundService.attrUp();
         setCharacter({
             ...updatedCharacterData.data,
         });
