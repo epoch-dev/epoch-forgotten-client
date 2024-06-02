@@ -3,10 +3,13 @@ import { useEffect, useState } from 'react';
 import { CharacterDto, PartySlot } from '../../common/api/.generated';
 import { charactersClient } from '../../common/api/client';
 import { CharacterComponent } from './CharacterComponent';
+import { SoundService } from '../../common/services/SoundService';
 
 export const PartyComponent = () => {
     const [party, setParty] = useState<CharacterDto[]>([]);
     const [roster, setRoster] = useState<CharacterDto[]>([]);
+
+    const soundService = SoundService.getInstance();
 
     useEffect(() => {
         void setupParty();
@@ -34,6 +37,7 @@ export const PartyComponent = () => {
             return;
         }
         await charactersClient.addToParty({ characterId, slot });
+        soundService.partyAdd();
         setParty((p) => [{ ...character, partySlot: slot }, ...p]);
         setRoster((r) => r.filter((c) => c.id !== characterId));
     };
@@ -44,6 +48,7 @@ export const PartyComponent = () => {
             return;
         }
         await charactersClient.removeFromParty({ characterId });
+        soundService.partyRemove();
         setParty((p) => p.filter((c) => c.id !== characterId));
         setRoster((r) => [character, ...r]);
     };

@@ -1,6 +1,7 @@
 import { AudioService, PlayingTrack } from './AudioService.ts';
 import { Howl } from 'howler';
 import { AssetsService } from './AssetsService.ts';
+import { ItemType } from '../api/.generated/api.ts';
 
 export class SoundService extends AudioService {
     private static instance: SoundService;
@@ -36,5 +37,29 @@ export class SoundService extends AudioService {
 
     public newSkill() {
         this.play('new-skill.ogg');
+    }
+
+    public partyAdd() {
+        this.play('party-add.ogg');
+    }
+
+    public partyRemove() {
+        this.play('party-remove.ogg');
+    }
+
+    public equip(itemType?: ItemType) {
+        if (itemType === 'Charm') {
+            this.equipCharm();
+        } else {
+            this.play('equip.ogg');
+        }
+    }
+
+    private equipCharm() {
+        this.play('equip-charm.ogg');
+    }
+
+    public unequip() {
+        this.play('unequip.ogg');
     }
 }

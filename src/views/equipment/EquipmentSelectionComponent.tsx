@@ -4,6 +4,7 @@ import { charactersClient, itemsClient } from '../../common/api/client';
 import { useGameStore } from '../game/GameStore';
 import { useEffect, useState } from 'react';
 import { ItemComponent } from './ItemComponent';
+import { SoundService } from '../../common/services/SoundService';
 
 export type EquipmentSelectionComponentProps = {
     currentItem?: ItemDto;
@@ -22,6 +23,8 @@ export const EquipmentSelectionComponent = ({
 }: EquipmentSelectionComponentProps) => {
     const { character, setCharacter } = useGameStore();
     const [items, setItems] = useState<ItemDto[]>([]);
+
+    const soundService = SoundService.getInstance();
 
     useEffect(() => {
         void fetchItems();
@@ -45,6 +48,7 @@ export const EquipmentSelectionComponent = ({
             itemId: item.id,
             target,
         });
+        soundService.equip(item.type);
         setCharacter(characterData.data);
         onClose();
     };
@@ -57,6 +61,7 @@ export const EquipmentSelectionComponent = ({
             characterId: character.id,
             itemId: currentItem.id,
         });
+        soundService.unequip();
         setCharacter(characterData.data);
         onClose();
     };
