@@ -7,9 +7,21 @@ import { ProgressBarComponent } from '../../common/components/ProgressBarCompone
 import { useEffect, useState } from 'react';
 import { getLevelExperience, wait } from '../../common/utils';
 import { CSS_COLOR } from '../../common/styles';
+import { ScenesService } from '../scenes/ScenesService';
 
 export const BattleResultComponent = ({ victory }: { victory: BattleVictoryRewards | undefined }) => {
-    const { setView } = useGameStore();
+    const { scene, setView } = useGameStore();
+
+    useEffect(() => {
+        if (victory) {
+            void handleVictory();
+        }
+    });
+
+    const handleVictory = async () => {
+        await ScenesService.initialize();
+        await scene?.loadScene();
+    };
 
     if (!victory) {
         return (
@@ -79,35 +91,36 @@ const CharacterLevelComponent = ({
     useEffect(() => {
         if (level < levelInfo.oldLevel + levelInfo.gainedLevels) {
             void handleLevelUp();
-        } else {
-            const exp =
-                levelInfo.oldLevel > 1
-                    ? levelInfo.oldExp + expGain - getLevelExperience(levelInfo.oldLevel)
-                    : levelInfo.oldExp + expGain;
-            setExp(exp);
-            const nextLevel =
-                levelInfo.oldLevel > 1
-                    ? getLevelExperience(levelInfo.oldLevel + 1) - getLevelExperience(levelInfo.oldLevel)
-                    : getLevelExperience(levelInfo.oldLevel);
-            setNextLevelExp(nextLevel);
+        } else if (levelInfo.gainedLevels === 0) {
+            void handleExpUp();
         }
     }, [level]);
 
     const handleLevelUp = async () => {
+        await wait(250);
         setExp(nextLevelExp);
-        await wait(750);
+        await wait(900);
+        let newLevel = level;
         setLevel((prevLevel) => {
-            const newLevel = prevLevel + 1;
+            newLevel = prevLevel + 1;
             setNextLevelExp(getLevelExperience(newLevel + 1) - getLevelExperience(newLevel));
             setExp(0);
             return Math.min(newLevel, levelInfo.oldLevel + levelInfo.gainedLevels);
         });
-        await wait(250);
+        await wait(400);
         setExp(() => {
-            const currentLevel = level + 1;
-            return levelInfo.oldExp + expGain - getLevelExperience(currentLevel);
+            return levelInfo.oldExp + expGain - getLevelExperience(newLevel - 1);
         });
-        await wait(150);
+        await wait(250);
+    };
+
+    const handleExpUp = async () => {
+        await wait(500);
+        const exp =
+            levelInfo.oldLevel > 1
+                ? levelInfo.oldExp + expGain - getLevelExperience(levelInfo.oldLevel)
+                : levelInfo.oldExp + expGain;
+        setExp(exp);
     };
 
     return (
