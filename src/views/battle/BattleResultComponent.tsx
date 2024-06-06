@@ -16,7 +16,7 @@ export const BattleResultComponent = ({ victory }: { victory: BattleVictoryRewar
         if (victory) {
             void handleVictory();
         }
-    });
+    }, [victory]);
 
     const handleVictory = async () => {
         await ScenesService.initialize();
