@@ -1,0 +1,87 @@
+@import '../../common/styles/variables.scss';
+@import '../../common/styles/mixins.scss';
+
+.shopItem {
+    width: 6rem;
+    height: 6rem;
+    position: relative;
+    border: 2px solid $color-dark;
+    border-radius: 1rem;
+    user-select: none;
+    overflow: hidden;
+    transition: all 0.5s;
+
+    img {
+        width: 80%;
+        aspect-ratio: 1/1;
+        object-fit: contain;
+        margin: 10% auto;
+    }
+
+    .actionIcon {
+        position: absolute;
+
+        font-size: 1.2rem;
+        // font-weight: 700;
+
+        &:hover {
+            cursor: pointer;
+            color: darken($color-primary, 10);
+        }
+    }
+
+    .quantityLabel {
+        position: absolute;
+        top: 0.1rem;
+        right: 0.4rem;
+        font-size: 1rem;
+    }
+
+    &.disabled {
+        cursor: auto;
+    }
+
+    &.Common {
+        @include insetShadow($color-common);
+        border: 2px solid darken($color-common, 10);
+    }
+
+    &.Rare {
+        @include insetShadow($color-rare);
+        border: 2px solid darken($color-rare, 10);
+    }
+
+    &.Epic {
+        @include insetShadow($color-epic);
+        border: 2px solid darken($color-epic, 10);
+    }
+
+    &.Mythical {
+        @include insetShadow($color-mythical);
+        border: 2px solid darken($color-mythical, 10);
+    }
+
+    &:hover,
+    &:focus {
+        background-color: rgba($color-dark, 0.1);
+    }
+
+    &:disabled {
+        cursor: auto;
+        background: rgba($color-grey, 0.8);
+    }
+
+    .shopItemOverlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: $color-light;
+        background-color: rgba($color-dark, 0.5);
+    }
+}

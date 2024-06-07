@@ -1,7 +1,7 @@
 import style from './ShopComponent.module.scss';
-import type { Item } from "../../common/api/.generated";
+import type { Item } from '../../common/api/.generated';
 import { useGameStore } from '../game/GameStore';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ToastService } from '../../common/services/ToastService';
 import LoadingOverlay from '../../common/components/LoadingOverlay';
 import { ShopService } from './ShopService';
@@ -24,11 +24,25 @@ const ShopComponent = ({ npcShop, onClose }: { npcShop: Item[]; onClose: () => v
         setLoading(false);
     };
 
-    const addToCheckout = (itemName: string, price: number, quantity: number) => {
-        setTotalCost(prevCost => prevCost + price);
-        setCheckout(prevCheckout => ({
+    const addToCheckout = (item: Item) => {
+        if (checkout[item.name] >= 99) {
+            return;
+        }
+        setTotalCost((prevCost) => prevCost + (item.price ?? 0));
+        setCheckout((prevCheckout) => ({
             ...prevCheckout,
-            [itemName]: quantity,
+            [item.name]: (prevCheckout[item.name] ?? 0) + 1,
+        }));
+    };
+
+    const removeFromCheckout = (item: Item) => {
+        if (checkout[item.name] <= 0) {
+            return;
+        }
+        setTotalCost((prevCost) => prevCost - (item.price ?? 0));
+        setCheckout((prevCheckout) => ({
+            ...prevCheckout,
+            [item.name]: prevCheckout[item.name] - 1,
         }));
     };
 
@@ -40,10 +54,10 @@ const ShopComponent = ({ npcShop, onClose }: { npcShop: Item[]; onClose: () => v
         try {
             const buyItemsDto = [];
             for (const [itemName, quantity] of Object.entries(checkout)) {
-                buyItemsDto.push({ name: itemName, quantity, npcName: npc.npcName })
+                buyItemsDto.push({ name: itemName, quantity, npcName: npc.npcName });
             }
             await ShopService.buyItems(buyItemsDto);
-            setGold(prevGold => prevGold - totalCost);
+            setGold((prevGold) => prevGold - totalCost);
             setTotalCost(0);
             setCheckout({});
             ToastService.success({ message: 'Items bought' });
@@ -55,11 +69,17 @@ const ShopComponent = ({ npcShop, onClose }: { npcShop: Item[]; onClose: () => v
 
     const buyDisabled = totalCost > gold;
 
+    const emptyItems = useMemo(() => {
+        const totalItems = npcShop.length;
+        const gridSize = 16;
+        const emptyItemsCount = Math.max(0, gridSize - totalItems);
+        return Array.from({ length: emptyItemsCount });
+    }, [npcShop]);
+
     return (
         <div className={style.shopViewOverlay}>
             <div className={style.shopView}>
                 {loading && <LoadingOverlay />}
-                <button className={style.closeShopButton} onClick={onClose}>x</button>
                 <div className={style.shopItems}>
                     {npcShop.map((shopItem, index) => (
                         <ShopItem
@@ -67,18 +87,30 @@ const ShopComponent = ({ npcShop, onClose }: { npcShop: Item[]; onClose: () => v
                             item={shopItem}
                             checkout={checkout}
                             addToCheckout={addToCheckout}
+                            removeFromCheckout={removeFromCheckout}
                         />
+                    ))}
+                    {emptyItems.map((_, index) => (
+                        <div key={`empty-${index}`} className={style.shopItemEmpty} />
                     ))}
                 </div>
                 <div className={style.shopPanel}>
-                    <button
-                        className={style.buyButton}
-                        onClick={buyAll}
-                        disabled={buyDisabled || !totalCost}
-                    >
-                        {!buyDisabled ? `Buy (${totalCost})` : 'Not enough gold'}
-                    </button>
-                    <div className={style.goldAmount}>Gold: {gold}</div>
+                    <div className={style.goldAmount}>
+                        <p>Gold: {gold}</p>
+                        <p>Total: {totalCost}</p>
+                        {buyDisabled && totalCost && <p className={style.errorLabel}>Not enough gold</p>}
+                    </div>
+                    <div>
+                        <button
+                            className={style.buyButton}
+                            onClick={buyAll}
+                            disabled={buyDisabled || !totalCost}>
+                            Purchase
+                        </button>
+                        <button className={style.closeShopButton} onClick={onClose}>
+                            Close
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

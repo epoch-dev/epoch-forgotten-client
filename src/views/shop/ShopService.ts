@@ -1,5 +1,5 @@
-import { ItemBuyDto } from "../../common/api/.generated";
-import { itemsClient, usersClient } from "../../common/api/client";
+import { ItemBuyDto } from '../../common/api/.generated';
+import { itemsClient, usersClient } from '../../common/api/client';
 
 export class ShopService {
     public static async getGold() {
