@@ -36,7 +36,7 @@ const ShopComponent = ({ npcShop, onClose }: { npcShop: Item[]; onClose: () => v
     };
 
     const removeFromCheckout = (item: Item) => {
-        if (checkout[item.name] <= 0) {
+        if (!checkout[item.name] || checkout[item.name] <= 0) {
             return;
         }
         setTotalCost((prevCost) => prevCost - (item.price ?? 0));

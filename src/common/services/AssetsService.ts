@@ -4,6 +4,7 @@ const ICONS = {
     EQUIPMENT: 'equipment-icon.svg',
     PLUS: 'plus-icon.svg',
     BLANK: 'blank-icon.png',
+    SHOP: 'shop-icon.svg',
 } as const;
 
 type IconName = keyof typeof ICONS;

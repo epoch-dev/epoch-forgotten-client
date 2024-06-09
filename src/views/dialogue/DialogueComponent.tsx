@@ -7,6 +7,7 @@ import { useGameStore } from '../game/GameStore';
 import { GameView } from '../game/types';
 import LoadingOverlay from '../../common/components/LoadingOverlay';
 import ShopComponent from '../shop/ShopComponent';
+import { AssetsService } from '../../common/services/AssetsService';
 
 const DialogueComponent = () => {
     const { npc, setView } = useGameStore();
@@ -104,12 +105,9 @@ const DialogueComponent = () => {
                             </button>
                         )}
                         {npcShop && (
-                            <>
-                                <hr />
-                                <button className={style.shopButton} onClick={() => setDisplayShop(true)}>
-                                    Shop
-                                </button>
-                            </>
+                            <button className={style.shopButton} onClick={() => setDisplayShop(true)}>
+                                <img src={AssetsService.getIcon('SHOP')} alt="shop" />
+                            </button>
                         )}
                     </div>
                 )
