@@ -7,6 +7,7 @@ import { useGameStore } from '../game/GameStore';
 import { GameView } from '../game/types';
 import LoadingOverlay from '../../common/components/LoadingOverlay';
 import ShopComponent from '../shop/ShopComponent';
+import { AssetsService } from '../../common/services/AssetsService';
 
 const DialogueComponent = () => {
     const { npc, setView } = useGameStore();
@@ -77,41 +78,40 @@ const DialogueComponent = () => {
 
     return (
         <div className={style.dialogueWrapper} onKeyDown={handleKeyPress} tabIndex={-1} ref={ref}>
-            {isLoading ? <LoadingOverlay /> : currentNode && (
-                <div className={style.dialogueItem}>
-                    {npcTitle && <div className={style.dialogueLabel}>{npcTitle}</div>}
-                    <p>
-                        {currentNode.author}: {currentNode.text}
-                    </p>
-                    {currentNode.options && (
-                        <>
-                            {currentNode.options.map((option, index) => (
-                                <button
-                                    key={option.id}
-                                    onClick={() => handleOptionClick(index)}
-                                    className={style.dialogueBtn}
-                                >
-                                    {index + 1}: {option.text}
-                                </button>
-                            ))}
-                        </>
-                    )}
-                    {showOkButton && (
-                        <button
-                            onClick={handleOkClick}
-                            className={style.dialogueBtn}
-                        >
-                            OK
-                        </button>
-                    )}
-                </div>
+            {isLoading ? (
+                <LoadingOverlay />
+            ) : (
+                currentNode && (
+                    <div className={style.dialogueItem}>
+                        {npcTitle && <div className={style.dialogueLabel}>{npcTitle}</div>}
+                        <p>
+                            {currentNode.author}: {currentNode.text}
+                        </p>
+                        {currentNode.options && (
+                            <>
+                                {currentNode.options.map((option, index) => (
+                                    <button
+                                        key={option.id}
+                                        onClick={() => handleOptionClick(index)}
+                                        className={style.dialogueBtn}>
+                                        {index + 1}: {option.text}
+                                    </button>
+                                ))}
+                            </>
+                        )}
+                        {showOkButton && (
+                            <button onClick={handleOkClick} className={style.dialogueBtn}>
+                                OK
+                            </button>
+                        )}
+                        {npcShop && (
+                            <button className={style.shopButton} onClick={() => setDisplayShop(true)}>
+                                <img src={AssetsService.getIcon('SHOP')} alt="shop" />
+                            </button>
+                        )}
+                    </div>
+                )
             )}
-            {npcShop && <button
-                className={style.shopButton}
-                onClick={() => setDisplayShop(true)}
-            >
-                Shop {/*todo: nice icon :)*/}
-            </button>}
         </div>
     );
 };

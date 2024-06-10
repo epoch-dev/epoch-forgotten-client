@@ -13,7 +13,7 @@
 
     .shopView {
         @include boxShadowSm;
-        background: rgba($color-light-grey, 0.65);
+        background: rgba($color-light-grey, 0.88);
         border-radius: 0.62rem;
         padding: 1.25rem;
         width: 90%;
@@ -21,144 +21,96 @@
         max-height: 32rem;
         overflow-y: auto;
         display: flex;
-        gap: 5rem;
+        justify-content: space-between;
+    }
+}
 
-        .closeShopButton {
-            position: absolute;
-            top: 0.62rem;
-            right: 0.62rem;
-            width: 2.5rem;
-            height: 2.5rem;
-            background: rgba($color-dark, 0.8);
-            border: 2px solid rgba($color-light, 0.8);
-            border-radius: 50%;
-            font-size: 1.25rem;
-            color: $color-light;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+.shopItems {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    text-align: center;
+    min-height: 24rem;
+
+    .shopItemEmpty {
+        width: 6rem;
+        height: 6rem;
+        position: relative;
+        border: 1px solid $color-dark;
+        border-radius: 1rem;
+        user-select: none;
+        overflow: hidden;
+        transition: all 0.5s;
+
+        &:hover {
+            cursor: auto;
+            background: rgba($color-grey, 0.2);
+        }
+    }
+}
+
+.shopPanel {
+    width: 14rem;
+    min-height: 24rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    .goldAmount {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: $color-dark;
+
+        p {
+            margin: 0;
+        }
+    }
+
+    .errorLabel {
+        font-size: 1rem;
+        color: $color-error;
+    }
+
+    .buyButton {
+        display: block;
+        width: 100%;
+        background: rgba($color-primary, 0.8);
+        color: $color-dark;
+        border: none;
+        padding: 0.3rem;
+        border-radius: 5px;
+        font-size: 1.2rem;
+        line-height: 1.7rem;
+
+        &:hover {
             cursor: pointer;
-
-            &:hover,
-            &:focus {
-                color: lighten($color-primary, 10);
-                background-color: rgba($color-dark, 0.9);
-                transform: scale(1.1);
-            }
+            color: lighten($color-primary, 10);
+            background-color: rgba($color-dark, 0.9);
         }
 
-        .shopItems {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(5rem, max-content));
-            gap: 1rem 3rem;
-            text-align: center;
-            min-height: 24rem;
-            width: 70%;
-
-            .shopItem {
-                position: relative;
-                border: 5px solid $color-common;
-                border-radius: 5px;
-                cursor: pointer;
-                user-select: none;
-
-                width: 8rem;
-                height: 8rem;
-
-                &.disabled {
-                    cursor: auto;
-                }
-
-                &.Common {
-                    @include insetShadow($color-common);
-                    border: 5px solid rgba($color-common, 0.7);
-                }
-
-                &.Rare {
-                    @include insetShadow($color-rare);
-                    border: 5px solid rgba($color-rare, 0.7);
-                }
-
-                &.Epic {
-                    @include insetShadow($color-epic);
-                    border: 5px solid rgba($color-epic, 0.7);
-                }
-
-                &.Mythical {
-                    @include insetShadow($color-mythical);
-                    border: 5px solid rgba($color-mythical, 0.7);
-                }
-
-                &:hover,
-                &:focus {
-                    color: lighten($color-primary, 10);
-                    background-color: rgba($color-dark, 0.9);
-                }
-
-                &:disabled {
-                    background: rgba($color-grey, 0.8);
-                    cursor: auto;
-                }
-
-                .shopItemImage {
-                    width: 100%;
-                    height: 100%;
-                    object-fit: contain;
-                }
-
-
-                .shopItemOverlay {
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    background-color: rgba(0, 0, 0, 0.5);
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                    align-items: center;
-                    color: white;
-                }
-            }
+        &:disabled {
+            cursor: not-allowed;
+            background: rgba($color-primary, 0.8);
+            color: $color-dark;
+            opacity: 0.7;
         }
+    }
 
-        .shopPanel {
-            position: sticky;
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-            top: 5rem;
+    .closeShopButton {
+        width: 100%;
+        margin-top: 1rem;
+        padding: 0.5rem;
+        border: 2px solid rgba($color-light, 0.8);
+        border-radius: 0.5rem;
+        font-size: 1.25rem;
+        color: $color-light;
+        background: rgba($color-dark, 0.8);
 
-            .buyButton {
-                background: rgba($color-primary, 0.8);
-                color: $color-dark;
-                border: none;
-                padding: 0.3rem;
-                border-radius: 5px;
-                cursor: pointer;
-                font-size: 1.2rem;
-                line-height: 1.7rem;
-
-                &:hover {
-                    color: lighten($color-primary, 10);
-                    background-color: rgba($color-dark, 0.9);
-                }
-                
-                &:disabled {
-                    background: rgba($color-grey, 0.8);
-                    cursor: auto;
-                }
-            }
-
-            .goldAmount {
-                font-size: 1.2rem;
-                font-weight: bold;
-                color: $color-dark;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
+        &:hover,
+        &:focus {
+            cursor: pointer;
+            color: lighten($color-primary, 10);
+            background-color: rgba($color-dark, 0.9);
         }
     }
 }

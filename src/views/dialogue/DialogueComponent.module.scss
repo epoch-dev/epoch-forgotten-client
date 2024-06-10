@@ -34,7 +34,7 @@
 
         .dialogueLabel {
             color: $color-light-grey;
-            font-size: 14px; 
+            font-size: 14px;
             line-height: 1;
         }
     }
@@ -51,17 +51,24 @@
         border-bottom: 1px solid $color-dark;
     }
 
+    hr {
+        margin: 1rem auto;
+    }
+
     .shopButton {
         @include btnEffects;
         position: absolute;
-        bottom: 2rem;
-        left: 2rem;
-        padding: 1.2rem;
+        top: 0.5rem;
+        right: 0.5rem;
+        width: 2rem;
+        padding: 0.25rem 0.5rem;
         border-radius: 0.5rem;
-        border: none;
-        background: none;
         color: $color-light;
-        background-color: rgba($color-dark, 0.85);
-        border-bottom: 1px solid $color-dark;
+        background: rgba($color-dark, 0.85);
+
+        img {
+            width: 1rem;
+            aspect-ratio: 1/1;
+        }
     }
 }
