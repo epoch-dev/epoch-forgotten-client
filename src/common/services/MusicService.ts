@@ -10,7 +10,6 @@ export class MusicService extends AudioService {
     constructor() {
         super();
         this.stopAllTracks();
-        this.loadTrack('battle.wav');
     }
 
     protected loadTrack(name: string) {
@@ -32,6 +31,11 @@ export class MusicService extends AudioService {
             this.loadTrack(name);
         }
         this.playUniqueVoice(name);
+        if (this.muted) {
+            this.mute();
+        } else {
+            this.unmute();
+        }
         this.currentPlaying?.track.volume(this.volume);
     }
 

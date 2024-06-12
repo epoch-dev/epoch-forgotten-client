@@ -13,6 +13,7 @@ export abstract class AudioService {
     protected readonly tracks: { [key: string]: Howl } = {};
     protected abstract currentPlaying: PlayingTrack | null;
     protected volume: number = 1;
+    protected muted: boolean = false;
 
     protected abstract loadTrack(name: string): void;
 
@@ -77,10 +78,12 @@ export abstract class AudioService {
     }
 
     public mute() {
+        this.muted = true;
         this.currentPlaying?.track.mute(true);
     }
 
     public unmute() {
+        this.muted = false;
         this.currentPlaying?.track.mute(false);
     }
 }
