@@ -106,7 +106,7 @@ const DialogueComponent = () => {
                         )}
                         {npcShop && (
                             <button className={style.shopButton} onClick={() => setDisplayShop(true)}>
-                                <img src={AssetsService.getIcon('SHOP')} alt="shop" />
+                                <img src={AssetsService.getIcon('SHOP')} alt='shop' />
                             </button>
                         )}
                     </div>

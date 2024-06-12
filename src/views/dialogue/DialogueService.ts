@@ -92,10 +92,17 @@ export class DialogueService {
 
     private async showEffects() {
         for (const effects of this.effectsAll) {
-            if (effects.quest) {
-                SoundService.getInstance().newQuest();
-                const quest = (await questsClient.getQuest(effects.quest.name, effects.quest.stageId)).data;
-                ToastService.success({ message: 'Started a new quest! ' + `"${quest.label}"` });
+            if (effects.quests) {
+                for (const questEffect of effects.quests) {
+                    SoundService.getInstance().newQuest();
+                    const quest = (await questsClient.getQuest(questEffect.name, questEffect.stageId)).data;
+                    console.log(questEffect)
+                    if (questEffect.stageId == 'stage1' && questEffect.state == 'In-progress') {
+                        ToastService.success({ message: 'Started a new quest! ' + `"${quest.label}"` });
+                    } else if (questEffect.stageId != 'stage1') {
+                        ToastService.success({ message: 'New quest stage! ' + `"${quest.label}"` });
+                    }
+                }
             }
             if (effects.items) {
                 ToastService.success({ message: 'Received new items!' });
