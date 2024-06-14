@@ -1,6 +1,6 @@
 import { ChangeEvent, useState } from 'react';
 import style from './MusicPanel.module.scss';
-import { MusicService } from '../../common/services/MusicService';
+import { MusicService } from '../services/MusicService';
 
 const MusicPanel = () => {
     const musicService = MusicService.getInstance();
