@@ -55,8 +55,6 @@ export const EquipmentComponent = () => {
             .map((e) => e?.weight ?? 0)
             .reduce((sum, curr) => sum + curr, 0);
 
-    console.log(getEquipmentWeight());
-
     return (
         <section style={{ display: 'flex', justifyContent: 'space-between' }}>
             {eqSelectionData && <EquipmentSelectionComponent {...eqSelectionData} />}
