@@ -23,7 +23,7 @@ export const DevComponent = () => {
     const addItem = async () => {
         await itemsClient.addItem({
             name: itemNameRef.current!.value,
-            quantity: +itemQuantityRef.current!.value,
+            quantity: +itemQuantityRef.current!.value || 1,
         });
         ToastService.success({ message: `${itemNameRef.current!.value} added` });
     };

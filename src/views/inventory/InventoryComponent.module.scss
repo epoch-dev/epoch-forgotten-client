@@ -1,0 +1,24 @@
+@import '../../common/styles/variables.scss';
+@import '../../common/styles/mixins.scss';
+
+.itemsWrapper {
+    max-width: 100%;
+    margin: auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    text-align: center;
+
+    .item {
+        position: relative;
+    }
+
+    .quantityLabel {
+        position: absolute;
+        top: 0.25rem;
+        right: 0.25rem;
+        margin: 0;
+        line-height: 1;
+    }
+}

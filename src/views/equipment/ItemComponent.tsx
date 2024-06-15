@@ -1,17 +1,30 @@
 import style from './ItemComponent.module.scss';
-import { CharacterClass, ItemDto, ItemRarity, ItemType } from '../../common/api/.generated';
+import { CharacterClass, Item, ItemDto, ItemRarity, ItemType } from '../../common/api/.generated';
 import { TooltipComponent } from '../../common/components/TooltipComponent';
 import { AssetsService } from '../../common/services/AssetsService';
 
-export const ItemComponent = ({ item }: { item: ItemDto }) => {
+type ItemComponentProps = {
+    item: ItemDto | Item;
+    itemStyle?: {
+        width?: string;
+        height?: string;
+        borderRadius?: string;
+    };
+};
+
+export const ItemComponent = ({ item, itemStyle }: ItemComponentProps) => {
     return (
-        <TooltipComponent hint={renderTooltip({ item })} config={{ width: '16rem' }}>
-            <img src={AssetsService.getItemUri(item.imageUri)} alt={item.label} draggable={false} />
-        </TooltipComponent>
+        <div className={`${style.itemWrapper} ${style[item.rarity]}`} style={{ ...itemStyle }}>
+            <TooltipComponent hint={<ItemTooltip item={item} />} config={{ width: '16rem' }}>
+                <img src={AssetsService.getItemUri(item.imageUri)} alt={item.label} draggable={false} />
+            </TooltipComponent>
+        </div>
     );
 };
 
-const renderTooltip = ({ item }: { item: ItemDto }) => {
+const ItemTooltip = ({ item }: { item: ItemDto | Item }) => {
+    const isShopItem = !('id' in item);
+
     const getRarityLabel = (rarity: ItemRarity) => {
         return <div className={`${style.rarityLabel} ${rarity.toLowerCase()}`}>{item.rarity}</div>;
     };
@@ -91,6 +104,13 @@ const renderTooltip = ({ item }: { item: ItemDto }) => {
                     <br />
                     <i>{item.description}</i>
                 </p>
+            )}
+
+            {isShopItem && (
+                <>
+                    <hr />
+                    <p className="epic bold">Price: {item.price}</p>
+                </>
             )}
         </section>
     );

@@ -40,14 +40,14 @@ export const SkillsComponent = () => {
                     alt={character.name}
                     draggable={false}
                 />
-                <hr />
                 <AttributeComponent label="Health" amount={character.statistics.health} name={'health'} />
                 <AttributeComponent label="Mana" amount={character.statistics.mana} name={'mana'} />
+                <hr />
                 <AttributeComponent label="Strength" amount={character.attributes.str} name={'str'} />
                 <AttributeComponent label="Dexterity" amount={character.attributes.dex} name={'dex'} />
                 <AttributeComponent label="Poi" amount={character.attributes.poi} name={'poi'} />
                 <AttributeComponent label="Arcana" amount={character.attributes.arc} name={'arc'} />
-                <hr />
+                <br />
                 <AttributeComponent label="Attribute points:" amount={character.attributePoints} />
                 <AttributeComponent label="Skill points:" amount={character.skillPoints} />
             </div>

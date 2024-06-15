@@ -72,15 +72,17 @@ export const EquipmentSelectionComponent = ({
                 <p className="subtitle dark" style={{ marginBottom: '2rem' }}>
                     Select new <b>{itemLabel}</b> to equip
                 </p>
-                {items.map((item) => (
-                    <div
-                        onClick={() => equipItem(item)}
-                        key={item.id}
-                        className={`${style.itemItem} ${item.characterId ? style.itemDisabled : ''}`}>
-                        <ItemComponent item={item} />
-                        <p>{item.label}</p>
-                    </div>
-                ))}
+                <div className={style.itemsWrapper}>
+                    {items.map((item) => (
+                        <div
+                            onClick={() => equipItem(item)}
+                            key={item.id}
+                            className={`${style.itemItem} ${item.characterId ? style.itemDisabled : ''}`}>
+                            <ItemComponent item={item} itemStyle={{ width: '3rem', height: '3rem' }} />
+                            <p>{item.label}</p>
+                        </div>
+                    ))}
+                </div>
                 {currentItem && (
                     <button onClick={unEquipItem} className="modalCloseBtn" style={{ marginTop: '2rem' }}>
                         Unequip

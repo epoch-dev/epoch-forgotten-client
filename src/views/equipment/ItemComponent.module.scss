@@ -1,3 +1,45 @@
+@import '../../common/styles/variables.scss';
+@import '../../common/styles/mixins.scss';
+
+.itemWrapper {
+    width: 4rem;
+    height: 4rem;
+    max-width: 100%;
+    max-height: 100%;
+
+    &.Common {
+        @include insetShadow($color-common);
+        border: 2px solid darken($color-common, 10);
+    }
+
+    &.Rare {
+        @include insetShadow($color-rare);
+        border: 2px solid darken($color-rare, 10);
+    }
+
+    &.Unique {
+        @include insetShadow($color-unique);
+        border: 1px solid darken($color-unique, 10);
+    }
+
+    &.Epic {
+        @include insetShadow($color-epic);
+        border: 2px solid darken($color-epic, 10);
+    }
+
+    &.Mythical {
+        @include insetShadow($color-mythical);
+        border: 2px solid darken($color-mythical, 10);
+    }
+
+    img {
+        width: 90%;
+        margin: 5%;
+        object-fit: contain;
+        aspect-ratio: 1/1;
+    }
+}
+
 .itemTooltip {
     p {
         margin: 0;

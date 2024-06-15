@@ -22,14 +22,11 @@ const JournalComponent = () => {
     }
 
     return (
-        <>
-            <h1 className={style.header}>Journal</h1>
-            <div className={style.questsWrapper}>
-                {quests.map((quest) => (
-                    <QuestItem key={quest.label} quest={quest} />
-                ))}
-            </div>
-        </>
+        <section className={style.questsWrapper}>
+            {quests.map((quest) => (
+                <QuestItem key={quest.label} quest={quest} />
+            ))}
+        </section>
     );
 };
 
