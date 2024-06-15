@@ -27,17 +27,21 @@
 }
 
 .modalCloseBtn {
-    width: 100%;
-    padding: 0.7rem;
-    font-size: 20px;
-    background: $color-primary;
-    border: 2px solid $color-primary;
+    width: 80%;
+    margin: auto 10%;
+    padding: 0.5rem;
+    font-size: 16px;
+    font-weight: 500;
+    color: $color-light;
+    background: $color-dark;
+    border-bottom: 2px solid $color-primary;
     border-radius: 0.7rem;
 
     &:hover {
+        @include boxShadowSm();
         cursor: pointer;
-        background: $color-light;
-        color: darken($color-primary, 10);
-        border: 2px solid darken($color-primary, 10);
+        color: lighten($color-primary, 10);
+        background: darken($color-dark, 10);
+        border-bottom: 2px solid lighten($color-primary, 10);
     }
 }

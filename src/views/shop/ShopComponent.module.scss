@@ -74,18 +74,21 @@
     .buyButton {
         display: block;
         width: 100%;
-        background: rgba($color-primary, 0.8);
-        color: $color-dark;
-        border: none;
         padding: 0.3rem;
         border-radius: 5px;
         font-size: 1.2rem;
         line-height: 1.7rem;
+        color: $color-dark;
+        background: lighten($color-primary, 10);
+        border-bottom: 2px solid $color-dark;
+        border-radius: 0.7rem;
 
         &:hover {
+            @include boxShadowSm();
             cursor: pointer;
-            color: lighten($color-primary, 10);
-            background-color: rgba($color-dark, 0.9);
+            color: darken($color-dark, 10);
+            background: lighten($color-primary, 20);
+            border-bottom: 2px solid darken($color-dark, 10);
         }
 
         &:disabled {
@@ -100,17 +103,19 @@
         width: 100%;
         margin-top: 1rem;
         padding: 0.5rem;
-        border: 2px solid rgba($color-light, 0.8);
         border-radius: 0.5rem;
         font-size: 1.25rem;
         color: $color-light;
-        background: rgba($color-dark, 0.8);
+        background: $color-dark;
+        border-bottom: 2px solid $color-primary;
+        border-radius: 0.7rem;
 
-        &:hover,
-        &:focus {
+        &:hover {
+            @include boxShadowSm();
             cursor: pointer;
             color: lighten($color-primary, 10);
-            background-color: rgba($color-dark, 0.9);
+            background: darken($color-dark, 10);
+            border-bottom: 2px solid lighten($color-primary, 10);
         }
     }
 }

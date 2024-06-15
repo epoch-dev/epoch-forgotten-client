@@ -1,3 +1,4 @@
+import style from './GameComponent.module.scss';
 import { ScenesComponent } from '../scenes/ScenesComponent';
 import { GameView } from './types';
 import { PartyComponent } from '../party/PartyComponent';
@@ -12,7 +13,7 @@ import { DevComponent } from '../_dev/DevComponent';
 import { EquipmentComponent } from '../equipment/EquipmentComponent';
 import JournalComponent from '../journal/JournalComponent';
 import { MusicService } from '../../common/services/MusicService';
-import MusicPanel from '../music/MusicPanel';
+import MusicPanel from '../../common/components/MusicPanel';
 
 export const GameComponent = () => {
     const navigate = useNavigate();
@@ -20,7 +21,8 @@ export const GameComponent = () => {
 
     const musicService = MusicService.getInstance();
     const canNavigate = view !== GameView.Battle && view !== GameView.Intro;
-    const overflowHidden = (view === GameView.World || view === GameView.Dialogue) ? { overflow: 'hidden' } : {};
+    const overflowHidden =
+        view === GameView.World || view === GameView.Dialogue ? { overflow: 'hidden' } : {};
 
     const handleSignout = () => {
         StorageService.clear();
@@ -31,7 +33,7 @@ export const GameComponent = () => {
 
     return (
         <>
-            <main className="contentWrapper" style={{ ...overflowHidden }}>
+            <main className={style.contentWrapper} style={{ ...overflowHidden }}>
                 <ScenesComponent />
                 {view === GameView._Dev && <DevComponent />}
                 {view === GameView.Party && <PartyComponent />}
@@ -43,26 +45,26 @@ export const GameComponent = () => {
                 {view === GameView.Journal && <JournalComponent />}
             </main>
             {canNavigate && (
-                <nav className="navWrapper">
-                    <button onClick={() => setView(GameView.World)} className="navItem">
+                <nav className={style.navWrapper}>
+                    <button onClick={() => setView(GameView.World)} className={style.navItem}>
                         World
                     </button>
-                    <button onClick={() => setView(GameView.Party)} className="navItem">
+                    <button onClick={() => setView(GameView.Party)} className={style.navItem}>
                         Party
                     </button>
-                    <button onClick={() => setView(GameView.Journal)} className="navItem">
+                    <button onClick={() => setView(GameView.Journal)} className={style.navItem}>
                         Journal
                     </button>
-                    <button onClick={handleSignout} className="navItem">
+                    <button onClick={handleSignout} className={style.navItem}>
                         Signout
-                    </button>
-                    <button onClick={() => setView(GameView._Dev)} className="navItem">
-                        _Dev
                     </button>
                 </nav>
             )}
             <aside>
                 <MusicPanel />
+                <button onClick={() => setView(GameView._Dev)} className={style.navItemDev}>
+                    _Dev
+                </button>
             </aside>
         </>
     );
