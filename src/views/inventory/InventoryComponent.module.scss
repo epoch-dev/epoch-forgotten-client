@@ -1,0 +1,49 @@
+@import '../../common/styles/variables.scss';
+@import '../../common/styles/mixins.scss';
+
+.goldLabel {
+    @include textShadow($color-light);
+    width: 60rem;
+    margin: 0.25rem auto 1.25rem auto;
+    font-size: 24px;
+    font-weight: 600;
+
+    b {
+        color: darken($color-epic, 30);
+    }
+}
+
+.itemsWrapper {
+    width: 59.8rem;
+    max-width: 100%;
+    margin: auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: left;
+    gap: 4px;
+    padding: 2px;
+    text-align: center;
+    border: 2px dashed darken($color-primary, 20);
+
+    .item {
+        @include insetShadow($color-primary);
+        width: 4rem;
+        height: 4rem;
+        position: relative;
+        border: 1px solid darken($color-primary, 20);
+
+        &:hover {
+            background: rgba(darken($color-primary, 20), 0.1);
+        }
+    }
+
+    .quantityLabel {
+        @include textShadow($color-light);
+        position: absolute;
+        top: 0.25rem;
+        right: 0.25rem;
+        margin: 0;
+        line-height: 1;
+        font-weight: 700;
+    }
+}

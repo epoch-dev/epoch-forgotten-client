@@ -33,7 +33,7 @@ export const useGameStore = create<GameStore>()((set) => ({
         set((state) => {
             const musicUri = state.scene?.musicUri;
             if (view === GameView.World && musicUri) {
-                MusicService.getInstance().play(musicUri)
+                MusicService.getInstance().play(musicUri);
             }
             if (state.scene) {
                 state.scene.blockMovement = view !== GameView.World;

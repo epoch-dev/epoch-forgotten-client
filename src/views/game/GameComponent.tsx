@@ -14,6 +14,7 @@ import { EquipmentComponent } from '../equipment/EquipmentComponent';
 import JournalComponent from '../journal/JournalComponent';
 import { MusicService } from '../../common/services/MusicService';
 import MusicPanel from '../../common/components/MusicPanel';
+import { InventoryComponent } from '../inventory/InventoryComponent';
 
 export const GameComponent = () => {
     const navigate = useNavigate();
@@ -43,6 +44,7 @@ export const GameComponent = () => {
                 {view === GameView.Dialogue && <DialogueComponent />}
                 {view === GameView.Intro && <IntroComponent />}
                 {view === GameView.Journal && <JournalComponent />}
+                {view === GameView.Inventory && <InventoryComponent />}
             </main>
             {canNavigate && (
                 <nav className={style.navWrapper}>
@@ -51,6 +53,9 @@ export const GameComponent = () => {
                     </button>
                     <button onClick={() => setView(GameView.Party)} className={style.navItem}>
                         Party
+                    </button>
+                    <button onClick={() => setView(GameView.Inventory)} className={style.navItem}>
+                        Inventory
                     </button>
                     <button onClick={() => setView(GameView.Journal)} className={style.navItem}>
                         Journal

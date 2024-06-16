@@ -8,4 +8,5 @@ export enum GameView {
     Dialogue,
     Intro,
     Journal,
+    Inventory,
 }

@@ -1,17 +1,30 @@
 import style from './ItemComponent.module.scss';
-import { CharacterClass, ItemDto, ItemRarity, ItemType } from '../../common/api/.generated';
+import { CharacterClass, Item, ItemDto, ItemRarity, ItemType } from '../../common/api/.generated';
 import { TooltipComponent } from '../../common/components/TooltipComponent';
 import { AssetsService } from '../../common/services/AssetsService';
 
-export const ItemComponent = ({ item }: { item: ItemDto }) => {
+type ItemComponentProps = {
+    item: ItemDto | Item;
+    itemStyle?: {
+        width?: string;
+        height?: string;
+        borderRadius?: string;
+    };
+};
+
+export const ItemComponent = ({ item, itemStyle }: ItemComponentProps) => {
     return (
-        <TooltipComponent hint={renderTooltip({ item })} config={{ width: '16rem' }}>
-            <img src={AssetsService.getItemUri(item.imageUri)} alt={item.label} draggable={false} />
-        </TooltipComponent>
+        <div className={`${style.itemWrapper} ${style[item.rarity]}`} style={{ ...itemStyle }}>
+            <TooltipComponent hint={<ItemTooltip item={item} />} config={{ width: '16rem' }}>
+                <img src={AssetsService.getItemUri(item.imageUri)} alt={item.label} draggable={false} />
+            </TooltipComponent>
+        </div>
     );
 };
 
-const renderTooltip = ({ item }: { item: ItemDto }) => {
+const ItemTooltip = ({ item }: { item: ItemDto | Item }) => {
+    const isShopItem = !('id' in item);
+
     const getRarityLabel = (rarity: ItemRarity) => {
         return <div className={`${style.rarityLabel} ${rarity.toLowerCase()}`}>{item.rarity}</div>;
     };
@@ -59,7 +72,6 @@ const renderTooltip = ({ item }: { item: ItemDto }) => {
             {getRarityLabel(item.rarity)}
 
             <hr />
-
             <p>
                 Type: <b>{getTypeLabel(item.type)}</b>
             </p>
@@ -68,7 +80,6 @@ const renderTooltip = ({ item }: { item: ItemDto }) => {
             </p>
 
             {item.stats && <hr />}
-
             {item.stats?.pAtk && <p>{getNumberLabel(item.stats.pAtk)} P. Attack</p>}
             {item.stats?.mAtk && <p>{getNumberLabel(item.stats.mAtk)} M. Attack</p>}
             {item.stats?.pDef && <p>{getNumberLabel(item.stats.pDef)} P. Defense</p>}
@@ -81,16 +92,24 @@ const renderTooltip = ({ item }: { item: ItemDto }) => {
             {item.stats?.poi && <p>{getNumberLabel(item.stats.poi)} Poi</p>}
             {item.stats?.arc && <p>{getNumberLabel(item.stats.poi)} Arcana</p>}
 
-            <hr />
-
+            {(item.reqLvl || item.reqClass) && <hr />}
             {item.reqLvl && <p>Required level: {item.reqLvl}</p>}
             {item.reqClass && <p>Required class: {getClassLabel(item.reqClass)}</p>}
 
             {item.description && (
-                <p>
-                    <br />
-                    <i>{item.description}</i>
-                </p>
+                <>
+                    <hr />
+                    <p>
+                        <i>{item.description}</i>
+                    </p>
+                </>
+            )}
+
+            {isShopItem && (
+                <>
+                    <hr />
+                    <p className="epic bold">Price: {item.price}</p>
+                </>
             )}
         </section>
     );

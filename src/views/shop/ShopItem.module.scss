@@ -11,13 +11,6 @@
     overflow: hidden;
     transition: all 0.5s;
 
-    img {
-        width: 80%;
-        aspect-ratio: 1/1;
-        object-fit: contain;
-        margin: 10% auto;
-    }
-
     .actionIcon {
         position: absolute;
         font-size: 1.2rem;
@@ -37,26 +30,6 @@
 
     &.disabled {
         cursor: auto;
-    }
-
-    &.Common {
-        @include insetShadow($color-common);
-        border: 2px solid darken($color-common, 10);
-    }
-
-    &.Rare {
-        @include insetShadow($color-rare);
-        border: 2px solid darken($color-rare, 10);
-    }
-
-    &.Epic {
-        @include insetShadow($color-epic);
-        border: 2px solid darken($color-epic, 10);
-    }
-
-    &.Mythical {
-        @include insetShadow($color-mythical);
-        border: 2px solid darken($color-mythical, 10);
     }
 
     &:hover,
