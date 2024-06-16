@@ -72,7 +72,6 @@ const ItemTooltip = ({ item }: { item: ItemDto | Item }) => {
             {getRarityLabel(item.rarity)}
 
             <hr />
-
             <p>
                 Type: <b>{getTypeLabel(item.type)}</b>
             </p>
@@ -81,7 +80,6 @@ const ItemTooltip = ({ item }: { item: ItemDto | Item }) => {
             </p>
 
             {item.stats && <hr />}
-
             {item.stats?.pAtk && <p>{getNumberLabel(item.stats.pAtk)} P. Attack</p>}
             {item.stats?.mAtk && <p>{getNumberLabel(item.stats.mAtk)} M. Attack</p>}
             {item.stats?.pDef && <p>{getNumberLabel(item.stats.pDef)} P. Defense</p>}
@@ -94,16 +92,17 @@ const ItemTooltip = ({ item }: { item: ItemDto | Item }) => {
             {item.stats?.poi && <p>{getNumberLabel(item.stats.poi)} Poi</p>}
             {item.stats?.arc && <p>{getNumberLabel(item.stats.poi)} Arcana</p>}
 
-            <hr />
-
+            {(item.reqLvl || item.reqClass) && <hr />}
             {item.reqLvl && <p>Required level: {item.reqLvl}</p>}
             {item.reqClass && <p>Required class: {getClassLabel(item.reqClass)}</p>}
 
             {item.description && (
-                <p>
-                    <br />
-                    <i>{item.description}</i>
-                </p>
+                <>
+                    <hr />
+                    <p>
+                        <i>{item.description}</i>
+                    </p>
+                </>
             )}
 
             {isShopItem && (
