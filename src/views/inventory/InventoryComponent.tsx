@@ -30,8 +30,6 @@ export const InventoryComponent = () => {
         return Array.from({ length: emptyItemsCount });
     }, [items]);
 
-    console.log(emptyItems);
-
     return (
         <section>
             <div className={style.goldLabel}>
