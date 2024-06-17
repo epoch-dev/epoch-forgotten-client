@@ -49,17 +49,21 @@ export class SoundService extends AudioService {
 
     public equip(itemType?: ItemType) {
         if (itemType === 'Charm') {
-            this.equipCharm();
+            this.play('equip-charm.ogg');
         } else {
             this.play('equip.ogg');
         }
     }
 
-    private equipCharm() {
-        this.play('equip-charm.ogg');
-    }
-
     public unequip() {
         this.play('unequip.ogg');
+    }
+
+    public victory() {
+        this.play('victory.mp3');
+    }
+
+    public defeat() {
+        this.play('defeat.mp3');
     }
 }

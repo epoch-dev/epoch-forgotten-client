@@ -1,5 +1,5 @@
 import style from './BattleComponent.module.scss';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
     BattleCharacter,
     BattleMoveCommand,
@@ -18,6 +18,7 @@ import { ScenesService } from '../scenes/ScenesService';
 import { AssetsService } from '../../common/services/AssetsService';
 import { BattleResultComponent } from './BattleResultComponent';
 import { MusicService } from '../../common/services/MusicService';
+import { SoundService } from '../../common/services/SoundService';
 
 const ANIMATION_TIME_MS = 1000;
 
@@ -34,16 +35,17 @@ export const BattleComponent = () => {
     const [defeat, setDefeat] = useState(false);
 
     const characterCommand = commands.find((c) => c.characterId === selectedCharacter?.id);
-    const musicService = MusicService.getInstance();
+    const musicService = useMemo(() => MusicService.getInstance(), []);
+    const soundService = useMemo(() => SoundService.getInstance(), []);
 
     const hint =
         victory || defeat
             ? ''
             : !selectedCharacter
-                ? 'Select character'
-                : !selectedSkill
-                    ? 'Select skill'
-                    : 'Select target';
+            ? 'Select character'
+            : !selectedSkill
+            ? 'Select skill'
+            : 'Select target';
 
     useEffect(() => {
         void loadScene();
@@ -121,9 +123,11 @@ export const BattleComponent = () => {
 
         if (turnResult.data.victory) {
             setVictory(turnResult.data.victory);
+            soundService.victory();
         }
         if (turnResult.data.defeat) {
             setDefeat(true);
+            soundService.defeat();
         }
     };
 
@@ -184,11 +188,12 @@ export const BattleComponent = () => {
                                     }>
                                     <button
                                         onClick={() => setSelectedSkill(skill)}
-                                        className={`${style.skillItem} ${selectedSkill?.name === skill.name ||
+                                        className={`${style.skillItem} ${
+                                            selectedSkill?.name === skill.name ||
                                             (!selectedSkill && characterCommand?.skillName === skill.name)
-                                            ? style.skillActive
-                                            : ''
-                                            }`}>
+                                                ? style.skillActive
+                                                : ''
+                                        }`}>
                                         {skill.label}
                                     </button>
                                 </TooltipComponent>
