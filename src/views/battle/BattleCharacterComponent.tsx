@@ -5,6 +5,10 @@ import { AssetsService } from '../../common/services/AssetsService';
 import { ProgressBarComponent } from '../../common/components/ProgressBarComponent';
 import { generateRandomId } from '../../common/utils';
 import { CSS_COLOR } from '../../common/styles';
+import { useEffect } from 'react';
+import { SoundService } from '../../common/services/SoundService';
+
+const soundService = SoundService.getInstance();
 
 export const BattleCharacterComponent = ({
     character,
@@ -19,6 +23,12 @@ export const BattleCharacterComponent = ({
     animatedSkill: BattleMoveResult | undefined;
     onClick: () => void;
 }) => {
+    useEffect(() => {
+        if (animatedSkill && animatedSkill.characterId === character.id) {
+            soundService.play(`skills/${animatedSkill.skillSoundUri}`);
+        }
+    }, [animatedSkill]);
+
     const characterClass = `${style.characterItem} ${isTargeted ? style.targetActive : ''} ${
         isSelected ? style.characterActive : ''
     } ${!character.isAlive ? style.characterDead : ''}`;
