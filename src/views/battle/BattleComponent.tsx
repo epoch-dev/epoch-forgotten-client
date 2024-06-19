@@ -1,5 +1,5 @@
 import style from './BattleComponent.module.scss';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     BattleCharacter,
     BattleMoveCommand,
@@ -21,6 +21,8 @@ import { MusicService } from '../../common/services/MusicService';
 import { SoundService } from '../../common/services/SoundService';
 
 const ANIMATION_TIME_MS = 1000;
+const musicService = MusicService.getInstance();
+const soundService = SoundService.getInstance();
 
 export const BattleComponent = () => {
     const { setView } = useGameStore();
@@ -35,8 +37,6 @@ export const BattleComponent = () => {
     const [defeat, setDefeat] = useState(false);
 
     const characterCommand = commands.find((c) => c.characterId === selectedCharacter?.id);
-    const musicService = useMemo(() => MusicService.getInstance(), []);
-    const soundService = useMemo(() => SoundService.getInstance(), []);
 
     const hint =
         victory || defeat
