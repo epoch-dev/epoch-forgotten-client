@@ -16,27 +16,32 @@ export default class TileRenderer {
         this.tiles = [];
         this.tileMap.clear();
 
-        tiles.forEach(tile => {
+        tiles.forEach((tile) => {
             const key = `${tile.position.x},${tile.position.y}`;
             this.tileMap.set(key, tile);
         });
 
-        tiles.forEach(tile => {
+        tiles.forEach((tile) => {
             switch (tile.type) {
                 case SceneTileType.Route:
-                case SceneTileType.Collision:
+                case SceneTileType.Collision: {
                     if (this.isBorderingDifferentType(tile)) {
+                        const rect = this.getTileRect({ tile, isBorder: true });
+                        this.tiles.push({ ...tile, spriteRef: rect });
+                    } else {
                         const rect = this.getTileRect({ tile });
                         this.tiles.push({ ...tile, spriteRef: rect });
                     }
                     break;
+                }
                 case SceneTileType.Passage:
                 case SceneTileType.Quest:
                 case SceneTileType.Npc:
-                case SceneTileType.Encounter:
+                case SceneTileType.Encounter: {
                     const rect = this.getTileRect({ tile });
                     this.tiles.push({ ...tile, spriteRef: rect });
                     break;
+                }
                 case SceneTileType.SafeRoute:
                     break;
             }
@@ -49,24 +54,36 @@ export default class TileRenderer {
             this.getTileAt(x - TILE_SIZE, y),
             this.getTileAt(x + TILE_SIZE, y),
             this.getTileAt(x, y - TILE_SIZE),
-            this.getTileAt(x, y + TILE_SIZE)
+            this.getTileAt(x, y + TILE_SIZE),
         ];
-        return neighbors.some(neighbor => neighbor && neighbor.type !== tile.type);
+        return neighbors.some((neighbor) => neighbor && neighbor.type !== tile.type);
     }
 
     private getTileAt(x: number, y: number) {
         return this.tileMap.get(`${x},${y}`);
     }
 
-    private getTileRect({ tile }: { tile: SceneTileDto }) {
+    private getTileRect({ tile, isBorder }: { tile: SceneTileDto; isBorder?: boolean }) {
         let rect: Phaser.GameObjects.Rectangle;
         switch (tile.type) {
             case SceneTileType.Route:
-                return this.scene.add.circle(tile.position.x, tile.position.y, 4.5, 0xffa500, 0.25);
+                return this.scene.add.circle(
+                    tile.position.x,
+                    tile.position.y,
+                    4.75,
+                    0xff2222,
+                    isBorder ? 0.25 : 0.1,
+                );
             case SceneTileType.SafeRoute:
-                return this.scene.add.rectangle(tile.position.x, tile.position.y, 9, 9, 0x22ddaa, 0.1);
+                return this.scene.add.rectangle(tile.position.x, tile.position.y, 9, 9, 0x22ddaa, 0.2);
             case SceneTileType.Collision:
-                return this.scene.add.circle(tile.position.x, tile.position.y, 4.5, 0x000000, 0.2);
+                return this.scene.add.circle(
+                    tile.position.x,
+                    tile.position.y,
+                    4.75,
+                    0x000000,
+                    isBorder ? 0.33 : 0.1,
+                );
             case SceneTileType.Passage:
                 return this.scene.add.rectangle(tile.position.x, tile.position.y, 9, 9, 0x90ee90, 0.7);
             case SceneTileType.Quest:
@@ -87,7 +104,8 @@ export default class TileRenderer {
                 rect = this.scene.add.rectangle(tile.position.x, tile.position.y, 9, 9, 0xff0000, 0.7);
                 this.scene.tweens.add({
                     targets: rect,
-                    alpha: { from: 0.5, to: 0.9 },
+                    alpha: { from: 0.6, to: 0.9 },
+                    scale: 1.25,
                     yoyo: true,
                     repeat: -1,
                     duration: 1000,
