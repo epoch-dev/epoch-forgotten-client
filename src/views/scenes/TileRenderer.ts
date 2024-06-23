@@ -66,28 +66,22 @@ export default class TileRenderer {
     private getTileRect({ tile, isBorder }: { tile: SceneTileDto; isBorder?: boolean }) {
         let rect: Phaser.GameObjects.Rectangle;
         switch (tile.type) {
-            case SceneTileType.Route:
-                return this.scene.add.circle(
-                    tile.position.x,
-                    tile.position.y,
-                    4.75,
-                    0xff2222,
-                    isBorder ? 0.25 : 0.1,
-                );
+            case SceneTileType.Route: {
+                const size = isBorder ? 1 : 0.5;
+                rect = this.scene.add.rectangle(tile.position.x, tile.position.y, size, size, 0xdd1331, 1);
+                break;
+            }
             case SceneTileType.SafeRoute:
-                return this.scene.add.rectangle(tile.position.x, tile.position.y, 9, 9, 0x22ddaa, 0.2);
-            case SceneTileType.Collision:
-                return this.scene.add.circle(
-                    tile.position.x,
-                    tile.position.y,
-                    4.75,
-                    0x000000,
-                    isBorder ? 0.33 : 0.1,
-                );
+                break;
+            case SceneTileType.Collision: {
+                const size = isBorder ? 1 : 0.5;
+                rect = this.scene.add.rectangle(tile.position.x, tile.position.y, size, size, 0x121212, 1);
+                break;
+            }
             case SceneTileType.Passage:
-                return this.scene.add.rectangle(tile.position.x, tile.position.y, 9, 9, 0x90ee90, 0.7);
+                return this.scene.add.rectangle(tile.position.x, tile.position.y, 8, 8, 0x90ee90, 0.7);
             case SceneTileType.Quest:
-                rect = this.scene.add.rectangle(tile.position.x, tile.position.y, 9, 9, 0xffff00, 0.7);
+                rect = this.scene.add.rectangle(tile.position.x, tile.position.y, 8, 8, 0xffff00, 0.7);
                 this.scene.tweens.add({
                     targets: rect,
                     alpha: { from: 0.5, to: 0.9 },
@@ -95,13 +89,13 @@ export default class TileRenderer {
                     repeat: -1,
                     duration: 1000,
                 });
-                return rect;
+                break;
             case SceneTileType.Npc:
-                rect = this.scene.add.rectangle(tile.position.x, tile.position.y, 9, 9, 0xadd8e6, 0.7);
+                rect = this.scene.add.rectangle(tile.position.x, tile.position.y, 8, 8, 0xadd8e6, 0.7);
                 rect.setStrokeStyle(1, 0x00008b, 0.6);
-                return rect;
+                break;
             case SceneTileType.Encounter:
-                rect = this.scene.add.rectangle(tile.position.x, tile.position.y, 9, 9, 0xff0000, 0.7);
+                rect = this.scene.add.rectangle(tile.position.x, tile.position.y, 8, 8, 0xff0000, 0.7);
                 this.scene.tweens.add({
                     targets: rect,
                     alpha: { from: 0.6, to: 0.9 },
@@ -110,7 +104,7 @@ export default class TileRenderer {
                     repeat: -1,
                     duration: 1000,
                 });
-                return rect;
+                break;
         }
     }
 }
