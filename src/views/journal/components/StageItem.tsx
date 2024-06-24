@@ -8,7 +8,8 @@ const StageItem = ({ stage, unlocked }: { stage: QuestStage; unlocked: QuestUnlo
         <div className={style.stageItem}>
             <p className={style.objective}>{stage.objective}</p>
             <p className={style.description}>{stage.description}</p>
-            {stage.goals && <StageGoals goals={stage.goals} progresses={unlockedEntity?.progresses} />}
+            {stage.goals && unlockedEntity?.state === 'In-progress'
+                && <StageGoals goals={stage.goals} progresses={unlockedEntity?.progresses} />}
             {stage.rewards && (
                 <p className={style.rewards}>
                     Rewards: {stage.rewards?.gold && `${stage.rewards.gold} Gold, `}

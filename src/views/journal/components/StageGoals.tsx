@@ -6,7 +6,7 @@ const StageGoals = ({ goals, progresses }: { goals: QuestGoal[]; progresses: num
         const progress = progresses ? progresses[index] : 0;
         return (
             <li key={index} className={style.goalItem}>
-                {goal.type}: {goal.label} (Progress: {progress}/{goal.target})
+                {goal.type}: {goal.label ?? goal.name} (Progress: {progress}/{goal.target})
             </li>
         );
     };
