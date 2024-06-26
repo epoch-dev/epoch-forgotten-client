@@ -81,14 +81,16 @@ export class DialogueService {
         return nodes.findIndex((node) => node.id === chosenNodeId);
     }
 
-    public async sendDialogueUpdates() { // todo: for now sending from here
+    public async sendDialogueUpdates() {
+        // todo: for now sending from here
         if (this.shouldUpdateService()) {
             await npcsClient.updateFromDialogue(this.decisions);
             this.showEffects();
         }
     }
 
-    private shouldUpdateService = () => Object.keys(this.decisions.nodes).length > 0 || Object.keys(this.effectsAll).length > 0;
+    private shouldUpdateService = () =>
+        Object.keys(this.decisions.nodes).length > 0 || Object.keys(this.effectsAll).length > 0;
 
     private async showEffects() {
         for (const effects of this.effectsAll) {
@@ -96,10 +98,9 @@ export class DialogueService {
                 for (const questEffect of effects.quests) {
                     SoundService.getInstance().newQuest();
                     const quest = (await questsClient.getQuest(questEffect.name, questEffect.stageId)).data;
-                    console.log(questEffect)
-                    if (questEffect.stageId == 'stage1' && questEffect.state == 'In-progress') {
+                    if (questEffect.stageId === 'stage1' && questEffect.state === 'In-progress') {
                         ToastService.success({ message: 'Started a new quest! ' + `"${quest.label}"` });
-                    } else if (questEffect.stageId != 'stage1') {
+                    } else if (questEffect.stageId !== 'stage1') {
                         ToastService.success({ message: 'New quest stage! ' + `"${quest.label}"` });
                     }
                 }
