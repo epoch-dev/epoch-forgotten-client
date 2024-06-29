@@ -3,30 +3,39 @@ import { AssetsService } from '../../common/services/AssetsService';
 import { ScenesService } from './ScenesService';
 import { SceneImage, TILE_SIZE, UserSprite } from './types';
 import {
+    SceneMoveDirection,
     SceneMoveResultDtoEncounterData,
     SceneMoveResultDtoNpcData,
+    ScenePoint,
 } from '../../common/api/.generated';
 import { MusicService } from '../../common/services/MusicService';
 import TileRenderer from './TileRenderer';
+import { getCurrentTimeStamp } from '../../common/utils';
+import { MOVE_INTERVAL } from '../../common/config';
 
 export class SceneRenderer extends Scene {
     public blockMovement = false;
     public musicUri?: string;
     private user?: UserSprite;
     private sceneImageRef?: SceneImage;
+    private onMove: (direction: SceneMoveDirection) => void;
     private onEncounter: (encounter: SceneMoveResultDtoEncounterData) => void;
     private onNpc: (encounter: SceneMoveResultDtoNpcData) => void;
     private musicService = MusicService.getInstance();
     private tileRenderer: TileRenderer;
+    private lastMove = getCurrentTimeStamp();
 
     constructor({
+        onMove,
         onEncounter,
         onNpc,
     }: {
+        onMove: (direction: SceneMoveDirection) => void;
         onEncounter: (encounter: SceneMoveResultDtoEncounterData) => void;
         onNpc: (encounter: SceneMoveResultDtoNpcData) => void;
     }) {
         super({ key: 'WorldScene' });
+        this.onMove = onMove;
         this.onEncounter = onEncounter;
         this.onNpc = onNpc;
         this.tileRenderer = new TileRenderer(this);
@@ -75,24 +84,62 @@ export class SceneRenderer extends Scene {
     }
 
     update() {
-        void this.moveUser();
+        void this.handleMove();
     }
 
-    private async moveUser() {
-        if (this.blockMovement || !this.user || !this.input.keyboard) {
+    private async handleMove() {
+        if (
+            this.lastMove + MOVE_INTERVAL > getCurrentTimeStamp() ||
+            this.blockMovement ||
+            !this.user ||
+            !this.input.keyboard
+        ) {
             return;
         }
         const cursor = this.input.keyboard.createCursorKeys();
-        const moveResult = await ScenesService.moveUser(cursor);
-        if (moveResult.sceneChanged) {
+        const direction = cursor.left.isDown
+            ? SceneMoveDirection.Left
+            : cursor.right.isDown
+            ? SceneMoveDirection.Right
+            : cursor.up.isDown
+            ? SceneMoveDirection.Up
+            : cursor.down.isDown
+            ? SceneMoveDirection.Down
+            : undefined;
+        if (direction) {
+            this.onMove(direction);
+            this.lastMove = getCurrentTimeStamp();
+        }
+    }
+
+    public moveUser({
+        newPosition,
+        sceneChanged,
+        encounter,
+        npc,
+    }: {
+        newPosition: ScenePoint;
+        sceneChanged: boolean;
+        encounter?: SceneMoveResultDtoEncounterData;
+        npc?: SceneMoveResultDtoNpcData;
+    }) {
+        if (this.user) {
+            this.tweens.add({
+                targets: this.user,
+                x: newPosition.x,
+                y: newPosition.y,
+                duration: 0.9 * MOVE_INTERVAL,
+                ease: 'Linear',
+            });
+        }
+        if (sceneChanged) {
             this.loadScene();
         }
-        if (moveResult.encounter) {
-            this.onEncounter(moveResult.encounter);
+        if (encounter) {
+            this.onEncounter(encounter);
         }
-        if (moveResult.npc) {
-            this.onNpc(moveResult.npc);
+        if (npc) {
+            this.onNpc(npc);
         }
-        this.user.setPosition(moveResult.newPosition.x, moveResult.newPosition.y);
     }
 }
