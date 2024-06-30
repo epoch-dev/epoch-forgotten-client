@@ -13,12 +13,10 @@ export const BattleResultComponent = ({ victory }: { victory: BattleVictoryRewar
     const { scene, setView } = useGameStore();
 
     useEffect(() => {
-        if (victory) {
-            void handleVictory();
-        }
+        void handleBattleEnded();
     }, [victory]);
 
-    const handleVictory = async () => {
+    const handleBattleEnded = async () => {
         await ScenesService.initialize();
         await scene?.loadScene();
     };
@@ -27,6 +25,11 @@ export const BattleResultComponent = ({ victory }: { victory: BattleVictoryRewar
         return (
             <section className={`${style.battleResultsWrapper} ${style.defeat}`}>
                 <h1 className="title light">Defeat</h1>
+                <p>
+                    Darkness surrounds you as gentle hands lift you from the battlefield, guiding you to
+                    safety...
+                </p>
+                <br />
                 <hr />
                 <div onClick={() => setView(GameView.World)} className={style.closeBtn}>
                     Close
