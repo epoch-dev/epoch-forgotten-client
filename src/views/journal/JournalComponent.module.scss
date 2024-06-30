@@ -13,6 +13,31 @@
     width: 100%;
 }
 
+.tabs {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.25rem;
+
+    button {
+        background: none;
+        padding: 1rem 2rem;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: background-color 0.8s, color 0.4s;
+        border-bottom: 2px solid $color-primary;
+
+        &:hover {
+            background-color: $color-light;
+            color: $color-dark;
+        }
+    }
+
+    .active {
+        background-color: $color-primary;
+        color: $color-light;
+    }
+}
+
 .questItem {
     @include boxShadow;
     @include fadeInAnimation;
@@ -99,28 +124,29 @@
             padding-left: 0.35rem;
 
             &.Unlocked {
-                background-color: rgb(224, 247, 250);
-                border-left: 4px solid rgb(0, 172, 193);
+                background-color: $color-light;
+                border-left: 4px solid $color-success;
             }
 
             &.In-progress {
-                background-color: rgb(255, 249, 196);
-                border-left: 4px solid rgb(251, 192, 45);
+                background-color: $color-light;
+                border-left: 4px solid $color-epic;
             }
 
-            &.Failed {
-                background-color: rgb(255, 235, 238);
-                border-left: 4px solid rgb(211, 47, 47);
-            }
+            // not needed for now
+            // &.Failed {
+            //     background-color: $color-light;
+            //     border-left: 4px solid rgb(211, 47, 47);
+            // }
 
-            &.On-hold {
-                background-color: rgb(243, 229, 245);
-                border-left: 4px solid rgb(142, 36, 170);
-            }
+            // &.On-hold {
+            //     background-color: $color-light;
+            //     border-left: 4px solid rgb(142, 36, 170);
+            // }
 
             &.Completed {
-                background-color: rgb(232, 245, 233);
-                border-left: 4px solid $color-success;
+                background-color: $color-light;
+                border-left: 4px solid $color-rare;
             }
         }
     }
