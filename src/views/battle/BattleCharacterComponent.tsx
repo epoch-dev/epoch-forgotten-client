@@ -3,7 +3,7 @@ import { BattleCharacter, BattleMoveResult } from '../../common/api/.generated';
 import { TooltipComponent } from '../../common/components/TooltipComponent';
 import { AssetsService } from '../../common/services/AssetsService';
 import { ProgressBarComponent } from '../../common/components/ProgressBarComponent';
-import { generateRandomId } from '../../common/utils';
+import { formatNumber, generateRandomId } from '../../common/utils';
 import { CSS_COLOR } from '../../common/styles';
 import { useEffect } from 'react';
 import { SoundService } from '../../common/services/SoundService';
@@ -44,6 +44,8 @@ export const BattleCharacterComponent = ({
             hint={
                 <div className={style.statusItem}>
                     <p className="subtitle">{character.label}</p>
+                    {character.title && <p className="bold mythical">*{character.title}*</p>}
+                    {character.race && <p>{character.race}</p>}
 
                     {character.isControlled && (
                         <div>
@@ -56,6 +58,9 @@ export const BattleCharacterComponent = ({
                             </p>
                         </div>
                     )}
+                    
+                    <hr />
+                    <p>Power level: {formatNumber(character.statistics.powerLevel) }</p>
                 </div>
             }>
             <div onClick={onClick} className={characterClass}>

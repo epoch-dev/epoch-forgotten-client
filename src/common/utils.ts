@@ -16,3 +16,18 @@ export const generateRandomId = () => {
 
 export const getLevelExperience = (level: number) =>
     Math.round(50 + 50 * Math.pow(Math.max(1, level - 1), 1.67));
+
+export const formatNumber = (value: number) => {
+    const formatted = new Intl.NumberFormat('en-US', {
+        useGrouping: true,
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+    })
+        .format(value)
+        .replace(/,/g, ' ');
+
+    return formatted
+        .split('')
+        .map((character, index) => (index > 3 && !isNaN(+character) ? '0' : character))
+        .join('');
+};
