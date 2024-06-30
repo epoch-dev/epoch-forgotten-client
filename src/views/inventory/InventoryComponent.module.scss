@@ -46,4 +46,19 @@
         line-height: 1;
         font-weight: 700;
     }
+
+    .deleteLabel {
+        @include textShadow($color-light);
+        position: absolute;
+        top: 0.25rem;
+        left: 0.25rem;
+        margin: 0;
+        line-height: 1;
+        font-weight: 900;
+        color: $color-error;
+
+        &:hover {
+            cursor: pointer;
+        }
+    }
 }

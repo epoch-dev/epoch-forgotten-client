@@ -3,10 +3,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { itemsClient, usersClient } from '../../common/api/client';
 import { ItemDto } from '../../common/api/.generated';
 import { ItemComponent } from '../equipment/ItemComponent';
+import { ConfirmDialog } from '../../common/components/ConfirmDialog';
 
 export const InventoryComponent = () => {
     const [gold, setGold] = useState(0);
     const [items, setItems] = useState<ItemDto[]>([]);
+    const [itemToDelete, setItemToDelete] = useState<ItemDto | undefined>();
 
     useEffect(() => {
         void fetchGold();
@@ -21,6 +23,15 @@ export const InventoryComponent = () => {
     const fetchItems = async () => {
         const itemsData = await itemsClient.getItems();
         setItems(itemsData.data);
+    };
+
+    const deleteItem = async () => {
+        if (!itemToDelete) {
+            return;
+        }
+        await itemsClient.deleteItem(itemToDelete.id);
+        setItems((prev) => prev.filter((p) => p.id !== itemToDelete.id));
+        setItemToDelete(undefined);
     };
 
     const emptyItems = useMemo(() => {
@@ -40,6 +51,9 @@ export const InventoryComponent = () => {
                     <div key={item.id} className={style.item}>
                         <ItemComponent item={item} />
                         {item.quantity > 1 && <div className={style.quantityLabel}>{item.quantity}</div>}
+                        <div onClick={() => setItemToDelete(item)} className={style.deleteLabel}>
+                            X
+                        </div>
                     </div>
                 ))}
                 {emptyItems.map((_, index) => (
@@ -48,6 +62,12 @@ export const InventoryComponent = () => {
                     </div>
                 ))}
             </div>
+            {itemToDelete && (
+                <ConfirmDialog onConfirm={() => deleteItem()} onCancel={() => setItemToDelete(undefined)}>
+                    Are you sure you want to discard <b>{itemToDelete.label}</b>
+                    {itemToDelete.quantity > 1 ? ` (${itemToDelete.quantity})` : ''}?
+                </ConfirmDialog>
+            )}
         </section>
     );
 };
