@@ -50,7 +50,7 @@ export const InventoryComponent = () => {
                 {items.map((item) => (
                     <div key={item.id} className={style.item}>
                         <ItemComponent item={item} />
-                        {item.quantity > 1 && <div className={style.quantityLabel}>{item.quantity}</div>}
+                        {item.stackable && <div className={style.quantityLabel}>{item.quantity}</div>}
                         <div onClick={() => setItemToDelete(item)} className={style.deleteLabel}>
                             X
                         </div>
