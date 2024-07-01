@@ -74,7 +74,7 @@ export default class TileRenderer {
             case SceneTileType.SafeRoute:
                 break;
             case SceneTileType.Collision: {
-                const size = isBorder ? 1 : 0.5;
+                const size = isBorder ? 1.5 : 1;
                 rect = this.scene.add.rectangle(tile.position.x, tile.position.y, size, size, 0x121212, 1);
                 break;
             }
