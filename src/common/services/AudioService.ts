@@ -9,6 +9,7 @@ export type PlayingTrack = {
 export abstract class AudioService {
     private readonly transitionFadeDuration = 2000;
     private readonly fadeInDuration = 5000;
+    private isTransitioning = false;
 
     protected readonly tracks: { [key: string]: Howl } = {};
     protected abstract currentPlaying: PlayingTrack | null;
@@ -38,6 +39,13 @@ export abstract class AudioService {
             this.trackError(name);
             return;
         }
+        if (this.isTransitioning) {
+            setTimeout(() => {
+                if (this.currentPlaying?.name !== name) {
+                    this.currentPlaying?.track.play();
+                }
+            }, this.transitionFadeDuration);
+        }
         track.play();
         if (this.currentPlaying) {
             track.volume(0);
@@ -64,9 +72,13 @@ export abstract class AudioService {
     }
 
     private transition() {
+        this.isTransitioning = true;
         const currentTrack = this.currentPlaying?.track;
         currentTrack?.fade(this.volume, 0, this.transitionFadeDuration);
-        setTimeout(() => currentTrack?.stop(), this.transitionFadeDuration);
+        setTimeout(() => {
+            currentTrack?.stop();
+            this.isTransitioning = false;
+        }, this.transitionFadeDuration);
     }
 
     private trackError(name: string) {
