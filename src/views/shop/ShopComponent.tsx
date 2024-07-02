@@ -6,6 +6,9 @@ import { ToastService } from '../../common/services/ToastService';
 import LoadingOverlay from '../../common/components/LoadingOverlay';
 import { ShopService } from './ShopService';
 import ShopItem from './ShopItem';
+import { SoundService } from '../../common/services/SoundService';
+
+const soundService = SoundService.getInstance();
 
 const ShopComponent = ({ npcShop, onClose }: { npcShop: Item[]; onClose: () => void }) => {
     const { npc } = useGameStore();
@@ -25,6 +28,7 @@ const ShopComponent = ({ npcShop, onClose }: { npcShop: Item[]; onClose: () => v
     };
 
     const addToCheckout = (item: Item) => {
+        soundService.click();
         if (checkout[item.name] >= 99) {
             return;
         }
@@ -36,6 +40,7 @@ const ShopComponent = ({ npcShop, onClose }: { npcShop: Item[]; onClose: () => v
     };
 
     const removeFromCheckout = (item: Item) => {
+        soundService.click();
         if (!checkout[item.name] || checkout[item.name] <= 0) {
             return;
         }
@@ -47,6 +52,7 @@ const ShopComponent = ({ npcShop, onClose }: { npcShop: Item[]; onClose: () => v
     };
 
     const buyAll = async () => {
+        soundService.click();
         setLoading(true);
         if (!npc) {
             return;
@@ -65,6 +71,11 @@ const ShopComponent = ({ npcShop, onClose }: { npcShop: Item[]; onClose: () => v
             ToastService.error({ message: 'Error buying items' });
         }
         setLoading(false);
+    };
+
+    const handleClose = () => {
+        soundService.click();
+        onClose();
     };
 
     const buyDisabled = totalCost > gold;
@@ -107,7 +118,7 @@ const ShopComponent = ({ npcShop, onClose }: { npcShop: Item[]; onClose: () => v
                             disabled={buyDisabled || !totalCost}>
                             Purchase
                         </button>
-                        <button className={style.closeShopButton} onClick={onClose}>
+                        <button className={style.closeShopButton} onClick={handleClose}>
                             Close
                         </button>
                     </div>

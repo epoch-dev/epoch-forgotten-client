@@ -3,6 +3,7 @@
 
 .partyWrapper {
     display: flex;
+    justify-content: center;
     gap: 1rem;
 }
 
@@ -24,6 +25,14 @@
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
+    }
+
+    b {
+        color: $color-primary;
+        margin: 3rem auto;
+        font-size: 55px;
+        font-weight: 500;
+        opacity: 0.33;
     }
 
     hr {
