@@ -1,5 +1,5 @@
 import style from './PartyComponent.module.scss';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CharacterDto, PartySlot } from '../../common/api/.generated';
 import { charactersClient } from '../../common/api/client';
 import { CharacterComponent } from './CharacterComponent';
@@ -11,10 +11,10 @@ export const PartyComponent = () => {
     const [party, setParty] = useState<CharacterDto[]>([]);
     const [roster, setRoster] = useState<CharacterDto[]>([]);
 
-    const main = useMemo(() => party.find((c) => c.partySlot === 'Main'), [party]);
-    const first = useMemo(() => party.find((c) => c.partySlot === 'First'), [party]);
-    const second = useMemo(() => party.find((c) => c.partySlot === 'Second'), [party]);
-    const third = useMemo(() => party.find((c) => c.partySlot === 'Third'), [party]);
+    const main = party.find((c) => c.partySlot === 'Main');
+    const first = party.find((c) => c.partySlot === 'First');
+    const second = party.find((c) => c.partySlot === 'Second');
+    const third = party.find((c) => c.partySlot === 'Third');
 
     useEffect(() => {
         void setupParty();
