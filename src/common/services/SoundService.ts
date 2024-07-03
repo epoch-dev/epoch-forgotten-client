@@ -31,20 +31,16 @@ export class SoundService extends AudioService {
         this.play('new-quest.ogg');
     }
 
-    public attrUp() {
-        this.play('attr-up.ogg');
+    public click() {
+        this.play('click.mp3');
     }
 
     public newSkill() {
         this.play('new-skill.ogg');
     }
 
-    public partyAdd() {
-        this.play('party-add.ogg');
-    }
-
-    public partyRemove() {
-        this.play('party-remove.ogg');
+    public toggleParty() {
+        this.play('party-toggle.mp3');
     }
 
     public equip(itemType?: ItemType) {

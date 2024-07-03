@@ -5,11 +5,16 @@ import { charactersClient } from '../../common/api/client';
 import { CharacterComponent } from './CharacterComponent';
 import { SoundService } from '../../common/services/SoundService';
 
+const soundService = SoundService.getInstance();
+
 export const PartyComponent = () => {
     const [party, setParty] = useState<CharacterDto[]>([]);
     const [roster, setRoster] = useState<CharacterDto[]>([]);
 
-    const soundService = SoundService.getInstance();
+    const main = party.find((c) => c.partySlot === 'Main');
+    const first = party.find((c) => c.partySlot === 'First');
+    const second = party.find((c) => c.partySlot === 'Second');
+    const third = party.find((c) => c.partySlot === 'Third');
 
     useEffect(() => {
         void setupParty();
@@ -37,18 +42,18 @@ export const PartyComponent = () => {
             return;
         }
         await charactersClient.addToParty({ characterId, slot });
-        soundService.partyAdd();
+        soundService.toggleParty();
         setParty((p) => [{ ...character, partySlot: slot }, ...p]);
         setRoster((r) => r.filter((c) => c.id !== characterId));
     };
 
     const removeFromParty = async (characterId: string) => {
         const character = party.find((c) => c.id === characterId);
-        if (!character) {
+        if (!character || character.partySlot === PartySlot.Main) {
             return;
         }
         await charactersClient.removeFromParty({ characterId });
-        soundService.partyRemove();
+        soundService.toggleParty();
         setParty((p) => p.filter((c) => c.id !== characterId));
         setRoster((r) => [character, ...r]);
     };
@@ -57,16 +62,22 @@ export const PartyComponent = () => {
         <section>
             <h2 className="subtitle dark">Active</h2>
             <div className={style.partyWrapper}>
-                {party.map((character) => (
-                    <div
-                        onClick={() => removeFromParty(character.id)}
-                        key={character.id}
-                        className={style.characterItem}>
-                        <CharacterComponent character={character} />
-                    </div>
-                ))}
+                {[main, first, second, third].map((character, index) =>
+                    character ? (
+                        <div
+                            onClick={() => removeFromParty(character.id)}
+                            key={character.id}
+                            className={style.characterItem}>
+                            <CharacterComponent character={character} />
+                        </div>
+                    ) : (
+                        <div key={index} className={style.characterItem}>
+                            <b>·{Array.from({ length: index }).map(() => 'I')}·</b>
+                        </div>
+                    ),
+                )}
             </div>
-            <h2 className="subtitle dark">Roster</h2>
+            <h2 className="subtitle dark">Standby</h2>
             <div className={style.partyWrapper}>
                 {roster.map((character) => (
                     <div

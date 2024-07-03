@@ -31,7 +31,7 @@ export const AttributeComponent = ({
             characterId: character.id,
             attribute: name as CharacterImproveAttributeDtoAttributeEnum,
         });
-        soundService.attrUp();
+        soundService.click();
         setCharacter({
             ...updatedCharacterData.data,
         });
