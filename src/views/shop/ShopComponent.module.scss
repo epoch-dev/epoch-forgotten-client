@@ -52,7 +52,7 @@
 
 .userItems {
     .userItem {
-        @include insetShadow($color-dark);
+        @include insetShadow(rgba($color-dark, 0.5), 15px);
         width: 22rem;
         margin-top: 0.25rem;
         display: flex;
@@ -100,37 +100,10 @@
     .buyButton {
         display: block;
         width: 100%;
-        padding: 0.3rem;
+        padding: 0.5rem;
         border-radius: 5px;
         font-size: 1.2rem;
         line-height: 1.7rem;
-        color: $color-dark;
-        background: lighten($color-primary, 10);
-        border-bottom: 2px solid $color-dark;
-        border-radius: 0.7rem;
-
-        &:hover {
-            @include boxShadowSm();
-            cursor: pointer;
-            color: darken($color-dark, 10);
-            background: lighten($color-primary, 20);
-            border-bottom: 2px solid darken($color-dark, 10);
-        }
-
-        &:disabled {
-            cursor: not-allowed;
-            background: rgba($color-primary, 0.8);
-            color: $color-dark;
-            opacity: 0.7;
-        }
-    }
-
-    .closeShopButton {
-        width: 100%;
-        margin-top: 1rem;
-        padding: 0.5rem;
-        border-radius: 0.5rem;
-        font-size: 1.25rem;
         color: $color-light;
         background: $color-dark;
         border-bottom: 2px solid $color-primary;
@@ -143,12 +116,40 @@
             background: darken($color-dark, 10);
             border-bottom: 2px solid lighten($color-primary, 10);
         }
+
+        &:disabled {
+            cursor: not-allowed;
+            background: rgba($color-dark, 0.8);
+            color: $color-dark;
+            opacity: 0.8;
+        }
+    }
+
+    .closeShopButton {
+        width: 100%;
+        margin-top: 1rem;
+        padding: 0.5rem;
+        border-radius: 0.5rem;
+        font-size: 1.25rem;
+        color: $color-dark;
+        background: lighten($color-primary, 10);
+
+        border-bottom: 2px solid $color-dark;
+        border-radius: 0.7rem;
+
+        &:hover {
+            @include boxShadowSm();
+            cursor: pointer;
+            color: darken($color-dark, 10);
+            background: lighten($color-primary, 20);
+            border-bottom: 2px solid darken($color-dark, 10);
+        }
     }
 }
 
 .modeShopButton {
     position: absolute;
-    top: 0.5rem;
+    top: 0.15rem;
     right: 1rem;
     font-size: 25px;
     font-weight: 900;
@@ -158,6 +159,7 @@
     p {
         @include textShadow($color-primary);
         margin: 0;
+        font-size: 50px;
     }
 
     &:hover p {
