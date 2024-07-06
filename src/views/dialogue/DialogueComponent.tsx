@@ -2,11 +2,10 @@ import style from './DialogueComponent.module.scss';
 import { useEffect, useState, KeyboardEvent, useRef } from 'react';
 import { DialogueService } from './DialogueService';
 import { npcsClient } from '../../common/api/client';
-import type { DialogueNode, Item } from '../../common/api/.generated';
+import type { DialogueNode } from '../../common/api/.generated';
 import { useGameStore } from '../game/GameStore';
 import { GameView } from '../game/types';
 import LoadingOverlay from '../../common/components/LoadingOverlay';
-import ShopComponent from '../shop/ShopComponent';
 import { AssetsService } from '../../common/services/AssetsService';
 
 const DialogueComponent = () => {
@@ -16,7 +15,6 @@ const DialogueComponent = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [showOkButton, setShowOkButton] = useState(false);
     const [npcTitle, setNpcTitle] = useState<string>();
-    const [npcShop, setNpcShop] = useState<Item[]>();
     const [displayShop, setDisplayShop] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
 
@@ -33,7 +31,7 @@ const DialogueComponent = () => {
             const npcData = (await npcsClient.getNpc(npc.npcName)).data;
 
             setNpcTitle(npcData.title);
-            setNpcShop(npcData.shop);
+            setDisplayShop(npcData.shop !== undefined);
 
             const newService = new DialogueService(npc.npcName, npcData.dialogue, {
                 onNodeChange: (node) => {
@@ -72,10 +70,6 @@ const DialogueComponent = () => {
         }
     };
 
-    if (displayShop && npcShop) {
-        return <ShopComponent npcShop={npcShop} onClose={() => setDisplayShop(false)} />;
-    }
-
     return (
         <div className={style.dialogueWrapper} onKeyDown={handleKeyPress} tabIndex={-1} ref={ref}>
             {isLoading ? (
@@ -104,8 +98,8 @@ const DialogueComponent = () => {
                                 OK
                             </button>
                         )}
-                        {npcShop && (
-                            <button className={style.shopButton} onClick={() => setDisplayShop(true)}>
+                        {displayShop && (
+                            <button className={style.shopButton} onClick={() => setView(GameView.ShopBuy)}>
                                 <img src={AssetsService.getIcon('SHOP')} alt="shop" />
                             </button>
                         )}

@@ -17,9 +17,10 @@
         border-radius: 0.62rem;
         padding: 1.25rem;
         width: 90%;
+        height: 29.5rem;
         position: relative;
         max-height: 32rem;
-        overflow-y: auto;
+        overflow: hidden;
         display: flex;
         justify-content: space-between;
     }
@@ -45,6 +46,31 @@
         &:hover {
             cursor: auto;
             background: rgba($color-grey, 0.2);
+        }
+    }
+}
+
+.userItems {
+    .userItem {
+        @include insetShadow($color-dark);
+        width: 22rem;
+        margin-top: 0.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0 1rem;
+        border: 1px solid $color-dark;
+
+        p {
+            margin: 0;
+        }
+
+        .userItemAction {
+            font-size: 20px;
+            font-weight: 600;
+            user-select: none;
+            cursor: pointer;
         }
     }
 }
@@ -117,5 +143,26 @@
             background: darken($color-dark, 10);
             border-bottom: 2px solid lighten($color-primary, 10);
         }
+    }
+}
+
+.modeShopButton {
+    position: absolute;
+    top: 0.5rem;
+    right: 1rem;
+    font-size: 25px;
+    font-weight: 900;
+    color: darken($color-primary, 10);
+    background: none;
+
+    p {
+        @include textShadow($color-primary);
+        margin: 0;
+    }
+
+    &:hover p {
+        cursor: pointer;
+        transform: scale(1.2);
+        color: darken($color-primary, 5);
     }
 }

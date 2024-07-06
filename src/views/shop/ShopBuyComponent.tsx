@@ -7,19 +7,32 @@ import LoadingOverlay from '../../common/components/LoadingOverlay';
 import { ShopService } from './ShopService';
 import ShopItem from './ShopItem';
 import { SoundService } from '../../common/services/SoundService';
+import { npcsClient } from '../../common/api/client';
+import { GameView } from '../game/types';
+import { TooltipComponent } from '../../common/components/TooltipComponent';
 
 const soundService = SoundService.getInstance();
 
-const ShopComponent = ({ npcShop, onClose }: { npcShop: Item[]; onClose: () => void }) => {
-    const { npc } = useGameStore();
+const ShopBuyComponent = () => {
+    const { npc, setView } = useGameStore();
+    const [shopItems, setShopItems] = useState<Item[]>([]);
     const [gold, setGold] = useState(0);
     const [totalCost, setTotalCost] = useState(0);
     const [checkout, setCheckout] = useState<{ [key: string]: number }>({});
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
+        void fetchShop();
         void getGold();
     }, []);
+
+    const fetchShop = async () => {
+        if (!npc) {
+            return setView(GameView.World);
+        }
+        const npcData = (await npcsClient.getNpc(npc.npcName)).data;
+        setShopItems(npcData.shop ?? []);
+    };
 
     const getGold = async () => {
         setLoading(true);
@@ -73,26 +86,21 @@ const ShopComponent = ({ npcShop, onClose }: { npcShop: Item[]; onClose: () => v
         setLoading(false);
     };
 
-    const handleClose = () => {
-        soundService.click();
-        onClose();
-    };
-
     const buyDisabled = totalCost > gold;
 
     const emptyItems = useMemo(() => {
-        const totalItems = npcShop.length;
+        const totalItems = shopItems.length;
         const gridSize = 16;
         const emptyItemsCount = Math.max(0, gridSize - totalItems);
         return Array.from({ length: emptyItemsCount });
-    }, [npcShop]);
+    }, [shopItems]);
 
     return (
         <div className={style.shopViewOverlay}>
             <div className={style.shopView}>
                 {loading && <LoadingOverlay />}
                 <div className={style.shopItems}>
-                    {npcShop.map((shopItem, index) => (
+                    {shopItems.map((shopItem, index) => (
                         <ShopItem
                             key={index}
                             item={shopItem}
@@ -118,14 +126,19 @@ const ShopComponent = ({ npcShop, onClose }: { npcShop: Item[]; onClose: () => v
                             disabled={buyDisabled || !totalCost}>
                             Purchase
                         </button>
-                        <button className={style.closeShopButton} onClick={handleClose}>
+                        <button className={style.closeShopButton} onClick={() => setView(GameView.World)}>
                             Close
                         </button>
                     </div>
                 </div>
+                <button className={style.modeShopButton} onClick={() => setView(GameView.ShopSell)}>
+                    <TooltipComponent hint="Sell" config={{}}>
+                        <p>♻</p>
+                    </TooltipComponent>
+                </button>
             </div>
         </div>
     );
 };
 
-export default ShopComponent;
+export default ShopBuyComponent;

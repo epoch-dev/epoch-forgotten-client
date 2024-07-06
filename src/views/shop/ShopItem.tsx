@@ -36,7 +36,7 @@ const ShopItem = ({
                     ▼
                 </div>
             )}
-            <ItemComponent item={item} itemStyle={{ width: '6rem', height: '6rem', borderRadius: '1rem' }} />
+            <ItemComponent item={item} isShopItem={true} itemStyle={{ width: '6rem', height: '6rem', borderRadius: '1rem' }} />
             {quantity > 0 && <div className={style.quantityLabel}>{quantity}</div>}
         </div>
     );
