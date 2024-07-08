@@ -5,6 +5,7 @@ import { AssetsService } from '../../common/services/AssetsService';
 
 type ItemComponentProps = {
     item: ItemDto | Item;
+    isShopItem?: boolean;
     itemStyle?: {
         width?: string;
         height?: string;
@@ -12,19 +13,17 @@ type ItemComponentProps = {
     };
 };
 
-export const ItemComponent = ({ item, itemStyle }: ItemComponentProps) => {
+export const ItemComponent = ({ item, isShopItem, itemStyle }: ItemComponentProps) => {
     return (
         <div className={`${style.itemWrapper} ${style[item.rarity]}`} style={{ ...itemStyle }}>
-            <TooltipComponent hint={<ItemTooltip item={item} />} config={{ width: '16rem' }}>
+            <TooltipComponent hint={<ItemTooltip item={item} isShopItem={isShopItem} />} config={{ width: '16rem' }}>
                 <img src={AssetsService.getItemUri(item.imageUri)} alt={item.label} draggable={false} />
             </TooltipComponent>
         </div>
     );
 };
 
-const ItemTooltip = ({ item }: { item: ItemDto | Item }) => {
-    const isShopItem = !('id' in item);
-
+export const ItemTooltip = ({ item, isShopItem }: { item: ItemDto | Item; isShopItem?: boolean }) => {
     const getRarityLabel = (rarity: ItemRarity) => {
         return <div className={`${style.rarityLabel} ${rarity.toLowerCase()}`}>{item.rarity}</div>;
     };

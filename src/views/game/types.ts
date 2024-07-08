@@ -9,4 +9,6 @@ export enum GameView {
     Intro,
     Journal,
     Inventory,
+    ShopBuy,
+    ShopSell,
 }

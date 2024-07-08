@@ -15,15 +15,18 @@ import JournalComponent from '../journal/JournalComponent';
 import { MusicService } from '../../common/services/MusicService';
 import MusicPanel from '../../common/components/MusicPanel';
 import { InventoryComponent } from '../inventory/InventoryComponent';
+import ShopBuyComponent from '../shop/ShopBuyComponent';
+import { ShopSellComponent } from '../shop/ShopSellComponent';
+
+const musicService = MusicService.getInstance();
+const NOT_SCROLLABLE_VIEWS = [GameView.World, GameView.Dialogue, GameView.ShopBuy, GameView.ShopSell];
 
 export const GameComponent = () => {
     const navigate = useNavigate();
     const { view, setView, clear } = useGameStore();
 
-    const musicService = MusicService.getInstance();
     const canNavigate = view !== GameView.Battle && view !== GameView.Intro;
-    const overflowHidden =
-        view === GameView.World || view === GameView.Dialogue ? { overflow: 'hidden' } : {};
+    const overflowHidden = NOT_SCROLLABLE_VIEWS.includes(view) ? { overflow: 'hidden' } : {};
 
     const handleSignout = () => {
         StorageService.clear();
@@ -45,6 +48,8 @@ export const GameComponent = () => {
                 {view === GameView.Intro && <IntroComponent />}
                 {view === GameView.Journal && <JournalComponent />}
                 {view === GameView.Inventory && <InventoryComponent />}
+                {view === GameView.ShopBuy && <ShopBuyComponent />}
+                {view === GameView.ShopSell && <ShopSellComponent />}
             </main>
             {canNavigate && (
                 <nav className={style.navWrapper}>

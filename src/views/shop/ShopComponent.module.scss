@@ -17,9 +17,10 @@
         border-radius: 0.62rem;
         padding: 1.25rem;
         width: 90%;
+        height: 29.5rem;
         position: relative;
         max-height: 32rem;
-        overflow-y: auto;
+        overflow: hidden;
         display: flex;
         justify-content: space-between;
     }
@@ -49,8 +50,33 @@
     }
 }
 
+.userItems {
+    .userItem {
+        @include insetShadow(rgba($color-dark, 0.5), 15px);
+        width: 22rem;
+        margin-top: 0.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0 1rem;
+        border: 1px solid $color-dark;
+
+        p {
+            margin: 0;
+        }
+
+        .userItemAction {
+            font-size: 20px;
+            font-weight: 600;
+            user-select: none;
+            cursor: pointer;
+        }
+    }
+}
+
 .shopPanel {
-    width: 14rem;
+    width: 16rem;
     min-height: 24rem;
     display: flex;
     flex-direction: column;
@@ -74,37 +100,10 @@
     .buyButton {
         display: block;
         width: 100%;
-        padding: 0.3rem;
+        padding: 0.5rem;
         border-radius: 5px;
         font-size: 1.2rem;
         line-height: 1.7rem;
-        color: $color-dark;
-        background: lighten($color-primary, 10);
-        border-bottom: 2px solid $color-dark;
-        border-radius: 0.7rem;
-
-        &:hover {
-            @include boxShadowSm();
-            cursor: pointer;
-            color: darken($color-dark, 10);
-            background: lighten($color-primary, 20);
-            border-bottom: 2px solid darken($color-dark, 10);
-        }
-
-        &:disabled {
-            cursor: not-allowed;
-            background: rgba($color-primary, 0.8);
-            color: $color-dark;
-            opacity: 0.7;
-        }
-    }
-
-    .closeShopButton {
-        width: 100%;
-        margin-top: 1rem;
-        padding: 0.5rem;
-        border-radius: 0.5rem;
-        font-size: 1.25rem;
         color: $color-light;
         background: $color-dark;
         border-bottom: 2px solid $color-primary;
@@ -117,5 +116,55 @@
             background: darken($color-dark, 10);
             border-bottom: 2px solid lighten($color-primary, 10);
         }
+
+        &:disabled {
+            cursor: not-allowed;
+            background: rgba($color-dark, 0.8);
+            color: $color-dark;
+            opacity: 0.8;
+        }
+    }
+
+    .closeShopButton {
+        width: 100%;
+        margin-top: 1rem;
+        padding: 0.5rem;
+        border-radius: 0.5rem;
+        font-size: 1.25rem;
+        color: $color-dark;
+        background: lighten($color-primary, 10);
+
+        border-bottom: 2px solid $color-dark;
+        border-radius: 0.7rem;
+
+        &:hover {
+            @include boxShadowSm();
+            cursor: pointer;
+            color: darken($color-dark, 10);
+            background: lighten($color-primary, 20);
+            border-bottom: 2px solid darken($color-dark, 10);
+        }
+    }
+}
+
+.modeShopButton {
+    position: absolute;
+    top: 0.15rem;
+    right: 1rem;
+    font-size: 25px;
+    font-weight: 900;
+    color: darken($color-primary, 10);
+    background: none;
+
+    p {
+        @include textShadow($color-primary);
+        margin: 0;
+        font-size: 50px;
+    }
+
+    &:hover p {
+        cursor: pointer;
+        transform: scale(1.2);
+        color: darken($color-primary, 5);
     }
 }

@@ -67,6 +67,8 @@ export const ScenesComponent = () => {
     const getSceneClass = () => {
         switch (view) {
             case GameView.Dialogue:
+            case GameView.ShopBuy:
+            case GameView.ShopSell:
                 return 'blur';
             case GameView.World:
                 return '';
