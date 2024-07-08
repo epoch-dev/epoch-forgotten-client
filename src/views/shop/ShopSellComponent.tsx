@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import style from './ShopComponent.module.scss';
-import { ItemDto, ItemSellDtoItemsInner } from '../../common/api/.generated';
-import { itemsClient } from '../../common/api/client';
+import { ItemDto, ItemSellDtoItemsInner, NpcDto } from '../../common/api/.generated';
+import { itemsClient, npcsClient } from '../../common/api/client';
 import { useGameStore } from '../game/GameStore';
 import { SoundService } from '../../common/services/SoundService';
 import { GameView } from '../game/types';
@@ -13,13 +13,23 @@ const soundService = SoundService.getInstance();
 
 export const ShopSellComponent = () => {
     const { npc, setView } = useGameStore();
+    const [merchant, setMerchant] = useState<NpcDto | undefined>();
     const [userItems, setUserItems] = useState<ItemDto[]>([]);
     const [totalPrice, setTotalPrice] = useState(0);
     const [checkout, setCheckout] = useState<{ [key: string]: number }>({});
 
     useEffect(() => {
+        void fetchMerchant();
         void fetchItems();
     }, []);
+
+    const fetchMerchant = async () => {
+        if (!npc) {
+            return;
+        }
+        const merchantData = await npcsClient.getNpc(npc.npcName);
+        setMerchant(merchantData.data);
+    };
 
     const fetchItems = async () => {
         const items = await itemsClient.getItems();
@@ -92,6 +102,7 @@ export const ShopSellComponent = () => {
                 </div>
                 <div className={style.shopPanel}>
                     <div className={style.goldAmount}>
+                        {merchant?.purchaseFactor && <p>Purchase price: {100 * merchant.purchaseFactor}%</p>}
                         <p>Total: {totalPrice}</p>
                     </div>
                     <div>
