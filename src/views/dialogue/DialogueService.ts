@@ -3,6 +3,10 @@ import { npcsClient, questsClient } from '../../common/api/client';
 import { SoundService } from '../../common/services/SoundService';
 import { ToastService } from '../../common/services/ToastService';
 
+const STARTING_STAGE = 'stage1';
+
+const soundService = SoundService.getInstance();
+
 export class DialogueService {
     private readonly decisions: NpcDialogueUpdatesDto;
     private currentNodeIndex = 0;
@@ -38,6 +42,7 @@ export class DialogueService {
     public async handleUserInput(optionIndex: number) {
         const currentNode = this.dialogue[this.currentNodeIndex];
         const chosenOption = currentNode.options![optionIndex];
+        console.log({ chosenOption });
         if (chosenOption.flagValue || chosenOption.effects) {
             chosenOption.effects && this.effectsAll.push(chosenOption.effects);
             this.decisions.nodes[currentNode.id] = chosenOption.id;
@@ -96,18 +101,30 @@ export class DialogueService {
         for (const effects of this.effectsAll) {
             if (effects.quests) {
                 for (const questEffect of effects.quests) {
-                    SoundService.getInstance().newQuest();
-                    const quest = (await questsClient.getQuest(questEffect.name, questEffect.stageId)).data;
-                    if (questEffect.stageId === 'stage1' && questEffect.state === 'In-progress') {
-                        ToastService.success({ message: 'Started a new quest! ' + `"${quest.label}"` });
-                    } else if (questEffect.stageId !== 'stage1') {
-                        ToastService.success({ message: 'New quest stage! ' + `"${quest.label}"` });
+                    const quest = (
+                        await questsClient.getQuest({ name: questEffect.name, stageId: questEffect.stageId })
+                    ).data;
+                    console.log({ questEffect, quest });
+                    if (questEffect.stageId === STARTING_STAGE) {
+                        soundService.newQuest();
+                        ToastService.success({ message: `Quest "${quest.label}" started!` });
+                    } else if (quest.isLastStage) {
+                        ToastService.success({ message: `"${quest.label}" completed!` });
+                    } else if (questEffect.state === 'Failed') {
+                        ToastService.error({ message: `Quest "${quest.label}" failed!` });
+                    } else if (
+                        questEffect.state === 'In-progress' &&
+                        quest.stages[quest.stages.length - 1].objective
+                    ) {
+                        ToastService.success({
+                            message: quest.stages[quest.stages.length - 1].objective ?? '',
+                        });
                     }
                 }
             }
-            if (effects.items) {
-                ToastService.success({ message: 'Received new items!' });
-            }
+            effects.items?.forEach((item) =>
+                ToastService.success({ message: `Received ${item.name} (${item.quantity})` }),
+            );
         }
     }
 }

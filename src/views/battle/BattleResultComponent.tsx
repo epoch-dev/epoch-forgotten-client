@@ -52,7 +52,7 @@ export const BattleResultComponent = ({ victory }: { victory: BattleVictoryRewar
                         />
                     ))}
                 </div>
-                <div>
+                <div className={style.lootsWrapper}>
                     <p className="subtitle" style={{ marginTop: '1rem' }}>
                         Obtained:
                     </p>

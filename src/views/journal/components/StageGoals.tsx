@@ -20,7 +20,7 @@ const StageGoals = ({ goals, progresses }: { goals: QuestGoal[]; progresses: num
                 ))}
             </ul>
         </div>
-    )
+    );
 };
 
 export default StageGoals;

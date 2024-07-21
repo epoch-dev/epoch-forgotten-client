@@ -8,9 +8,8 @@
 }
 
 .questsWrapper {
-    padding: 0 0.625rem;
-    box-sizing: border-box;
     width: 100%;
+    padding: 0 0.625rem;
 }
 
 .tabs {
@@ -41,16 +40,15 @@
 .questItem {
     @include boxShadow;
     @include fadeInAnimation;
-    height: fit-content;
+    width: 90%;
+    max-width: 40rem;
+    margin: 1rem auto;
     background: $color-transparent-standard;
     border: 1px solid $color-light;
     border-radius: 0.5rem;
-    padding-top: 5rem;
-    padding-bottom: 5rem;
-    padding-left: 10rem;
-    padding-right: 10rem;
-    margin: 0.625rem 0;
+    padding: 2rem;
     transition: background-color 1s ease, border-color 1s ease;
+    user-select: none;
 
     &:hover {
         background-color: lighten(rgba($color-grey, 0.35), 90%);
@@ -69,8 +67,16 @@
 
     .subtitle {
         font-size: 1.5em;
-        margin-top: 0.625rem;
+        margin-left: -0.825rem;
         font-weight: bold;
+
+        &:hover {
+            cursor: pointer;
+        }
+    }
+
+    .stagesWrapper {
+        padding: 0 1rem;
     }
 
     .stageItem {
@@ -133,11 +139,10 @@
                 border-left: 4px solid $color-epic;
             }
 
-            // not needed for now
-            // &.Failed {
-            //     background-color: $color-light;
-            //     border-left: 4px solid rgb(211, 47, 47);
-            // }
+            &.Failed {
+                background-color: $color-light;
+                border-left: 4px solid $color-error;
+            }
 
             // &.On-hold {
             //     background-color: $color-light;
