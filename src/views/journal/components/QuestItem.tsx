@@ -10,7 +10,7 @@ const QuestItem = ({ quest }: { quest: QuestsDtoInner }) => {
         <div className={`${style.questItem} ${quest.main ? style.mainQuest : ''}`}>
             <div>
                 <p onClick={() => setExpanded(!expanded)} className={`${style.subtitle} action dark`}>
-                    {expanded ? '◀' : '▶'} {quest.label}
+                    {expanded ? '▼' : '▶'} {quest.label}
                 </p>
             </div>
             {expanded && (

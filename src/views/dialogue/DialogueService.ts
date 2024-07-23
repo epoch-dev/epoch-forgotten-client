@@ -42,7 +42,6 @@ export class DialogueService {
     public async handleUserInput(optionIndex: number) {
         const currentNode = this.dialogue[this.currentNodeIndex];
         const chosenOption = currentNode.options![optionIndex];
-        console.log({ chosenOption });
         if (chosenOption.flagValue || chosenOption.effects) {
             chosenOption.effects && this.effectsAll.push(chosenOption.effects);
             this.decisions.nodes[currentNode.id] = chosenOption.id;
@@ -104,7 +103,6 @@ export class DialogueService {
                     const quest = (
                         await questsClient.getQuest({ name: questEffect.name, stageId: questEffect.stageId })
                     ).data;
-                    console.log({ questEffect, quest });
                     if (questEffect.stageId === STARTING_STAGE) {
                         soundService.newQuest();
                         ToastService.success({ message: `Quest "${quest.label}" started!` });
