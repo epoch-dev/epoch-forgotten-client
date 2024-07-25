@@ -100,9 +100,7 @@ export class DialogueService {
         for (const effects of this.effectsAll) {
             if (effects.quests) {
                 for (const questEffect of effects.quests) {
-                    const quest = (
-                        await questsClient.getQuest({ name: questEffect.name, stageId: questEffect.stageId })
-                    ).data;
+                    const quest = (await questsClient.getQuest(questEffect.name, questEffect.stageId)).data;
                     if (questEffect.stageId === STARTING_STAGE) {
                         soundService.newQuest();
                         ToastService.success({ message: `Quest "${quest.label}" started!` });

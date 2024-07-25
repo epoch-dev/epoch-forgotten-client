@@ -19,7 +19,7 @@ import ShopBuyComponent from '../shop/ShopBuyComponent';
 import { ShopSellComponent } from '../shop/ShopSellComponent';
 
 const musicService = MusicService.getInstance();
-const NOT_SCROLLABLE_VIEWS = [GameView.World, GameView.Dialogue, GameView.ShopBuy, GameView.ShopSell];
+const NOT_SCROLLABLE_VIEWS = [GameView.World, GameView.Dialogue, GameView.ShopBuy, GameView.ShopSell, GameView.Battle];
 
 export const GameComponent = () => {
     const navigate = useNavigate();
