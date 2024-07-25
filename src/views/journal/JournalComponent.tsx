@@ -30,6 +30,7 @@ const JournalComponent = () => {
                 <button onClick={() => setActiveTab('In-progress')} className={activeTab === 'In-progress' ? style.active : ''}>In Progress</button>
                 <button onClick={() => setActiveTab('Unlocked')} className={activeTab === 'Unlocked' ? style.active : ''}>Unlocked</button>
                 <button onClick={() => setActiveTab('Completed')} className={activeTab === 'Completed' ? style.active : ''}>Completed</button>
+                <button onClick={() => setActiveTab('Failed')} className={activeTab === 'Failed' ? style.active : ''}>Failed</button>
             </div>
             {filteredQuests.map((quest) => (
                 <QuestItem key={quest.label} quest={quest} />
