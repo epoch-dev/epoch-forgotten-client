@@ -69,7 +69,7 @@ export class SceneRenderer extends Scene {
             this.user = this.physics.add
                 .sprite(userPosition.x, userPosition.y, 'user-icon')
                 .setDepth(10)
-                .setScale(1 / 16);
+                .setScale(1 / 4);
 
             this.cameras.main.setBounds(
                 -TILE_SIZE / 2,

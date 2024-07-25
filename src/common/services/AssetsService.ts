@@ -1,5 +1,5 @@
 const ICONS = {
-    USER: 'user-icon.svg',
+    USER: 'user-icon.png',
     SKILLS: 'skills-icon.svg',
     EQUIPMENT: 'equipment-icon.svg',
     PLUS: 'plus-icon.svg',
