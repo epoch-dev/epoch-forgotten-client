@@ -1,11 +1,6 @@
 import { DialogueNode, Effects, NpcDialogue, NpcDialogueUpdatesDto } from '../../common/api/.generated';
-import { npcsClient, questsClient } from '../../common/api/client';
-import { SoundService } from '../../common/services/SoundService';
-import { ToastService } from '../../common/services/ToastService';
-
-const STARTING_STAGE = 'stage1';
-
-const soundService = SoundService.getInstance();
+import { npcsClient } from '../../common/api/client';
+import { EffectsService } from '../../common/services/EffectsService';
 
 export class DialogueService {
     private readonly decisions: NpcDialogueUpdatesDto;
@@ -89,38 +84,10 @@ export class DialogueService {
         // todo: for now sending from here
         if (this.shouldUpdateService()) {
             await npcsClient.updateFromDialogue(this.decisions);
-            this.showEffects();
+            EffectsService.showEffects(this.effectsAll);
         }
     }
 
     private shouldUpdateService = () =>
         Object.keys(this.decisions.nodes).length > 0 || Object.keys(this.effectsAll).length > 0;
-
-    private async showEffects() {
-        for (const effects of this.effectsAll) {
-            if (effects.quests) {
-                for (const questEffect of effects.quests) {
-                    const quest = (await questsClient.getQuest(questEffect.name, questEffect.stageId)).data;
-                    if (questEffect.stageId === STARTING_STAGE) {
-                        soundService.newQuest();
-                        ToastService.success({ message: `Quest "${quest.label}" started!` });
-                    } else if (quest.isLastStage) {
-                        ToastService.success({ message: `"${quest.label}" completed!` });
-                    } else if (questEffect.state === 'Failed') {
-                        ToastService.error({ message: `Quest "${quest.label}" failed!` });
-                    } else if (
-                        questEffect.state === 'In-progress' &&
-                        quest.stages[quest.stages.length - 1].objective
-                    ) {
-                        ToastService.success({
-                            message: quest.stages[quest.stages.length - 1].objective ?? '',
-                        });
-                    }
-                }
-            }
-            effects.items?.forEach((item) =>
-                ToastService.success({ message: `Received ${item.name} (${item.quantity})` }),
-            );
-        }
-    }
 }
