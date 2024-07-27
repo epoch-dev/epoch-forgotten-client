@@ -28,27 +28,31 @@ export const IntroComponent = () => {
                     their livelihoods, the local farmers rally together, pooling their resources to hire
                     someone capable of quelling this menacing threat.
                 </p>
+                <br />
                 <p className="subtitle">
                     Amidst the turmoil, the young man's thoughts turn to his childhood friend, Nikka. A
-                    skilled huntress known for her unmatched prowess with a bow, Nikka has always been a
-                    steadfast companion. As he contemplates the daunting task ahead, he knows he cannot face
-                    it alone. With resolve in his heart, he sets out to convince Nikka to join him in this
-                    perilous endeavor, for he knows her aid will be crucial in overcoming the challenges that
-                    lie ahead. Yet, he is keenly aware that convincing Nikka may not be easy, as her old
-                    resentments towards him for choosing the path of a warrior-artist instead of a true
-                    warrior still linger.
+                    skilled huntress known for her unmatched prowess with a bow. As he contemplates the
+                    daunting task ahead, he knows he cannot face it alone. Yet, he is keenly aware that
+                    convincing Nikka may not be easy, as her old resentments towards him for choosing
+                    the path of an artist instead of a true warrior still linger.
+                </p>
+                <br />
+                <p className="subtitle">
+                    Raised by a father who was a musician and inventor of instruments, he was trained in
+                    combat during his childhood but later moved into music as his father wished.
+                    Despite this, his desire for something more has never faded.
                 </p>
             </div>
             <div>
                 <figure className={style.figureWrapper}>
                     <img src="./images/story/story-0-1.png" alt="" />
                     <p className="subtitle">
-                        An adventurer, warrior, and musician, he embodies a unique blend of courage, strength,
-                        and creativity. Raised in the tranquil village of Vivinra, he have honed his skills
+                        A guardian and musician, he embodies a unique blend of courage, strength, and creativity.
+                        Raised in the tranquil village of Vivinra, he have honed his skills
                         through years of diligent training and exploration. Now, their journey takes a new
-                        turn as there seems to be something mysterious hiding behind wolves activity. With
+                        turn as there seems to be something mysterious hiding behind wolves' activity. With
                         determination etched into their every step, he stand ready to face whatever challenges
-                        lie ahead..
+                        lie ahead...
                     </p>
                 </figure>
                 <fieldset>
