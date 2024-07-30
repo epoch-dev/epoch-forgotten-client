@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import { getLevelExperience, wait } from '../../common/utils';
 import { CSS_COLOR } from '../../common/styles';
 import { ScenesService } from '../scenes/ScenesService';
+import { EffectsService } from '../../common/services/EffectsService';
 
 export const BattleResultComponent = ({ victory }: { victory: BattleVictoryRewards | undefined }) => {
     const { scene, setView } = useGameStore();
@@ -17,6 +18,9 @@ export const BattleResultComponent = ({ victory }: { victory: BattleVictoryRewar
     }, [victory]);
 
     const handleBattleEnded = async () => {
+        if (victory?.effects) {
+            await EffectsService.showEffects(victory.effects);
+        }
         await ScenesService.initialize();
         await scene?.loadScene();
     };
