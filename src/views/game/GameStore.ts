@@ -3,6 +3,7 @@ import { GameView } from './types';
 import { SceneRenderer } from '../scenes/SceneRenderer';
 import {
     CharacterDto,
+    NpcDialogue,
     SceneMoveResultDtoEncounterData,
     SceneMoveResultDtoNpcData,
 } from '../../common/api/.generated';
@@ -14,12 +15,14 @@ type GameStore = {
     encounter: SceneMoveResultDtoEncounterData | undefined;
     encounterName: string | undefined;
     npc: SceneMoveResultDtoNpcData | undefined;
+    dialogue: NpcDialogue | undefined;
     character: CharacterDto | undefined;
     setView: (view: GameView) => void;
     setScene: (scene: SceneRenderer) => void;
     setEncounter: (encounter: SceneMoveResultDtoEncounterData) => void;
     setEncounterName: (encounterName: string) => void;
     setNpc: (npc: SceneMoveResultDtoNpcData) => void;
+    setDialogue: (dialogue: NpcDialogue| undefined) => void;
     setCharacter: (character: CharacterDto) => void;
     clear: () => void;
 };
@@ -30,6 +33,7 @@ export const useGameStore = create<GameStore>()((set) => ({
     encounter: undefined,
     encounterName: undefined,
     npc: undefined,
+    dialogue: undefined,
     character: undefined,
     setScene: (scene: SceneRenderer) => set({ scene }),
     setView: (view: GameView) =>
@@ -49,6 +53,7 @@ export const useGameStore = create<GameStore>()((set) => ({
     setEncounter: (encounter: SceneMoveResultDtoEncounterData) => set({ encounter }),
     setEncounterName: (encounterName: string) => set({ encounterName }),
     setNpc: (npc: SceneMoveResultDtoNpcData) => set({ npc }),
+    setDialogue: (dialogue: NpcDialogue | undefined) => set({ dialogue }),
     setCharacter: (character: CharacterDto) => set({ character }),
     clear: () => set({ scene: undefined, view: GameView.World, encounter: undefined, npc: undefined }),
 }));

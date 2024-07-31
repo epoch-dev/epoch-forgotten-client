@@ -9,7 +9,7 @@ import LoadingOverlay from '../../common/components/LoadingOverlay';
 import { AssetsService } from '../../common/services/AssetsService';
 
 const DialogueComponent = () => {
-    const { npc, setView } = useGameStore();
+    const { npc, dialogue, setView, setDialogue } = useGameStore();
     const [service, setService] = useState<DialogueService>();
     const [currentNode, setCurrentNode] = useState<DialogueNode>();
     const [isLoading, setIsLoading] = useState(true);
@@ -23,31 +23,33 @@ const DialogueComponent = () => {
     }, [isLoading]);
 
     useEffect(() => {
-        const fetchAndStartDialogue = async () => {
-            setIsLoading(true);
-            if (!npc) {
-                return;
-            }
-            const npcData = (await npcsClient.getNpc(npc.npcName)).data;
+        void fetchAndStartDialogue();
 
-            setNpcTitle(npcData.title);
-            setDisplayShop(npcData.shop !== undefined);
-
-            const newService = new DialogueService(npc.npcName, npcData.dialogue, {
-                onNodeChange: (node) => {
-                    setCurrentNode(node);
-                    setShowOkButton(!(node && node.options));
-                },
-                onComplete: () => setView(GameView.World),
-            });
-            newService.start();
-
-            setService(newService);
-            setIsLoading(false);
-        };
-
-        fetchAndStartDialogue();
+        return () => setDialogue(undefined);
     }, []);
+
+    const fetchAndStartDialogue = async () => {
+        setIsLoading(true);
+        if (!npc) {
+            return;
+        }
+        const npcData = (await npcsClient.getNpc(npc.npcName)).data;
+
+        setNpcTitle(npcData.title);
+        setDisplayShop(npcData.shop !== undefined);
+
+        const newService = new DialogueService(npc.npcName, dialogue ?? npcData.dialogue, {
+            onNodeChange: (node) => {
+                setCurrentNode(node);
+                setShowOkButton(!(node && node.options));
+            },
+            onComplete: () => setView(GameView.World),
+        });
+        newService.start();
+
+        setService(newService);
+        setIsLoading(false);
+    };
 
     const handleOptionClick = async (optionIndex: number) => {
         await service?.handleUserInput(optionIndex);
@@ -79,7 +81,7 @@ const DialogueComponent = () => {
                     <div className={style.dialogueItem}>
                         {npcTitle && <div className={style.dialogueLabel}>{npcTitle}</div>}
                         <p>
-                            {currentNode.author}: {currentNode.text}
+                            <b>{currentNode.author}</b>: {currentNode.text}
                         </p>
                         {currentNode.options && (
                             <>

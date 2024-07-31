@@ -2,6 +2,7 @@ import style from './BattleComponent.module.scss';
 import { useEffect, useState } from 'react';
 import {
     BattleCharacter,
+    BattleDto,
     BattleMoveCommand,
     BattleMoveResult,
     BattleSkill,
@@ -26,6 +27,8 @@ const soundService = SoundService.getInstance();
 
 export const BattleComponent = () => {
     const { setView } = useGameStore();
+    const [battleAssets, setBattleAssets] =
+        useState<Partial<Pick<BattleDto, 'battleImageUri' | 'battleMusicUri'>>>();
     const [scene, setScene] = useState<SceneDataDto | undefined>();
     const [party, setParty] = useState<BattleCharacter[]>([]);
     const [enemies, setEnemies] = useState<BattleCharacter[]>([]);
@@ -55,11 +58,12 @@ export const BattleComponent = () => {
     const loadScene = async () => {
         const sceneData = await ScenesService.getSceneData();
         setScene(sceneData);
-        musicService.play(sceneData.battleMusicUri);
+        musicService.play(battleAssets?.battleMusicUri ?? sceneData.battleMusicUri);
     };
 
     const loadBattle = async () => {
         const battleData = await battleClient.loadBattle();
+        setBattleAssets({ ...battleData.data });
         setParty(battleData.data.state.characters.filter((c) => c.isControlled));
         setEnemies(battleData.data.state.characters.filter((c) => !c.isControlled));
     };
@@ -139,7 +143,13 @@ export const BattleComponent = () => {
         <section
             className={style.battleWrapper}
             style={
-                scene ? { backgroundImage: `url(${AssetsService.getSceneUri(scene?.battleImageUri)})` } : {}
+                scene
+                    ? {
+                          backgroundImage: `url(${AssetsService.getSceneUri(
+                              battleAssets?.battleImageUri ?? scene?.battleImageUri,
+                          )})`,
+                      }
+                    : {}
             }>
             <p className={style.infoItem}>{hint}</p>
             {(victory || defeat) && <BattleResultComponent victory={victory} />}
