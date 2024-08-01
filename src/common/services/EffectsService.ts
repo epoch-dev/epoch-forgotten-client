@@ -1,6 +1,6 @@
 import { useGameStore } from '../../views/game/GameStore';
 import { GameView } from '../../views/game/types';
-import { Effects, EffectsItemsInner, EffectsQuest } from '../api/.generated';
+import { Effects, EffectsItemsInner, EffectsQuest, NpcDialogue } from '../api/.generated';
 import { questsClient } from '../api/client';
 import { SoundService } from './SoundService';
 import { ToastService } from './ToastService';
@@ -19,6 +19,9 @@ export class EffectsService {
             }
             if (effects.encounter) {
                 this.handleEncounterEffect(effects.encounter);
+            }
+            if (effects.dialogue) {
+                this.handleDialogueEffect(effects.dialogue);
             }
         }
     }
@@ -48,6 +51,14 @@ export class EffectsService {
             ...prev,
             view: GameView.Battle,
             encounterName,
+        }));
+    }
+
+    private static handleDialogueEffect(dialogue: NpcDialogue) {
+        useGameStore.setState((prev) => ({
+            ...prev,
+            view: GameView.Dialogue,
+            dialogue,
         }));
     }
 }

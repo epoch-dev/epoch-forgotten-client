@@ -58,9 +58,14 @@ export const BattleCharacterComponent = ({
                             </p>
                         </div>
                     )}
-                    
+
                     <hr />
-                    <p>Power level: {formatNumber(character.statistics.powerLevel) }</p>
+                    <p>
+                        Power level:{' '}
+                        {character.statistics.powerLevel
+                            ? formatNumber(character.statistics.powerLevel)
+                            : '???'}
+                    </p>
                 </div>
             }>
             <div onClick={onClick} className={characterClass}>

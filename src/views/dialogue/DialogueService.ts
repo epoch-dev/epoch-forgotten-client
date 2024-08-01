@@ -81,7 +81,6 @@ export class DialogueService {
     }
 
     public async sendDialogueUpdates() {
-        // todo: for now sending from here
         if (this.shouldUpdateService()) {
             await npcsClient.updateFromDialogue(this.decisions);
             EffectsService.showEffects(this.effectsAll);
