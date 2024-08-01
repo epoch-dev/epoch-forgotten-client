@@ -22,7 +22,7 @@ type GameStore = {
     setEncounter: (encounter: SceneMoveResultDtoEncounterData) => void;
     setEncounterName: (encounterName: string) => void;
     setNpc: (npc: SceneMoveResultDtoNpcData) => void;
-    setDialogue: (dialogue: NpcDialogue| undefined) => void;
+    setDialogue: (dialogue: NpcDialogue | undefined) => void;
     setCharacter: (character: CharacterDto) => void;
     clear: () => void;
 };
