@@ -7,8 +7,13 @@ import { io } from 'socket.io-client';
 import { WS_PATH } from '../../common/config';
 import { StorageService } from '../../common/services/StorageService';
 import { SceneMoveDirection, SceneMoveResultDto } from '../../common/api/.generated';
+import { ToastService } from '../../common/services/ToastService';
 
 let wsClient = io(WS_PATH);
+
+const isSceneMoveResult = (obj: unknown): obj is SceneMoveResultDto => {
+    return obj !== null && typeof obj === 'object' && 'newPosition' in obj;
+};
 
 export const ScenesComponent = () => {
     const { view, setScene, setView, setEncounter, setNpc } = useGameStore();
@@ -41,8 +46,12 @@ export const ScenesComponent = () => {
         setScene(scene);
         const authToken = StorageService.get('user')?.accessToken;
         wsClient = io(WS_PATH, { extraHeaders: { authorization: `Bearer ${authToken}` } });
-        wsClient.on('message', async (moveResultRaw: string) => {
-            const moveResult = JSON.parse(moveResultRaw) as SceneMoveResultDto;
+        wsClient.on('message', async (wsData: string) => {
+            if (!isSceneMoveResult(wsData)) {
+                ToastService.error({ message: wsData });
+                return;
+            }
+            const moveResult = JSON.parse(wsData) as SceneMoveResultDto;
             ScenesService.userPosition = moveResult.newPosition;
             if (moveResult.newSceneData) {
                 await ScenesService.initialize();
