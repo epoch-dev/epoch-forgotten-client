@@ -47,7 +47,7 @@ export const ScenesComponent = () => {
         const authToken = StorageService.get('user')?.accessToken;
         wsClient = io(WS_PATH, { extraHeaders: { authorization: `Bearer ${authToken}` } });
         wsClient.on('message', async (wsData: string) => {
-            if (!isSceneMoveResult(wsData)) {
+            if (!isSceneMoveResult(JSON.parse(wsData))) {
                 ToastService.error({ message: wsData });
                 return;
             }
