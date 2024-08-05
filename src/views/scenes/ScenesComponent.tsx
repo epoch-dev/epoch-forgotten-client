@@ -11,8 +11,14 @@ import { ToastService } from '../../common/services/ToastService';
 
 let wsClient = io(WS_PATH);
 
-const isSceneMoveResult = (obj: unknown): obj is SceneMoveResultDto => {
-    return obj !== null && typeof obj === 'object' && 'newPosition' in obj;
+const isSceneMoveResult = (data: unknown): data is SceneMoveResultDto => {
+    try {
+        const obj = JSON.parse(data as string);
+        return obj !== null && typeof obj === 'object' && 'newPosition' in obj;
+    } catch {
+        // invalid JSON
+        return false;
+    }
 };
 
 export const ScenesComponent = () => {
