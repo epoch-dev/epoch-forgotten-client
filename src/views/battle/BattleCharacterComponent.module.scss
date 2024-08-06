@@ -27,6 +27,12 @@
     }
 }
 
+.characterAlly {
+    img {
+        animation: bounceAnimationAlly 5s infinite;
+    }
+}
+
 .characterActive {
     @include insetShadow($color-dark);
 }
@@ -52,6 +58,7 @@
 .logItem {
     @include textShadow();
 
+    width: max-content;
     position: absolute;
     z-index: 100;
     left: 50%;
@@ -71,6 +78,12 @@
     color: $color-light;
 }
 
+.effectLogItem {
+    margin: 0;
+    font-size: 14px;
+    color: $color-dark;
+}
+
 @keyframes bounceAnimation {
     0%,
     100% {
@@ -78,6 +91,16 @@
     }
     50% {
         transform: translateY(-4px);
+    }
+}
+
+@keyframes bounceAnimationAlly {
+    0%,
+    100% {
+        transform: translateY(1px) rotateY(180deg);
+    }
+    50% {
+        transform: translateY(-4px) rotateY(180deg);
     }
 }
 

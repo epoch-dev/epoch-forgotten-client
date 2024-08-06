@@ -29,9 +29,9 @@ export const BattleCharacterComponent = ({
         }
     }, [animatedSkill]);
 
-    const characterClass = `${style.characterItem} ${isTargeted ? style.targetActive : ''} ${
-        isSelected ? style.characterActive : ''
-    } ${!character.isAlive ? style.characterDead : ''}`;
+    const characterClass = `${style.characterItem} ${character.isControlled ? style.characterAlly : ''} ${
+        isTargeted ? style.targetActive : ''
+    } ${isSelected ? style.characterActive : ''} ${!character.isAlive ? style.characterDead : ''}`;
 
     const characterImgUri = character.isControlled
         ? AssetsService.getCharacterUri(character.imageUri)
@@ -61,10 +61,10 @@ export const BattleCharacterComponent = ({
 
                     <hr />
                     <p>
-                        Power level:{' '}
+                        Power level:
                         {character.statistics.powerLevel
-                            ? formatNumber(character.statistics.powerLevel)
-                            : '???'}
+                            ? ` ${formatNumber(character.statistics.powerLevel)}`
+                            : ' ???'}
                     </p>
                 </div>
             }>
@@ -78,11 +78,13 @@ export const BattleCharacterComponent = ({
                             key={generateRandomId()}
                             className={style.logItem}
                             style={{ animationDelay: `${hitInd / 2}s` }}>
-                            <b
-                                className={`${hit.value >= 0 ? 'error' : 'success'} ${
-                                    hit.isCritical ? style.logItemCritical : ''
-                                } ${hit.dodged ? style.logItemDodged : ''}`}>
-                                {hit.dodged ? 'Dodged' : Math.round(Math.abs(hit.value))}
+                            <b className={`${hit.value >= 0 ? 'error' : 'success'}`}>
+                                {formatNumber(Math.round(Math.abs(hit.value)))}
+                                {hit.effectLogs.map((effectLog, effectLogInd) => (
+                                    <p key={`el-${effectLogInd}`} className={style.effectLogItem}>
+                                        {effectLog}
+                                    </p>
+                                ))}
                             </b>
                         </div>
                     ))}
