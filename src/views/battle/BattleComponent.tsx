@@ -2,6 +2,7 @@ import style from './BattleComponent.module.scss';
 import { useEffect, useState } from 'react';
 import {
     BattleCharacter,
+    BattleDefeatResults,
     BattleDto,
     BattleMoveCommand,
     BattleMoveResult,
@@ -36,13 +37,13 @@ export const BattleComponent = () => {
     const [selectedSkill, setSelectedSkill] = useState<BattleSkill | undefined>();
     const [commands, setCommands] = useState<BattleMoveCommand[]>([]);
     const [animatedSkill, setAnimatedSkill] = useState<BattleMoveResult | undefined>();
-    const [victory, setVictory] = useState<BattleVictoryRewards | undefined>();
-    const [defeat, setDefeat] = useState(false);
+    const [victoryResults, setVictoryResults] = useState<BattleVictoryRewards | undefined>();
+    const [defeatResults, setDefeatResults] = useState<BattleDefeatResults | undefined>();
 
     const characterCommand = commands.find((c) => c.characterId === selectedCharacter?.id);
 
     const hint =
-        victory || defeat
+        victoryResults || defeatResults
             ? ''
             : !selectedCharacter
             ? 'Select character'
@@ -126,11 +127,11 @@ export const BattleComponent = () => {
         setAnimatedSkill(undefined);
 
         if (turnResult.data.victory) {
-            setVictory(turnResult.data.victory);
+            setVictoryResults(turnResult.data.victory);
             soundService.victory();
         }
         if (turnResult.data.defeat) {
-            setDefeat(true);
+            setDefeatResults(turnResult.data.defeat);
             soundService.defeat();
         }
     };
@@ -152,7 +153,9 @@ export const BattleComponent = () => {
                     : {}
             }>
             <p className={style.infoItem}>{hint}</p>
-            {(victory || defeat) && <BattleResultComponent victory={victory} />}
+            {(victoryResults || defeatResults) && (
+                <BattleResultComponent victoryResults={victoryResults} defeatResults={defeatResults} />
+            )}
             <div className={style.fieldWrapper}>
                 <div className={style.alliesWrapper}>
                     {party.map((character) => (
@@ -213,13 +216,21 @@ export const BattleComponent = () => {
                     <button
                         onClick={handleAttack}
                         className={style.controlItem}
-                        disabled={animatedSkill !== undefined || victory !== undefined || defeat}>
+                        disabled={
+                            animatedSkill !== undefined ||
+                            victoryResults !== undefined ||
+                            defeatResults !== undefined
+                        }>
                         Attack
                     </button>
                     <button
                         onClick={handleRun}
                         className={style.controlItem}
-                        disabled={animatedSkill !== undefined || victory !== undefined || defeat}>
+                        disabled={
+                            animatedSkill !== undefined ||
+                            victoryResults !== undefined ||
+                            defeatResults !== undefined
+                        }>
                         Run
                     </button>
                 </div>
