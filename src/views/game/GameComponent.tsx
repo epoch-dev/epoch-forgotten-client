@@ -17,9 +17,17 @@ import MusicPanel from '../../common/components/MusicPanel';
 import { InventoryComponent } from '../inventory/InventoryComponent';
 import ShopBuyComponent from '../shop/ShopBuyComponent';
 import { ShopSellComponent } from '../shop/ShopSellComponent';
+import { useEffect } from 'react';
+import { battleClient } from '../../common/api/client';
 
 const musicService = MusicService.getInstance();
-const NOT_SCROLLABLE_VIEWS = [GameView.World, GameView.Dialogue, GameView.ShopBuy, GameView.ShopSell, GameView.Battle];
+const NOT_SCROLLABLE_VIEWS = [
+    GameView.World,
+    GameView.Dialogue,
+    GameView.ShopBuy,
+    GameView.ShopSell,
+    GameView.Battle,
+];
 
 export const GameComponent = () => {
     const navigate = useNavigate();
@@ -27,6 +35,17 @@ export const GameComponent = () => {
 
     const canNavigate = view !== GameView.Battle && view !== GameView.Intro;
     const overflowHidden = NOT_SCROLLABLE_VIEWS.includes(view) ? { overflow: 'hidden' } : {};
+
+    useEffect(() => {
+        void checkBattle();
+    }, []);
+
+    const checkBattle = async () => {
+        const battle = await battleClient.loadBattle();
+        if (!battle.data.finished) {
+            setView(GameView.Battle);
+        }
+    };
 
     const handleSignout = () => {
         StorageService.clear();
