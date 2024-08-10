@@ -1,5 +1,9 @@
 import style from './BattleResultComponent.module.scss';
-import { BattleVictoryRewards, BattleVictoryRewardsLevel } from '../../common/api/.generated';
+import {
+    BattleDefeatResults,
+    BattleVictoryRewards,
+    BattleVictoryRewardsLevel,
+} from '../../common/api/.generated';
 import { useGameStore } from '../game/GameStore';
 import { GameView } from '../game/types';
 import { AssetsService } from '../../common/services/AssetsService';
@@ -10,22 +14,29 @@ import { CSS_COLOR } from '../../common/styles';
 import { ScenesService } from '../scenes/ScenesService';
 import { EffectsService } from '../../common/services/EffectsService';
 
-export const BattleResultComponent = ({ victory }: { victory: BattleVictoryRewards | undefined }) => {
+export const BattleResultComponent = ({
+    victoryResults,
+    defeatResults,
+}: {
+    victoryResults: BattleVictoryRewards | undefined;
+    defeatResults: BattleDefeatResults | undefined;
+}) => {
     const { scene, setView } = useGameStore();
 
     useEffect(() => {
         void handleBattleEnded();
-    }, [victory]);
+    }, [victoryResults]);
 
     const handleBattleEnded = async () => {
-        if (victory?.effects) {
-            await EffectsService.showEffects(victory.effects);
-        }
+        await EffectsService.showEffects([
+            ...(victoryResults?.effects ?? []),
+            ...(defeatResults?.effects ?? []),
+        ]);
         await ScenesService.initialize();
         await scene?.loadScene();
     };
 
-    if (!victory) {
+    if (!victoryResults) {
         return (
             <section className={`${style.battleResultsWrapper} ${style.defeat}`}>
                 <h1 className="title light">Defeat</h1>
@@ -48,11 +59,11 @@ export const BattleResultComponent = ({ victory }: { victory: BattleVictoryRewar
             <hr />
             <div className={style.resultsWrapper}>
                 <div className={style.partyWrapper}>
-                    {victory.levels.map((levelInfo) => (
+                    {victoryResults.levels.map((levelInfo) => (
                         <CharacterLevelComponent
                             key={levelInfo.characterName}
                             levelInfo={levelInfo}
-                            expGain={victory.exp}
+                            expGain={victoryResults.exp}
                         />
                     ))}
                 </div>
@@ -61,15 +72,15 @@ export const BattleResultComponent = ({ victory }: { victory: BattleVictoryRewar
                         Obtained:
                     </p>
                     <p style={{ marginTop: '0.5rem' }}>
-                        <b className="epic">{victory.gold}</b> Gold
+                        <b className="epic">{victoryResults.gold}</b> Gold
                     </p>
                     <p>
-                        <b className="epic">{victory.exp}</b> Experience
+                        <b className="epic">{victoryResults.exp}</b> Experience
                     </p>
-                    {victory.items.length > 0 && (
+                    {victoryResults.items.length > 0 && (
                         <div className={style.itemsWrapper}>
                             <b>Loots:</b>
-                            {victory?.items.map((item) => (
+                            {victoryResults?.items.map((item) => (
                                 <p key={item.id}>{item.label}</p>
                             ))}
                         </div>
