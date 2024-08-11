@@ -27,7 +27,7 @@ export abstract class AudioService {
         track.play();
     }
 
-    protected playUniqueVoice(name: string) {
+    protected playUniqueVoice(name: string, resume: boolean) {
         if (this.currentPlaying?.name === name) {
             return;
         }
@@ -50,6 +50,9 @@ export abstract class AudioService {
             track.once('play', () => {
                 track.fade(0, this.volume, this.fadeInDuration);
             });
+        }
+        if (!resume) {
+            track.seek(0);
         }
         track.play();
         this.currentPlaying = { name, track };

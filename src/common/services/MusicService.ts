@@ -26,11 +26,11 @@ export class MusicService extends AudioService {
         return MusicService.instance;
     }
 
-    public play(name: string) {
+    public play(name: string, resume = true) {
         if (!(name in this.tracks)) {
             this.loadTrack(name);
         }
-        this.playUniqueVoice(name);
+        this.playUniqueVoice(name, resume);
         if (this.muted) {
             this.mute();
         } else {

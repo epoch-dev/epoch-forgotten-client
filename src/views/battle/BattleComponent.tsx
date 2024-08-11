@@ -56,10 +56,15 @@ export const BattleComponent = () => {
         void loadBattle();
     }, []);
 
+    useEffect(() => {
+        if (scene && battleAssets) {
+            musicService.play(battleAssets.battleMusicUri ?? scene.battleMusicUri, !battleAssets.battleMusicUri);
+        }
+    }, [scene, battleAssets]);
+
     const loadScene = async () => {
         const sceneData = await ScenesService.getSceneData();
         setScene(sceneData);
-        musicService.play(battleAssets?.battleMusicUri ?? sceneData.battleMusicUri);
     };
 
     const loadBattle = async () => {
@@ -146,10 +151,10 @@ export const BattleComponent = () => {
             style={
                 scene
                     ? {
-                          backgroundImage: `url(${AssetsService.getSceneUri(
-                              battleAssets?.battleImageUri ?? scene?.battleImageUri,
-                          )})`,
-                      }
+                        backgroundImage: `url(${AssetsService.getSceneUri(
+                            battleAssets?.battleImageUri ?? scene?.battleImageUri,
+                        )})`,
+                    }
                     : {}
             }>
             <p className={style.infoItem}>{hint}</p>
