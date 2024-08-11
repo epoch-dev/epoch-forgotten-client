@@ -22,6 +22,7 @@ import { AssetsService } from '../../common/services/AssetsService';
 import { BattleResultComponent } from './BattleResultComponent';
 import { MusicService } from '../../common/services/MusicService';
 import { SoundService } from '../../common/services/SoundService';
+import { ToastService } from '../../common/services/ToastService';
 
 const ANIMATION_TIME_MS = 1000;
 const musicService = MusicService.getInstance();
@@ -122,11 +123,19 @@ export const BattleComponent = () => {
         if (!canEscape) {
             return;
         }
+
         const result = await battleClient.escapeBattle();
         if (result.data.escaped) {
-            setView(GameView.World);
-        } else {
-            await animateTurn(result.data);
+            ToastService.success({ message: 'Escaped successfully', duration: 1000 });
+            return setView(GameView.World);
+        }
+
+        ToastService.error({ message: 'Failed to escape', duration: 1000 });
+        await animateTurn(result.data);
+
+        if (result.data.defeat) {
+            setDefeatResults(result.data.defeat);
+            soundService.defeat();
         }
     };
 
