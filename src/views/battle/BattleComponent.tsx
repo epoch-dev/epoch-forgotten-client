@@ -7,6 +7,7 @@ import {
     BattleMoveCommand,
     BattleMoveResult,
     BattleSkill,
+    BattleTurnResultDto,
     BattleVictoryRewards,
     SceneDataDto,
 } from '../../common/api/.generated';
@@ -21,6 +22,7 @@ import { AssetsService } from '../../common/services/AssetsService';
 import { BattleResultComponent } from './BattleResultComponent';
 import { MusicService } from '../../common/services/MusicService';
 import { SoundService } from '../../common/services/SoundService';
+import { ToastService } from '../../common/services/ToastService';
 
 const ANIMATION_TIME_MS = 1000;
 const musicService = MusicService.getInstance();
@@ -33,6 +35,7 @@ export const BattleComponent = () => {
     const [scene, setScene] = useState<SceneDataDto | undefined>();
     const [party, setParty] = useState<BattleCharacter[]>([]);
     const [enemies, setEnemies] = useState<BattleCharacter[]>([]);
+    const [canEscape, setCanEscape] = useState(false);
     const [selectedCharacter, setSelectedCharacter] = useState<BattleCharacter | undefined>();
     const [selectedSkill, setSelectedSkill] = useState<BattleSkill | undefined>();
     const [commands, setCommands] = useState<BattleMoveCommand[]>([]);
@@ -72,6 +75,7 @@ export const BattleComponent = () => {
         setBattleAssets({ ...battleData.data });
         setParty(battleData.data.state.characters.filter((c) => c.isControlled));
         setEnemies(battleData.data.state.characters.filter((c) => !c.isControlled));
+        setCanEscape(battleData.data.canEscape);
     };
 
     const handleCharacterSelection = (target: BattleCharacter) => {
@@ -108,7 +112,40 @@ export const BattleComponent = () => {
 
         const turnResult = await battleClient.continueBattle({ commands });
 
-        for (const moveResult of turnResult.data.moveResults) {
+        await animateTurn(turnResult.data);
+
+        if (turnResult.data.victory) {
+            setVictoryResults(turnResult.data.victory);
+            soundService.victory();
+        }
+        if (turnResult.data.defeat) {
+            setDefeatResults(turnResult.data.defeat);
+            soundService.defeat();
+        }
+    };
+
+    const handleEscape = async () => {
+        if (!canEscape) {
+            return;
+        }
+
+        const result = await battleClient.escapeBattle();
+        if (result.data.escaped) {
+            ToastService.success({ message: 'Escaped successfully', duration: 1000 });
+            return setView(GameView.World);
+        }
+
+        ToastService.error({ message: 'Failed to escape', duration: 1000 });
+        await animateTurn(result.data);
+
+        if (result.data.defeat) {
+            setDefeatResults(result.data.defeat);
+            soundService.defeat();
+        }
+    };
+
+    const animateTurn = async (turnResult: BattleTurnResultDto) => {
+        for (const moveResult of turnResult.moveResults) {
             setAnimatedSkill(moveResult);
             const character = [...party, ...enemies].find((c) => c.id === moveResult.characterId)!;
             const skill = character.skills.find((s) => s.label === moveResult.skillLabel)!;
@@ -130,19 +167,6 @@ export const BattleComponent = () => {
             await wait(ANIMATION_TIME_MS); // animating
         }
         setAnimatedSkill(undefined);
-
-        if (turnResult.data.victory) {
-            setVictoryResults(turnResult.data.victory);
-            soundService.victory();
-        }
-        if (turnResult.data.defeat) {
-            setDefeatResults(turnResult.data.defeat);
-            soundService.defeat();
-        }
-    };
-
-    const handleRun = () => {
-        setView(GameView.World);
     };
 
     return (
@@ -229,9 +253,10 @@ export const BattleComponent = () => {
                         Attack
                     </button>
                     <button
-                        onClick={handleRun}
+                        onClick={handleEscape}
                         className={style.controlItem}
                         disabled={
+                            !canEscape ||
                             animatedSkill !== undefined ||
                             victoryResults !== undefined ||
                             defeatResults !== undefined
