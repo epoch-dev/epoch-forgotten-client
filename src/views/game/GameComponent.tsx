@@ -18,7 +18,7 @@ import { InventoryComponent } from '../inventory/InventoryComponent';
 import ShopBuyComponent from '../shop/ShopBuyComponent';
 import { ShopSellComponent } from '../shop/ShopSellComponent';
 import { useEffect } from 'react';
-import { battleClient } from '../../common/api/client';
+import { battleClient, charactersClient } from '../../common/api/client';
 
 const musicService = MusicService.getInstance();
 const NOT_SCROLLABLE_VIEWS = [
@@ -37,8 +37,16 @@ export const GameComponent = () => {
     const overflowHidden = NOT_SCROLLABLE_VIEWS.includes(view) ? { overflow: 'hidden' } : {};
 
     useEffect(() => {
+        void checkParty();
         void checkBattle();
     }, []);
+
+    const checkParty = async () => {
+        const party = await charactersClient.getParty();
+        if (!party.data.length) {
+            setView(GameView.Intro);
+        }
+    };
 
     const checkBattle = async () => {
         const battle = await battleClient.loadBattle();
