@@ -25,8 +25,8 @@ export const SkillsComponent = () => {
     }
 
     const fetchSkills = async (characterId: string) => {
-        const data = await skillsClient.getSkillTree(characterId);
-        setSkills(data.data.skills);
+        const skillRes = await skillsClient.getSkillTree(characterId);
+        setSkills([...skillRes.data.uniqueSkills, ...skillRes.data.classSkills]);
     };
 
     return (

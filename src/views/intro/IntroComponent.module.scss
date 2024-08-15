@@ -8,7 +8,6 @@
     grid-template-rows: 1fr 9fr;
     align-items: stretch;
     gap: 1rem;
-    overflow-y: auto;
     color: $color-dark;
 
     fieldset {
@@ -17,10 +16,8 @@
     }
 
     b {
-        @include textShadow($color-primary);
-
         margin: 0;
-        color: darken($color-primary, 10);
+        color: darken($color-primary, 20);
     }
 
     p {
@@ -29,12 +26,38 @@
         text-align: justify;
         color: $color-dark;
     }
+
+    fieldset {
+        margin-top: 1rem;
+    }
+
+    input[type='radio'] {
+        appearance: none;
+        width: 1rem;
+        height: 1rem;
+        border-radius: 50%;
+        border: 2px solid darken($color-primary, 10%);
+        outline: none;
+        cursor: pointer;
+        margin: -0.15rem 0.5rem;
+        transition: background-color 0.2s ease, border-color 0.2s ease;
+
+        &:checked {
+            background-color: $color-primary;
+            border-color: $color-dark;
+        }
+
+        &:hover {
+            border-color: lighten($color-dark, 10%);
+        }
+    }
 }
 
 .figureWrapper {
     margin: 0;
 
     img {
+        width: 10rem;
         float: left;
         margin: 0.5rem 1rem 0 0;
     }
