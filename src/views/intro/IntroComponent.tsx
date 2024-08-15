@@ -81,7 +81,7 @@ export const IntroComponent = () => {
                 <fieldset>
                     <legend className="formLabel">Which path will he follow?</legend>
                     <TooltipComponent
-                        config={{ width: '200px' }}
+                        config={{ width: '14rem' }}
                         hint="A true warrior with hight endurance and power to withstand attacks and deal target multiple enemies.">
                         <input
                             type="radio"
@@ -92,7 +92,7 @@ export const IntroComponent = () => {
                         <label htmlFor="Mercenary">Mercenary</label>
                     </TooltipComponent>
                     <TooltipComponent
-                        config={{ width: '200px' }}
+                        config={{ width: '14rem' }}
                         hint="Swift and agile, capable of high single-target damage and mild supportive abilities.">
                         <input
                             type="radio"
@@ -103,7 +103,7 @@ export const IntroComponent = () => {
                         <label htmlFor="Mercenary">Hunter</label>
                     </TooltipComponent>
                     <TooltipComponent
-                        config={{ width: '200px' }}
+                        config={{ width: '14rem' }}
                         hint="Neither strong nor agile yet versatile and  proficient with mysterious Arcana powers.">
                         <input
                             type="radio"
