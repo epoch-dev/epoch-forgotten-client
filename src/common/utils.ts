@@ -28,6 +28,6 @@ export const formatNumber = (value: number) => {
 
     return formatted
         .split('')
-        .map((character, index) => (index > 3 && !isNaN(+character) ? '0' : character))
+        .map((character, index) => ((index > 3 && !isNaN(+character)) && character !== ' ' ? '0' : character))
         .join('');
 };
