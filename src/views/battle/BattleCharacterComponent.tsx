@@ -1,5 +1,5 @@
 import style from './BattleCharacterComponent.module.scss';
-import { BattleCharacter, BattleMoveResult } from '../../common/api/.generated';
+import { BattleCharacter, BattleMoveResult, BattleStatus } from '../../common/api/.generated';
 import { TooltipComponent } from '../../common/components/TooltipComponent';
 import { AssetsService } from '../../common/services/AssetsService';
 import { ProgressBarComponent } from '../../common/components/ProgressBarComponent';
@@ -42,7 +42,7 @@ export const BattleCharacterComponent = ({
     return (
         <TooltipComponent
             hint={
-                <div className={style.statusItem}>
+                <div className={style.tooltipItem}>
                     <p className="subtitle">{character.label}</p>
                     {character.title && <p className="bold mythical">*{character.title}*</p>}
                     {character.race && <p>{character.race}</p>}
@@ -57,6 +57,10 @@ export const BattleCharacterComponent = ({
                                 {character.statistics.mana} / {character.statistics.maxMana} MP
                             </p>
                         </div>
+                    )}
+
+                    {(character.statistics.statuses.length > 0) && (
+                        <BattleCharacterStatus statuses={character.statistics.statuses} />
                     )}
 
                     <hr />
@@ -96,5 +100,39 @@ export const BattleCharacterComponent = ({
                 />
             </div>
         </TooltipComponent>
+    );
+};
+
+const BattleCharacterStatus = ({ statuses }: { statuses: BattleStatus[] }) => {
+    const statusModifiers: { key: keyof BattleStatus; label: string }[] = [
+        { key: 'maxHealthMod', label: 'Max health' },
+        { key: 'maxManaMod', label: 'Max mana' },
+        { key: 'pAtkMod', label: 'Physical attack' },
+        { key: 'mAtkMod', label: 'Magical attack' },
+        { key: 'pDefMod', label: 'Physical defense' },
+        { key: 'mDefMod', label: 'Magical defense' },
+        { key: 'speedMod', label: 'Speed' },
+        { key: 'dodgeMod', label: 'Dodge' },
+        { key: 'critChanceMod', label: 'Critical chance' },
+        { key: 'critPowerMod', label: 'Critical power' },
+    ];
+
+    return (
+        <div className={style.statusWrapper}>
+            <hr />
+            {statuses.map((status, statusInd) => (
+                <div key={`status-${statusInd}`}>
+                    {statusModifiers.map(({ key, label }) =>
+                        status[key] ? (
+                            <p key={key}>
+                                {label} +{100 * +status[key]}% ({status.duration} turns)
+                            </p>
+                        ) : (
+                            <></>
+                        ),
+                    )}
+                </div>
+            ))}
+        </div>
     );
 };

@@ -150,6 +150,7 @@ export const BattleComponent = () => {
             const character = [...party, ...enemies].find((c) => c.id === moveResult.characterId)!;
             const skill = character.skills.find((s) => s.label === moveResult.skillLabel)!;
             character.statistics.mana -= skill.manaCost ?? 0;
+            character.statistics.statuses = turnResult.characters.find(c => c.id === character.id)?.statistics.statuses ?? [];
             moveResult.moveLogs.forEach((log) => {
                 const target = [...party, ...enemies].find((c) => c.id === log.targetId)!;
                 target.statistics.health -= log.hits.reduce((prev, curr) => prev + curr.value, 0);
