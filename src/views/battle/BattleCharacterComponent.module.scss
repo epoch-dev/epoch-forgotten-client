@@ -123,10 +123,16 @@
     }
 }
 
-.statusItem {
+.tooltipItem {
     text-align: center;
 
     p {
         margin: 0;
+    }
+}
+
+.statusWrapper {
+    p {
+        font-size: 10px;
     }
 }
