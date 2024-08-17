@@ -10,7 +10,8 @@ import { SkillComponent } from './SkillComponent';
 
 export const SkillsComponent = () => {
     const { character, setView } = useGameStore();
-    const [skills, setSkills] = useState<SkillDto[]>();
+    const [uniqueSkills, setUniqueSkills] = useState<SkillDto[]>();
+    const [classSkills, setClassSkills] = useState<SkillDto[]>();
 
     useEffect(() => {
         if (!character) {
@@ -26,7 +27,8 @@ export const SkillsComponent = () => {
 
     const fetchSkills = async (characterId: string) => {
         const skillRes = await skillsClient.getSkillTree(characterId);
-        setSkills([...skillRes.data.uniqueSkills, ...skillRes.data.classSkills]);
+        setUniqueSkills(skillRes.data.uniqueSkills);
+        setClassSkills(skillRes.data.classSkills);
     };
 
     return (
@@ -62,9 +64,26 @@ export const SkillsComponent = () => {
                         />
                     </div>
                 </div>
-                {skills?.map((skill) => (
-                    <SkillComponent key={skill.name} skill={skill} />
-                ))}
+                <div className={style.skillTreesWrapper}>
+                    <div className={style.skillTreeWrapper}>
+                        <b>{character.class}</b><br />
+                        {classSkills?.map((skill, index) => (
+                            <div key={skill.name} className={style.skillWrapper}>
+                                <SkillComponent skill={skill} />
+                                {index < classSkills.length - 1 && <div className={style.dashedLine} />}
+                            </div>
+                        ))}
+                    </div>
+                    <div className={style.skillTreeWrapper}>
+                        <b>Bloodline</b><br />
+                        {uniqueSkills?.map((skill, index) => (
+                            <div key={skill.name} className={style.skillWrapper}>
+                                <SkillComponent skill={skill} />
+                                {index < uniqueSkills.length - 1 && <div className={style.dashedLine} />}
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </div>
         </section>
     );
