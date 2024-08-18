@@ -54,7 +54,7 @@ export const SkillComponent = ({ skill }: { skill: SkillDto }) => {
             {showConfirmLearnDialog && (
                 <ConfirmDialog onConfirm={learnSkill} onCancel={() => setShowConfirmLearnDialog(false)}>
                     <p>
-                        Are you sure you want to lear <b className="primary">{skill.label}</b>
+                        Are you sure you want to learn <b className="primary">{skill.label}</b>
                         <br /> by using
                         <b> {skill.pointsRequired} skill points</b>?
                     </p>
