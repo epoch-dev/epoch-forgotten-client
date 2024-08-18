@@ -61,7 +61,20 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1rem;
+}
+
+.skillTreesWrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.skillTreeWrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
 }
 
 .skillsHeaderWrapper {
@@ -76,10 +89,16 @@
 }
 
 .skillItem {
-    width: 4rem;
+    width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
+
+    &.skillInactive img {
+        filter: grayscale(1);
+        opacity: 0.5;
+    }
 
     button {
         width: 3rem;
@@ -87,7 +106,31 @@
         padding: 0;
         font-size: 12px;
         line-height: 14px;
+
+        &:disabled {
+            filter: grayscale(1);
+            opacity: 0.5;
+            cursor: default;
+        }
     }
+}
+
+.skillWrapper {
+    margin: 0.25rem 0 2rem 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.dashedLine {
+    position: absolute;
+    bottom: -1.75rem;
+    left: calc(50% + 1px);
+    width: 0;
+    height: 1.5rem;
+    border-left: 2px dashed $color-dark;
+    margin: 0;
 }
 
 .skillHintItem {
