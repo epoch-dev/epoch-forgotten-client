@@ -16,7 +16,9 @@ type ItemComponentProps = {
 export const ItemComponent = ({ item, isShopItem, itemStyle }: ItemComponentProps) => {
     return (
         <div className={`${style.itemWrapper} ${style[item.rarity]}`} style={{ ...itemStyle }}>
-            <TooltipComponent hint={<ItemTooltip item={item} isShopItem={isShopItem} />} config={{ width: '16rem' }}>
+            <TooltipComponent
+                hint={<ItemTooltip item={item} isShopItem={isShopItem} />}
+                config={{ width: '16rem' }}>
                 <img src={AssetsService.getItemUri(item.imageUri)} alt={item.label} draggable={false} />
             </TooltipComponent>
         </div>
@@ -56,10 +58,10 @@ export const ItemTooltip = ({ item, isShopItem }: { item: ItemDto | Item; isShop
             return <></>;
         }
         if (value > 0) {
-            return <b>{`+ ${value} `}</b>;
+            return <b>{`+ ${value}`}</b>;
         }
         if (value < 0) {
-            return <b>{`- ${Math.abs(value)} `}</b>;
+            return <b>{`- ${Math.abs(value)}`}</b>;
         }
     };
 
@@ -90,6 +92,9 @@ export const ItemTooltip = ({ item, isShopItem }: { item: ItemDto | Item; isShop
             {item.stats?.dex && <p>{getNumberLabel(item.stats.dex)} Dexterity</p>}
             {item.stats?.poi && <p>{getNumberLabel(item.stats.poi)} Poi</p>}
             {item.stats?.arc && <p>{getNumberLabel(item.stats.poi)} Arcana</p>}
+            {item.stats?.dodgeChance && <p>{getNumberLabel(100 * item.stats.dodgeChance)}% Dodge Chance</p>}
+            {item.stats?.critChance && <p>{getNumberLabel(100 * item.stats.critChance)}% Crit Chance</p>}
+            {item.stats?.critPower && <p>{getNumberLabel(100 * item.stats.critPower)}% Crit Power</p>}
 
             {(item.reqLvl || item.reqClass) && <hr />}
             {item.reqLvl && <p>Required level: {item.reqLvl}</p>}
