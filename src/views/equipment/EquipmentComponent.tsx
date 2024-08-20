@@ -84,14 +84,14 @@ export const EquipmentComponent = () => {
                     Speed: <b>{character.statistics.speed}</b>
                 </p>
                 <p className={style.statisticLabel}>
-                    Dodge Chance: <b>{100 * character.statistics.dodge}%</b>
+                    Dodge Chance: <b>{100 * character.statistics.dodgeChance}%</b>
                 </p>
                 <hr />
                 <p className={style.statisticLabel}>
                     Critical Chance: <b>{100 * character.statistics.critChance}%</b>
                 </p>
                 <p className={style.statisticLabel}>
-                    Critical Power: <b>{100 * character.statistics.critChance}%</b>
+                    Critical Power: <b>{100 * character.statistics.critPower}%</b>
                 </p>
             </div>
 

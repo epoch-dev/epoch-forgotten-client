@@ -21,7 +21,7 @@ export const SkillComponent = ({ skill }: { skill: SkillDto }) => {
 
     const canLearn =
         !skill.learned &&
-        character.skillPoints > (skill.pointsRequired ?? 0) &&
+        character.skillPoints >= (skill.pointsRequired ?? 0) &&
         character.level >= (skill.lvlRequired ?? 0);
     const skillClass = `${style.skillItem} ${!skill.learned ? style.skillInactive : ''}`;
 
