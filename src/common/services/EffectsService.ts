@@ -28,6 +28,12 @@ export class EffectsService {
             if (effects.character) {
                 this.handleCharacterEffect(effects.character);
             }
+            if (effects.gold) {
+                this.handleGoldEffect(effects.gold);
+            }
+            if (effects.exp) {
+                this.handleExpEffect(effects.exp);
+            }
         }
     }
 
@@ -69,5 +75,13 @@ export class EffectsService {
 
     private static handleCharacterEffect(character: Required<Effects>['character']) {
         ToastService.success({ message: `${character.name} joined you party!` });
+    }
+
+    private static handleGoldEffect(gold: Required<Effects>['gold']) {
+        ToastService.success({ message: `Obtained ${gold} gold!` });
+    }
+
+    private static handleExpEffect(exp: Required<Effects>['exp']) {
+        ToastService.success({ message: `Obtained ${exp} experience!` });
     }
 }
