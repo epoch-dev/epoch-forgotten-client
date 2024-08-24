@@ -44,6 +44,7 @@ jobs:
           repository: epoch-dev/epoch-forgotten
           path: server
           ref: main
+          token: ${{ secrets.PAT_TOKEN }}
 
       - name: Install server dependencies
         run: yarn install
