@@ -55,10 +55,7 @@ jobs:
         working-directory: ./server
 
       - name: Copy generated client to frontend
-        run: cp -r ./backend/generated ./src/common/api/
-
-      - name: Clean up backend repository
-        run: rm -rf ./backend
+        run: cp -r ./server/.generated ./src/common/api/
 
       - name: Build client
         run: yarn build
