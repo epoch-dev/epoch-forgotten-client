@@ -44,4 +44,8 @@ export class MusicService extends AudioService {
         this.volume = value;
         this.currentPlaying?.track.volume(value);
     }
+
+    public mainTheme() {
+        this.play('menu-theme.ogg')
+    }
 }

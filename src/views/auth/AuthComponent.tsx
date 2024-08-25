@@ -1,8 +1,10 @@
-import style from './AuthComponent.module.scss';
 import { useState } from 'react';
+import { MusicService } from '../../common/services/MusicService';
+import style from './AuthComponent.module.scss';
 import SigninFormComponent from './SigninFormComponent';
 import SignupFormComponent from './SignupFormComponent';
 
+const musicService = MusicService.getInstance();
 const particlesCount = Array.from({ length: 125 }, (_, index) => index + 1);
 
 enum ViewMode {
@@ -12,6 +14,8 @@ enum ViewMode {
 
 export const AuthComponent = () => {
     const [view, setView] = useState(ViewMode.Signin);
+
+    musicService.mainTheme();
 
     const toggleViewMode = () => {
         view === ViewMode.Signin ? setView(ViewMode.Signup) : setView(ViewMode.Signin);
