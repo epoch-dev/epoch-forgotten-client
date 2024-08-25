@@ -1,8 +1,8 @@
 name: Deploy Epoch Forgotten client to Pages
 
 on:
-  push:
-    branches: [$default-branch, 'github-pages-deploy']
+  # push:
+  #   branches: [$default-branch]
 
   # allows to run this workflow manually from the Actions tab 1
   workflow_dispatch:
