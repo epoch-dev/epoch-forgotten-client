@@ -76,6 +76,7 @@ export const IntroComponent = () => {
                         className="formInput"
                         minLength={3}
                         maxLength={12}
+                        required
                     />
                 </fieldset>
                 <fieldset>
