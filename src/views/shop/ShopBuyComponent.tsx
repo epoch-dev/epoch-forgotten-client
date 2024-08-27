@@ -14,7 +14,7 @@ import { TooltipComponent } from '../../common/components/TooltipComponent';
 const soundService = SoundService.getInstance();
 
 const ShopBuyComponent = () => {
-    const { npc, setView } = useGameStore();
+    const { npcName: npc, setView } = useGameStore();
     const [shopItems, setShopItems] = useState<Item[]>([]);
     const [gold, setGold] = useState(0);
     const [totalCost, setTotalCost] = useState(0);

@@ -13,8 +13,13 @@ const StageItem = ({ stage, unlocked }: { stage: QuestStage; unlocked: QuestUnlo
             )}
             {stage.effects && (
                 <p className={style.rewards}>
-                    Rewards: {stage.effects?.gold && `${stage.effects.gold} Gold, `}
-                    {stage.effects?.exp && `${stage.effects.exp} Exp`}
+                    <b>Rewards:</b>
+                    {stage.effects.gold && ` ${stage.effects.gold} Gold${stage.effects.gold ? ', ' : ''}`}
+                    {stage.effects.exp &&
+                        `${stage.effects.exp} Exp${stage.effects.items?.length ? ', ' : ''}`}
+                    {stage.effects.items
+                        ?.map((item) => `${item.label ?? item.name} (${item.quantity})`)
+                        .join(', ')}
                 </p>
             )}
             <p className={`${style.state} ${style[unlockedEntity?.state ?? '']}`}>{unlockedEntity?.state}</p>

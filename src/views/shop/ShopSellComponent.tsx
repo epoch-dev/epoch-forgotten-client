@@ -12,7 +12,7 @@ import { ToastService } from '../../common/services/ToastService';
 const soundService = SoundService.getInstance();
 
 export const ShopSellComponent = () => {
-    const { npc, setView } = useGameStore();
+    const { npcName: npc, setView } = useGameStore();
     const [purchaseFactor, setPurchaseFactor] = useState(0);
     const [userItems, setUserItems] = useState<ItemDto[]>([]);
     const [totalPrice, setTotalPrice] = useState(0);
