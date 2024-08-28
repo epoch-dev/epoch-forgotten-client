@@ -125,7 +125,7 @@ const BattleCharacterStatus = ({ statuses }: { statuses: BattleStatus[] }) => {
                     {statusModifiers.map(({ key, label }) =>
                         status[key] ? (
                             <p key={key}>
-                                {label} +{100 * +status[key]}% ({status.duration} turns)
+                                {label} +{100 * + status[key]!}% ({status.duration} turns)
                             </p>
                         ) : (
                             <></>

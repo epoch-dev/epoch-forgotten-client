@@ -11,10 +11,10 @@ const StageItem = ({ stage, unlocked }: { stage: QuestStage; unlocked: QuestUnlo
             {stage.goals && unlockedEntity?.state === 'In-progress' && (
                 <StageGoals goals={stage.goals} progresses={unlockedEntity?.progresses} />
             )}
-            {stage.rewards && (
+            {stage.effects && (
                 <p className={style.rewards}>
-                    Rewards: {stage.rewards?.gold && `${stage.rewards.gold} Gold, `}
-                    {stage.rewards?.exp && `${stage.rewards.exp} Exp`}
+                    Rewards: {stage.effects?.gold && `${stage.effects.gold} Gold, `}
+                    {stage.effects?.exp && `${stage.effects.exp} Exp`}
                 </p>
             )}
             <p className={`${style.state} ${style[unlockedEntity?.state ?? '']}`}>{unlockedEntity?.state}</p>
