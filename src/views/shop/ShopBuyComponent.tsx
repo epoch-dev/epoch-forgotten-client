@@ -14,7 +14,7 @@ import { TooltipComponent } from '../../common/components/TooltipComponent';
 const soundService = SoundService.getInstance();
 
 const ShopBuyComponent = () => {
-    const { npcName: npc, setView } = useGameStore();
+    const { npcName, setView } = useGameStore();
     const [shopItems, setShopItems] = useState<Item[]>([]);
     const [gold, setGold] = useState(0);
     const [totalCost, setTotalCost] = useState(0);
@@ -27,10 +27,10 @@ const ShopBuyComponent = () => {
     }, []);
 
     const fetchShop = async () => {
-        if (!npc) {
+        if (!npcName) {
             return setView(GameView.World);
         }
-        const npcData = (await npcsClient.getNpc(npc.npcName)).data;
+        const npcData = (await npcsClient.getNpc(npcName)).data;
         setShopItems(npcData.shop ?? []);
     };
 
@@ -67,13 +67,13 @@ const ShopBuyComponent = () => {
     const buyAll = async () => {
         soundService.click();
         setLoading(true);
-        if (!npc) {
+        if (!npcName) {
             return;
         }
         try {
             const buyItemsDto = [];
             for (const [itemName, quantity] of Object.entries(checkout)) {
-                buyItemsDto.push({ name: itemName, quantity, npcName: npc.npcName });
+                buyItemsDto.push({ name: itemName, quantity, npcName });
             }
             await ShopService.buyItems(buyItemsDto);
             setGold((prevGold) => prevGold - totalCost);

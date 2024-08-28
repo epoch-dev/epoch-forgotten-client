@@ -12,7 +12,7 @@ import { ToastService } from '../../common/services/ToastService';
 const soundService = SoundService.getInstance();
 
 export const ShopSellComponent = () => {
-    const { npcName: npc, setView } = useGameStore();
+    const { npcName, setView } = useGameStore();
     const [purchaseFactor, setPurchaseFactor] = useState(0);
     const [userItems, setUserItems] = useState<ItemDto[]>([]);
     const [totalPrice, setTotalPrice] = useState(0);
@@ -24,10 +24,10 @@ export const ShopSellComponent = () => {
     }, []);
 
     const fetchMerchant = async () => {
-        if (!npc) {
+        if (!npcName) {
             return;
         }
-        const merchantData = await npcsClient.getNpc(npc.npcName);
+        const merchantData = await npcsClient.getNpc(npcName);
         setPurchaseFactor(merchantData.data.purchaseFactor ?? 0);
     };
 
@@ -61,13 +61,13 @@ export const ShopSellComponent = () => {
     };
 
     const sellAll = async () => {
-        if (!npc) {
+        if (!npcName) {
             return;
         }
         const items: ItemSellDtoItemsInner[] = Object.keys(checkout)
             .map((itemId) => ({ id: itemId, quantity: checkout[itemId] }))
             .filter((item) => item.quantity > 0);
-        await itemsClient.sellItems({ npcName: npc.npcName, items });
+        await itemsClient.sellItems({ npcName, items });
         await fetchItems();
         setCheckout({});
         ToastService.success({ message: 'Items sold' });
