@@ -6,13 +6,15 @@ import { AuthComponent } from './views/auth/AuthComponent';
 import { GameComponent } from './views/game/GameComponent';
 import { ToastContainer } from 'react-toastify';
 
+const BASE_PATH = 'epoch-forgotten'
+
 const router = createBrowserRouter([
     {
-        path: 'game',
+        path: `${BASE_PATH}/game`,
         element: <GameComponent />,
     },
     {
-        path: '*', // least specific, catches all not found routes, keep last
+        path: BASE_PATH, // least specific, catches all not found routes, keep last
         element: <AuthComponent />,
     },
 ]);
