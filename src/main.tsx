@@ -6,7 +6,7 @@ import { AuthComponent } from './views/auth/AuthComponent';
 import { GameComponent } from './views/game/GameComponent';
 import { ToastContainer } from 'react-toastify';
 
-const BASE_PATH = 'epoch-forgotten'
+export const BASE_PATH = 'epoch-forgotten'
 
 const router = createBrowserRouter([
     {

@@ -7,6 +7,7 @@ import { ToastService } from '../../common/services/ToastService';
 import { isEmpty } from '../../common/utils';
 import { useGameStore } from '../game/GameStore';
 import { GameView } from '../game/types';
+import { BASE_PATH } from '../../main.tsx';
 
 type UserAuthConfirm = UserAuthDto & { confirmPassword: string };
 
@@ -37,7 +38,7 @@ export const SignupFormComponent = () => {
         StorageService.set({ key: 'user', data: res.data });
         ToastService.success({ message: 'Account created' });
         setView(GameView.Intro);
-        navigate('game');
+        navigate(`${BASE_PATH}/game`);
     };
 
     const validateForm = () => {

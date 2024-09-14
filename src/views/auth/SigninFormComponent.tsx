@@ -5,6 +5,7 @@ import { usersClient } from '../../common/api/client';
 import { StorageService } from '../../common/services/StorageService';
 import { ToastService } from '../../common/services/ToastService';
 import { isEmpty } from '../../common/utils';
+import { BASE_PATH } from '../../main.tsx';
 
 export const SigninFormComponent = () => {
     const [formData, setFormData] = useState<UserAuthDto>({
@@ -30,7 +31,7 @@ export const SigninFormComponent = () => {
         });
         StorageService.set({ key: 'user', data: res.data });
         ToastService.success({ message: 'Welcome back' });
-        navigate('game');
+        navigate(`${BASE_PATH}/game`);
     };
 
     const validateForm = () => {
