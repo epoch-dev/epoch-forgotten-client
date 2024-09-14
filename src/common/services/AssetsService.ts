@@ -1,4 +1,3 @@
-const BASE_PATH = 'epoch-forgotten'
 const ICONS = {
     USER: 'user-icon.png',
     SKILLS: 'skills-icon.svg',
@@ -21,34 +20,34 @@ export class AssetsService {
     private static ITEMS_BASE_URI = '/images/items';
 
     public static getIcon(iconName: IconName) {
-        return `${BASE_PATH}/${this.ICONS_BASE_URI}/${ICONS[iconName]}`;
+        return `${this.ICONS_BASE_URI}/${ICONS[iconName]}`;
     }
 
     public static getSceneUri(sceneName: string) {
-        return `${BASE_PATH}/${this.SCENES_BASE_URI}/${sceneName}`;
+        return `${this.SCENES_BASE_URI}/${sceneName}`;
     }
 
     public static getMusicUri(musicName: string) {
-        return `${BASE_PATH}/${this.MUSIC_BASE_URI}/${musicName}`;
+        return `${this.MUSIC_BASE_URI}/${musicName}`;
     }
 
     public static getSoundUri(soundName: string) {
-        return `${BASE_PATH}/${this.SOUNDS_BASE_URI}/${soundName}`;
+        return `${this.SOUNDS_BASE_URI}/${soundName}`;
     }
 
     public static getCharacterUri(characterImageUri: string) {
-        return `${BASE_PATH}/${this.CHARACTERS_BASE_URI}/${characterImageUri}`;
+        return `${this.CHARACTERS_BASE_URI}/${characterImageUri}`;
     }
 
     public static getEnemyUri(enemyImageUri: string) {
-        return `${BASE_PATH}/${this.ENEMIES_BASE_URI}/${enemyImageUri}`;
+        return `${this.ENEMIES_BASE_URI}/${enemyImageUri}`;
     }
 
     public static getSkillUri(skillUri: string) {
-        return `${BASE_PATH}/${this.SKILLS_BASE_URI}/${skillUri}`;
+        return `${this.SKILLS_BASE_URI}/${skillUri}`;
     }
 
     public static getItemUri(itemUri: string) {
-        return `${BASE_PATH}/${this.ITEMS_BASE_URI}/${itemUri}`;
+        return `${this.ITEMS_BASE_URI}/${itemUri}`;
     }
 }
