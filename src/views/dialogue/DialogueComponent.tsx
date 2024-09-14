@@ -9,7 +9,7 @@ import LoadingOverlay from '../../common/components/LoadingOverlay';
 import { AssetsService } from '../../common/services/AssetsService';
 
 const DialogueComponent = () => {
-    const { npc, dialogue, setView, setDialogue } = useGameStore();
+    const { npcName, dialogue, setView, setDialogue } = useGameStore();
     const [service, setService] = useState<DialogueService>();
     const [currentNode, setCurrentNode] = useState<DialogueNode>();
     const [isLoading, setIsLoading] = useState(true);
@@ -30,15 +30,15 @@ const DialogueComponent = () => {
 
     const fetchAndStartDialogue = async () => {
         setIsLoading(true);
-        if (!npc) {
+        if (!npcName) {
             return;
         }
-        const npcData = (await npcsClient.getNpc(npc.npcName)).data;
+        const npcData = (await npcsClient.getNpc(npcName)).data;
 
         setNpcTitle(npcData.title);
         setDisplayShop(npcData.shop !== undefined);
 
-        const newService = new DialogueService(npc.npcName, dialogue ?? npcData.dialogue, {
+        const newService = new DialogueService(npcName, dialogue ?? npcData.dialogue, {
             onNodeChange: (node) => {
                 setCurrentNode(node);
                 setShowOkButton(!(node && node.options));
@@ -81,7 +81,13 @@ const DialogueComponent = () => {
                     <div className={style.dialogueItem}>
                         {npcTitle && <div className={style.dialogueLabel}>{npcTitle}</div>}
                         <p>
-                            <b>{currentNode.author}</b>: {currentNode.text}
+                            {currentNode.author ? (
+                                <span>
+                                    <b>{currentNode.author}</b>: {currentNode.text}
+                                </span>
+                            ) : (
+                                <i>{currentNode.text}</i>
+                            )}
                         </p>
                         {currentNode.options && (
                             <>

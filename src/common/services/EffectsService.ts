@@ -69,7 +69,8 @@ export class EffectsService {
         useGameStore.setState((prev) => ({
             ...prev,
             view: GameView.Dialogue,
-            dialogue,
+            dialogue: dialogue.dialogue,
+            npcName: dialogue.npcName,
         }));
     }
 

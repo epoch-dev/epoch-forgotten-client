@@ -22,7 +22,7 @@ const isSceneMoveResult = (data: unknown): data is SceneMoveResultDto => {
 };
 
 export const ScenesComponent = () => {
-    const { view, setScene, setView, setEncounter, setNpc } = useGameStore();
+    const { view, setScene, setView, setEncounter, setNpcName: setNpc } = useGameStore();
 
     useEffect(() => {
         ScenesService.initialize();
@@ -34,7 +34,7 @@ export const ScenesComponent = () => {
             },
             onNpc: (npc) => {
                 setView(GameView.Dialogue);
-                setNpc(npc);
+                setNpc(npc.npcName);
             },
         });
         const game = new Phaser.Game({
