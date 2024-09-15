@@ -1,10 +1,17 @@
 import axios, { AxiosError } from 'axios';
-import { CharactersApi, ItemsApi, ScenesApi, NpcsApi, UsersApi, SkillsApi, QuestsApi, BattleApi } from './.generated';
-import { API_PATH } from '../config';
+import {
+    CharactersApi,
+    ItemsApi,
+    ScenesApi,
+    NpcsApi,
+    UsersApi,
+    SkillsApi,
+    QuestsApi,
+    BattleApi,
+} from './.generated';
+import { appConfig } from '../config';
 import { ToastService } from '../services/ToastService';
 import { StorageService } from '../services/StorageService';
-
-const BASE_PATH = API_PATH;
 
 type ApiError = {
     name: string;
@@ -27,11 +34,11 @@ axios.interceptors.response.use(
     },
 );
 
-export const usersClient = new UsersApi(undefined, BASE_PATH, axios);
-export const itemsClient = new ItemsApi(undefined, BASE_PATH, axios);
-export const scenesClient = new ScenesApi(undefined, BASE_PATH, axios);
-export const charactersClient = new CharactersApi(undefined, BASE_PATH, axios);
-export const npcsClient = new NpcsApi(undefined, BASE_PATH, axios);
-export const skillsClient = new SkillsApi(undefined, BASE_PATH, axios);
-export const battleClient = new BattleApi(undefined, BASE_PATH, axios);
-export const questsClient = new QuestsApi(undefined, BASE_PATH, axios);
+export const usersClient = new UsersApi(undefined, appConfig.apiUrl, axios);
+export const itemsClient = new ItemsApi(undefined, appConfig.apiUrl, axios);
+export const scenesClient = new ScenesApi(undefined, appConfig.apiUrl, axios);
+export const charactersClient = new CharactersApi(undefined, appConfig.apiUrl, axios);
+export const npcsClient = new NpcsApi(undefined, appConfig.apiUrl, axios);
+export const skillsClient = new SkillsApi(undefined, appConfig.apiUrl, axios);
+export const battleClient = new BattleApi(undefined, appConfig.apiUrl, axios);
+export const questsClient = new QuestsApi(undefined, appConfig.apiUrl, axios);

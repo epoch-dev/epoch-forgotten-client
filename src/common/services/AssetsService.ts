@@ -1,3 +1,5 @@
+import { appConfig } from "../config";
+
 const ICONS = {
     USER: 'user-icon.png',
     SKILLS: 'skills-icon.svg',
@@ -10,14 +12,14 @@ const ICONS = {
 type IconName = keyof typeof ICONS;
 
 export class AssetsService {
-    private static ICONS_BASE_URI = './images/icons';
-    private static SCENES_BASE_URI = '/images/scenes';
-    private static MUSIC_BASE_URI = '/audio/music';
-    private static SOUNDS_BASE_URI = '/audio/sounds';
-    private static CHARACTERS_BASE_URI = '/images/characters';
-    private static ENEMIES_BASE_URI = '/images/enemies';
-    private static SKILLS_BASE_URI = '/images/skills';
-    private static ITEMS_BASE_URI = '/images/items';
+    private static ICONS_BASE_URI = `${appConfig.assetsPath}images/icons`;
+    private static SCENES_BASE_URI = `${appConfig.assetsPath}images/scenes`;
+    private static MUSIC_BASE_URI = `${appConfig.assetsPath}audio/music`;
+    private static SOUNDS_BASE_URI = `${appConfig.assetsPath}audio/sounds`;
+    private static CHARACTERS_BASE_URI = `${appConfig.assetsPath}images/characters`;
+    private static ENEMIES_BASE_URI = `${appConfig.assetsPath}images/enemies`;
+    private static SKILLS_BASE_URI = `${appConfig.assetsPath}images/skills`;
+    private static ITEMS_BASE_URI = `${appConfig.assetsPath}images/items`;
 
     public static getIcon(iconName: IconName) {
         return `${this.ICONS_BASE_URI}/${ICONS[iconName]}`;

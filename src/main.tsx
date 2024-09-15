@@ -1,12 +1,12 @@
 import './common/styles/index.scss';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { RouterProvider, createHashRouter } from 'react-router-dom';
 import { AuthComponent } from './views/auth/AuthComponent';
 import { GameComponent } from './views/game/GameComponent';
 import { ToastContainer } from 'react-toastify';
 
-const router = createBrowserRouter([
+const router = createHashRouter([
     {
         path: 'game',
         element: <GameComponent />,
