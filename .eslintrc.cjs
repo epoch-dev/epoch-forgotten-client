@@ -1,5 +1,3 @@
-const { jsx } = require('react/jsx-runtime');
-
 module.exports = {
     root: true,
     env: { browser: true, es2020: true },
@@ -24,8 +22,5 @@ module.exports = {
         eqeqeq: 'error',
         'keyword-spacing': 'warn',
         'comma-dangle': ['error', 'always-multiline'],
-        jsx: {
-            ignorePatterns: ['ConditionalExpression'],
-        },
     },
 };

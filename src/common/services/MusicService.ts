@@ -46,6 +46,6 @@ export class MusicService extends AudioService {
     }
 
     public mainTheme() {
-        this.play('menu-theme.ogg')
+        this.play('menu-theme.ogg');
     }
 }

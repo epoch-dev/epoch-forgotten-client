@@ -1,10 +1,10 @@
 name: Deploy Epoch Forgotten client to Pages
 
 on:
-  # push:
-  #   branches: [$default-branch]
+  push:
+    branches: [$default-branch]
 
-  # allows to run this workflow manually from the Actions tab 1
+  # allows to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 permissions:
@@ -60,14 +60,14 @@ jobs:
       - name: Build client
         run: yarn build
 
-      # - name: Setup Pages
-      #   uses: actions/configure-pages@v5
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
 
-      # - name: Upload artifact
-      #   uses: actions/upload-pages-artifact@v3
-      #   with:
-      #     path: './dist'
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './dist'
 
-      # - name: Deploy to GitHub Pages
-      #   id: deployment
-      #   uses: actions/deploy-pages@v4
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
