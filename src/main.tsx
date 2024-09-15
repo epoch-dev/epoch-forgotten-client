@@ -8,7 +8,7 @@ import { ToastContainer } from 'react-toastify';
 
 const router = createBrowserRouter([
     {
-        path: `game`,
+        path: 'game',
         element: <GameComponent />,
     },
     {
