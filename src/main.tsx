@@ -15,7 +15,7 @@ const router = createBrowserRouter([
         path: '*', // least specific, catches all not found routes, keep last
         element: <AuthComponent />,
     },
-]);
+], { basename: import.meta.env.BASE_URL });
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
