@@ -54,7 +54,7 @@ export class EffectsService {
     }
 
     private static handleItemEffect(item: Single<Required<Effects>['items']>) {
-        ToastService.success({ message: `Received ${item.name} (${item.quantity})` });
+        ToastService.success({ message: `Received ${item.label} (${item.quantity})` });
     }
 
     private static handleEncounterEffect(encounter: Required<Effects>['encounter']) {
