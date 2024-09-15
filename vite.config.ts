@@ -5,5 +5,5 @@ import react from '@vitejs/plugin-react-swc';
 export default defineConfig({
     base: '/epoch-forgotten-client/',
     plugins: [react()],
-    envDir: './'
+    envDir: './',
 });

@@ -5,7 +5,7 @@ import { questsClient } from '../api/client';
 import { SoundService } from './SoundService';
 import { ToastService } from './ToastService';
 
-type Single<T extends any[]> = T[number];
+type Single<T extends unknown[]> = T[number];
 
 const STARTING_STAGE = 'stage1';
 const soundService = SoundService.getInstance();
@@ -14,7 +14,7 @@ export class EffectsService {
     public static async showEffects(allEffects: Effects[]) {
         for (const effects of allEffects) {
             for (const questEffect of effects.quests || []) {
-                this.handleQuestEffect(questEffect);
+                await this.handleQuestEffect(questEffect);
             }
             for (const item of effects.items || []) {
                 this.handleItemEffect(item);
