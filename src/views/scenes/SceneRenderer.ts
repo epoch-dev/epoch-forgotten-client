@@ -11,7 +11,7 @@ import {
 import { MusicService } from '../../common/services/MusicService';
 import TileRenderer from './TileRenderer';
 import { getCurrentTimeStamp } from '../../common/utils';
-import { MOVE_INTERVAL } from '../../common/config';
+import { appConfig } from '../../common/config';
 
 export class SceneRenderer extends Scene {
     public blockMovement = false;
@@ -89,7 +89,7 @@ export class SceneRenderer extends Scene {
 
     private async handleMove() {
         if (
-            this.lastMove + MOVE_INTERVAL > getCurrentTimeStamp() ||
+            this.lastMove + appConfig.moveInterval > getCurrentTimeStamp() ||
             this.blockMovement ||
             !this.user ||
             !this.input.keyboard
@@ -128,7 +128,7 @@ export class SceneRenderer extends Scene {
                 targets: this.user,
                 x: newPosition.x,
                 y: newPosition.y,
-                duration: 0.9 * MOVE_INTERVAL,
+                duration: 0.9 * appConfig.moveInterval,
                 ease: 'Linear',
             });
         }

@@ -4,12 +4,12 @@ import { ScenesService } from './ScenesService';
 import { useGameStore } from '../game/GameStore';
 import { GameView } from '../game/types';
 import { io } from 'socket.io-client';
-import { WS_PATH } from '../../common/config';
 import { StorageService } from '../../common/services/StorageService';
 import { SceneMoveDirection, SceneMoveResultDto } from '../../common/api/.generated';
 import { ToastService } from '../../common/services/ToastService';
+import { appConfig } from '../../common/config';
 
-let wsClient = io(WS_PATH);
+let wsClient = io(appConfig.apiUrl);
 
 const isSceneMoveResult = (data: unknown): data is SceneMoveResultDto => {
     try {
@@ -51,7 +51,7 @@ export const ScenesComponent = () => {
         });
         setScene(scene);
         const authToken = StorageService.get('user')?.accessToken;
-        wsClient = io(WS_PATH, { extraHeaders: { authorization: `Bearer ${authToken}` } });
+        wsClient = io(appConfig.apiUrl, { extraHeaders: { authorization: `Bearer ${authToken}` } });
         wsClient.on('message', async (wsData: string) => {
             if (!isSceneMoveResult(wsData)) {
                 ToastService.error({ message: wsData });
