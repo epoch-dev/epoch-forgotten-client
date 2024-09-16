@@ -2,7 +2,7 @@ name: Deploy Epoch Forgotten client to Pages
 
 on:
   push:
-    branches: ['main']
+    branches: ['main', 'service-testing']
   pull_request:
     branches: ['main']
 
