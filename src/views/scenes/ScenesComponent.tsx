@@ -9,7 +9,7 @@ import { ToastService } from '../../common/services/ToastService';
 import { appConfig } from '../../common/config';
 import { SceneMoveDirection, SceneMoveResultDto } from '../../common/api/sceneTypes';
 
-let wsClient = io(appConfig.apiUrl);
+let wsClient = io(appConfig.apiUrl, { extraHeaders: { 'ngrok-skip-browser-warning': 'true' } });
 
 const isSceneMoveResult = (data: unknown): data is SceneMoveResultDto => {
     try {
