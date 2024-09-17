@@ -5,6 +5,9 @@ import { RouterProvider, createHashRouter } from 'react-router-dom';
 import { AuthComponent } from './views/auth/AuthComponent';
 import { GameComponent } from './views/game/GameComponent';
 import { ToastContainer } from 'react-toastify';
+import axios from 'axios';
+
+axios.defaults.headers.common['ngrok-skip-browser-warning'] = true;
 
 const router = createHashRouter([
     {
