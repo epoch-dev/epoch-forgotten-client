@@ -19,8 +19,8 @@ import ShopBuyComponent from '../shop/ShopBuyComponent';
 import { ShopSellComponent } from '../shop/ShopSellComponent';
 import { useEffect } from 'react';
 import { battleClient, charactersClient } from '../../common/api/client';
+import { UserRole } from '../../common/api/.generated';
 
-const musicService = MusicService.getInstance();
 const NOT_SCROLLABLE_VIEWS = [
     GameView.World,
     GameView.Dialogue,
@@ -29,9 +29,13 @@ const NOT_SCROLLABLE_VIEWS = [
     GameView.Battle,
 ];
 
+const musicService = MusicService.getInstance();
+
 export const GameComponent = () => {
     const navigate = useNavigate();
     const { view, setView, clear } = useGameStore();
+
+    const user = StorageService.get('user');
 
     const canNavigate = view !== GameView.Battle && view !== GameView.Intro;
     const overflowHidden = NOT_SCROLLABLE_VIEWS.includes(view) ? { overflow: 'hidden' } : {};
@@ -99,9 +103,11 @@ export const GameComponent = () => {
             )}
             <aside>
                 <MusicPanel />
-                <button onClick={() => setView(GameView._Dev)} className={style.navItemDev}>
-                    _Dev
-                </button>
+                {user?.role === UserRole.Administrator && (
+                    <button onClick={() => setView(GameView._Dev)} className={style.navItemDev}>
+                        _Dev
+                    </button>
+                )}
             </aside>
         </>
     );
