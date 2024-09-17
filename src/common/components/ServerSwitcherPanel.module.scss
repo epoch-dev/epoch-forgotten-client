@@ -1,0 +1,55 @@
+.serverSwitcher {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+
+    .serverItem {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+
+        button {
+            padding: 10px;
+            margin-right: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            outline: none;
+
+            &:disabled {
+                cursor: not-allowed;
+                background-color: #555;
+            }
+
+            &.active {
+                background-color: #007bff;
+            }
+
+            &:hover:not(:disabled) {
+                background-color: #444;
+            }
+        }
+
+        .diode {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: grey;
+
+            &.green {
+                background-color: green;
+            }
+
+            &.red {
+                background-color: red;
+            }
+        }
+    }
+}
+
+.activeServerInfo {
+    margin-top: 20px;
+    font-weight: bold;
+}

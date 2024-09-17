@@ -3,6 +3,7 @@ import { MusicService } from '../../common/services/MusicService';
 import style from './AuthComponent.module.scss';
 import SigninFormComponent from './SigninFormComponent';
 import SignupFormComponent from './SignupFormComponent';
+import ServerSwitcherPanel from '../../common/components/ServerSwitcherPanel';
 
 const musicService = MusicService.getInstance();
 const particlesCount = Array.from({ length: 125 }, (_, index) => index + 1);
@@ -44,6 +45,7 @@ export const AuthComponent = () => {
                     </div>
                 ))}
             </div>
+            <ServerSwitcherPanel />
         </>
     );
 };
