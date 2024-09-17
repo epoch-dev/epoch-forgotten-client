@@ -51,7 +51,7 @@ export const ScenesComponent = () => {
         });
         setScene(scene);
         const authToken = StorageService.get('user')?.accessToken;
-        wsClient = io(appConfig.apiUrl, { extraHeaders: { authorization: `Bearer ${authToken}` } });
+        wsClient = io(appConfig.apiUrl, { extraHeaders: { authorization: `Bearer ${authToken}`, 'ngrok-skip-browser-warning': 'true' } });
         wsClient.on('message', async (wsData: string) => {
             if (!isSceneMoveResult(wsData)) {
                 ToastService.error({ message: wsData });
