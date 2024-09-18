@@ -4,7 +4,7 @@ import { UserAuthDto } from '../../common/api/.generated';
 import { usersClient } from '../../common/api/client';
 import { StorageService } from '../../common/services/StorageService';
 import { ToastService } from '../../common/services/ToastService';
-import { isEmpty } from '../../common/utils';
+import { isEmpty, throttle } from '../../common/utils';
 
 export const SigninFormComponent = () => {
     const [formData, setFormData] = useState<UserAuthDto>({
@@ -19,8 +19,12 @@ export const SigninFormComponent = () => {
         setFormData({ ...formData, [id]: value });
     };
 
-    const handleSignin = async (event: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        throttle(handleSignin)();
+    };
+
+    const handleSignin = async () => {
         if (!validateForm()) {
             return;
         }
@@ -46,7 +50,7 @@ export const SigninFormComponent = () => {
     };
 
     return (
-        <form onSubmit={handleSignin} className="formWrapper">
+        <form onSubmit={handleSubmit} className="formWrapper">
             <fieldset>
                 <label htmlFor="username" className="formLabel">
                     Username:

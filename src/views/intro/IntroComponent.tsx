@@ -7,6 +7,7 @@ import { GameView } from '../game/types';
 import { ScenesService } from '../scenes/ScenesService';
 import { CharacterClass } from '../../common/api/.generated';
 import { TooltipComponent } from '../../common/components/TooltipComponent';
+import { throttle } from '../../common/utils';
 
 export const IntroComponent = () => {
     const [mainName, setMainName] = useState('');
@@ -115,7 +116,7 @@ export const IntroComponent = () => {
                         <label htmlFor="Mercenary">Arcanist</label>
                     </TooltipComponent>
                 </fieldset>
-                <button onClick={handleNameChoice} className={`formSubmitBtn ${style.confirmBtn}`}>
+                <button onClick={throttle(handleNameChoice)} className={`formSubmitBtn ${style.confirmBtn}`}>
                     Confirm
                 </button>
             </div>

@@ -5,6 +5,7 @@ import { useGameStore } from '../game/GameStore';
 import { useEffect, useState } from 'react';
 import { ItemComponent } from './ItemComponent';
 import { SoundService } from '../../common/services/SoundService';
+import { throttle } from '../../common/utils';
 
 export type EquipmentSelectionComponentProps = {
     currentItem?: ItemDto;
@@ -75,7 +76,7 @@ export const EquipmentSelectionComponent = ({
                 <div className={style.itemsWrapper}>
                     {items.map((item) => (
                         <div
-                            onClick={() => equipItem(item)}
+                            onClick={throttle(() => equipItem(item))}
                             key={item.id}
                             className={`${style.itemItem} ${item.characterId ? style.itemDisabled : ''}`}>
                             <ItemComponent item={item} itemStyle={{ width: '3rem', height: '3rem' }} />
@@ -84,7 +85,10 @@ export const EquipmentSelectionComponent = ({
                     ))}
                 </div>
                 {currentItem && (
-                    <button onClick={unEquipItem} className="modalCloseBtn" style={{ marginTop: '2rem' }}>
+                    <button
+                        onClick={throttle(unEquipItem)}
+                        className="modalCloseBtn"
+                        style={{ marginTop: '2rem' }}>
                         Unequip
                     </button>
                 )}

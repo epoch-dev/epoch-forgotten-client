@@ -8,6 +8,7 @@ import { ToastService } from '../../common/services/ToastService';
 import { SoundService } from '../../common/services/SoundService';
 import { useState } from 'react';
 import { ConfirmDialog } from '../../common/components/ConfirmDialog';
+import { throttle } from '../../common/utils';
 
 const soundService = SoundService.getInstance();
 
@@ -52,7 +53,9 @@ export const SkillComponent = ({ skill }: { skill: SkillDto }) => {
                 </button>
             )}
             {showConfirmLearnDialog && (
-                <ConfirmDialog onConfirm={learnSkill} onCancel={() => setShowConfirmLearnDialog(false)}>
+                <ConfirmDialog
+                    onConfirm={throttle(learnSkill)}
+                    onCancel={() => setShowConfirmLearnDialog(false)}>
                     <p>
                         Are you sure you want to learn <b className="primary">{skill.label}</b>
                         <br /> by using

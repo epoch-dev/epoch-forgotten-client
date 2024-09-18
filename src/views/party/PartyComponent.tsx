@@ -4,6 +4,7 @@ import { CharacterDto, PartySlot } from '../../common/api/.generated';
 import { charactersClient } from '../../common/api/client';
 import { CharacterComponent } from './CharacterComponent';
 import { SoundService } from '../../common/services/SoundService';
+import { throttle } from '../../common/utils';
 
 const soundService = SoundService.getInstance();
 
@@ -65,7 +66,7 @@ export const PartyComponent = () => {
                 {[main, first, second, third].map((character, index) =>
                     character ? (
                         <div
-                            onClick={() => removeFromParty(character.id)}
+                            onClick={throttle(() => removeFromParty(character.id))}
                             key={character.id}
                             className={style.characterItem}>
                             <CharacterComponent character={character} />
@@ -81,7 +82,7 @@ export const PartyComponent = () => {
             <div className={style.partyWrapper}>
                 {roster.map((character) => (
                     <div
-                        onClick={() => addToParty(character.id)}
+                        onClick={throttle(() => addToParty(character.id))}
                         key={character.id}
                         className={style.characterItem}>
                         <CharacterComponent character={character} />
