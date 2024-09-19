@@ -8,6 +8,7 @@ import { GameView } from '../game/types';
 import { TooltipComponent } from '../../common/components/TooltipComponent';
 import { ItemTooltip } from '../equipment/ItemComponent';
 import { ToastService } from '../../common/services/ToastService';
+import { throttle } from '../../common/utils';
 
 const soundService = SoundService.getInstance();
 
@@ -106,7 +107,10 @@ export const ShopSellComponent = () => {
                         <p>Total: {Math.round(purchaseFactor * totalPrice)}</p>
                     </div>
                     <div>
-                        <button className={style.buyButton} onClick={sellAll} disabled={!totalPrice}>
+                        <button
+                            className={style.buyButton}
+                            onClick={throttle(sellAll)}
+                            disabled={!totalPrice}>
                             Sell
                         </button>
                         <button className={style.closeShopButton} onClick={() => setView(GameView.World)}>

@@ -7,6 +7,7 @@ import { useGameStore } from '../game/GameStore';
 import { GameView } from '../game/types';
 import LoadingOverlay from '../../common/components/LoadingOverlay';
 import { AssetsService } from '../../common/services/AssetsService';
+import { throttle } from '../../common/utils';
 
 const DialogueComponent = () => {
     const { npcName, dialogue, setView, setDialogue } = useGameStore();
@@ -73,7 +74,11 @@ const DialogueComponent = () => {
     };
 
     return (
-        <div className={style.dialogueWrapper} onKeyDown={handleKeyPress} tabIndex={-1} ref={ref}>
+        <div
+            className={style.dialogueWrapper}
+            onKeyDown={throttle(handleKeyPress, 100)}
+            tabIndex={-1}
+            ref={ref}>
             {isLoading ? (
                 <LoadingOverlay />
             ) : (
@@ -94,7 +99,7 @@ const DialogueComponent = () => {
                                 {currentNode.options.map((option, index) => (
                                     <button
                                         key={option.id}
-                                        onClick={() => handleOptionClick(index)}
+                                        onClick={throttle(() => handleOptionClick(index), 100)}
                                         className={style.dialogueBtn}>
                                         {index + 1}: {option.text}
                                     </button>
@@ -102,7 +107,7 @@ const DialogueComponent = () => {
                             </>
                         )}
                         {showOkButton && (
-                            <button onClick={handleOkClick} className={style.dialogueBtn}>
+                            <button onClick={throttle(handleOkClick, 100)} className={style.dialogueBtn}>
                                 OK
                             </button>
                         )}

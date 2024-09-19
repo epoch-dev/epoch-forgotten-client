@@ -10,6 +10,7 @@ import { SoundService } from '../../common/services/SoundService';
 import { npcsClient } from '../../common/api/client';
 import { GameView } from '../game/types';
 import { TooltipComponent } from '../../common/components/TooltipComponent';
+import { throttle } from '../../common/utils';
 
 const soundService = SoundService.getInstance();
 
@@ -122,7 +123,7 @@ const ShopBuyComponent = () => {
                     <div>
                         <button
                             className={style.buyButton}
-                            onClick={buyAll}
+                            onClick={throttle(buyAll)}
                             disabled={buyDisabled || !totalCost}>
                             Purchase
                         </button>

@@ -4,6 +4,7 @@ import { useGameStore } from '../game/GameStore';
 import { CharacterAttrs, CharacterImproveAttributeDtoAttributeEnum } from '../../common/api/.generated';
 import { charactersClient } from '../../common/api/client';
 import { SoundService } from '../../common/services/SoundService';
+import { throttle } from '../../common/utils';
 
 export const AttributeComponent = ({
     label,
@@ -44,7 +45,7 @@ export const AttributeComponent = ({
                 {amount}
                 {canUpgrade && (
                     <img
-                        onClick={handleUpgrade}
+                        onClick={throttle(handleUpgrade, 100)}
                         src={AssetsService.getIcon('PLUS')}
                         style={{ width: '1rem', height: '1rem' }}
                         draggable={false}

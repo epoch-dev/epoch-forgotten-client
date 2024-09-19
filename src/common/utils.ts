@@ -30,3 +30,18 @@ export const formatNumber = (value: number) => {
         .map((character, index) => (index > 3 && !isNaN(+character) && character !== ' ' ? '0' : character))
         .join('');
 };
+
+let inThrottle = false;
+
+export function throttle<T extends (...args: never[]) => void>(
+    func: T,
+    throttle = 1000, // 1 second
+): (...args: Parameters<T>) => void {
+    return function (...args: Parameters<T>): void {
+        if (!inThrottle) {
+            func(...args);
+            inThrottle = true;
+            setTimeout(() => (inThrottle = false), throttle);
+        }
+    };
+}

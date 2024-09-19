@@ -16,7 +16,7 @@ import { GameView } from '../game/types';
 import { useGameStore } from '../game/GameStore';
 import { TooltipComponent } from '../../common/components/TooltipComponent';
 import { BattleCharacterComponent } from './BattleCharacterComponent';
-import { wait } from '../../common/utils';
+import { throttle, wait } from '../../common/utils';
 import { ScenesService } from '../scenes/ScenesService';
 import { AssetsService } from '../../common/services/AssetsService';
 import { BattleResultComponent } from './BattleResultComponent';
@@ -61,7 +61,10 @@ export const BattleComponent = () => {
 
     useEffect(() => {
         if (scene && battleAssets) {
-            musicService.play(battleAssets.battleMusicUri ?? scene.battleMusicUri, !battleAssets.battleMusicUri);
+            musicService.play(
+                battleAssets.battleMusicUri ?? scene.battleMusicUri,
+                !battleAssets.battleMusicUri,
+            );
         }
     }, [scene, battleAssets]);
 
@@ -150,7 +153,8 @@ export const BattleComponent = () => {
             const character = [...party, ...enemies].find((c) => c.id === moveResult.characterId)!;
             const skill = character.skills.find((s) => s.label === moveResult.skillLabel)!;
             character.statistics.mana -= skill.manaCost ?? 0;
-            character.statistics.statuses = turnResult.characters.find(c => c.id === character.id)?.statistics.statuses ?? [];
+            character.statistics.statuses =
+                turnResult.characters.find((c) => c.id === character.id)?.statistics.statuses ?? [];
             moveResult.moveLogs.forEach((log) => {
                 const target = [...party, ...enemies].find((c) => c.id === log.targetId)!;
                 target.statistics.health -= log.hits.reduce((prev, curr) => prev + curr.value, 0);
@@ -176,10 +180,10 @@ export const BattleComponent = () => {
             style={
                 scene
                     ? {
-                        backgroundImage: `url(${AssetsService.getSceneUri(
-                            battleAssets?.battleImageUri ?? scene?.battleImageUri,
-                        )})`,
-                    }
+                          backgroundImage: `url(${AssetsService.getSceneUri(
+                              battleAssets?.battleImageUri ?? scene?.battleImageUri,
+                          )})`,
+                      }
                     : {}
             }>
             <p className={style.infoItem}>{hint}</p>
@@ -195,7 +199,7 @@ export const BattleComponent = () => {
                             isSelected={selectedCharacter?.id === character.id}
                             isTargeted={characterCommand?.targetId === character.id}
                             animatedSkill={animatedSkill}
-                            onClick={() => handleCharacterSelection(character)}
+                            onClick={throttle(() => handleCharacterSelection(character), 100)}
                         />
                     ))}
                 </div>
@@ -207,7 +211,7 @@ export const BattleComponent = () => {
                             isSelected={selectedCharacter?.id === enemy.id}
                             isTargeted={characterCommand?.targetId === enemy.id}
                             animatedSkill={animatedSkill}
-                            onClick={() => handleCharacterSelection(enemy)}
+                            onClick={throttle(() => handleCharacterSelection(enemy), 100)}
                         />
                     ))}
                 </div>
@@ -230,7 +234,7 @@ export const BattleComponent = () => {
                                         </>
                                     }>
                                     <button
-                                        onClick={() => setSelectedSkill(skill)}
+                                        onClick={throttle(() => setSelectedSkill(skill), 100)}
                                         className={`${style.skillItem} ${
                                             selectedSkill?.name === skill.name ||
                                             (!selectedSkill && characterCommand?.skillName === skill.name)
@@ -244,7 +248,7 @@ export const BattleComponent = () => {
                 </div>
                 <div className={style.controlsWrapper}>
                     <button
-                        onClick={handleAttack}
+                        onClick={throttle(handleAttack)}
                         className={style.controlItem}
                         disabled={
                             animatedSkill !== undefined ||
@@ -254,7 +258,7 @@ export const BattleComponent = () => {
                         Attack
                     </button>
                     <button
-                        onClick={handleEscape}
+                        onClick={throttle(handleEscape)}
                         className={style.controlItem}
                         disabled={
                             !canEscape ||

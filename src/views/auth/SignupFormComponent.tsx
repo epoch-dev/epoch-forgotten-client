@@ -4,7 +4,7 @@ import { UserAuthDto } from '../../common/api/.generated';
 import { usersClient } from '../../common/api/client';
 import { StorageService } from '../../common/services/StorageService';
 import { ToastService } from '../../common/services/ToastService';
-import { isEmpty } from '../../common/utils';
+import { isEmpty, throttle } from '../../common/utils';
 import { useGameStore } from '../game/GameStore';
 import { GameView } from '../game/types';
 
@@ -25,8 +25,12 @@ export const SignupFormComponent = () => {
         setFormData({ ...formData, [id]: value });
     };
 
-    const handleSignup = async (event: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        throttle(handleSignup)();
+    };
+
+    const handleSignup = async () => {
         if (!validateForm()) {
             return;
         }
@@ -59,7 +63,7 @@ export const SignupFormComponent = () => {
     };
 
     return (
-        <form onSubmit={handleSignup} className="formWrapper">
+        <form onSubmit={handleSubmit} className="formWrapper">
             <fieldset>
                 <label className="formLabel">Username:</label>
                 <input
