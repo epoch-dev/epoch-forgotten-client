@@ -1,3 +1,4 @@
+@use 'sass:color';
 @import './variables.scss';
 
 .title {
@@ -6,7 +7,7 @@
     text-align: center;
     font-size: 1.8rem;
     line-height: 2rem;
-    color: lighten($color-primary, 10);
+    color: color.adjust($color-primary, $lightness: 10%);
 }
 
 .subtitle {
@@ -33,9 +34,9 @@
     &:hover {
         @include boxShadowSm();
         cursor: pointer;
-        color: lighten($color-primary, 10);
-        background: darken($color-dark, 10);
-        border-bottom: 2px solid lighten($color-primary, 10);
+        color: color.adjust($color-primary, $lightness: 10%);
+        background: color.adjust($color-dark, $lightness: -10%);
+        border-bottom: 2px solid color.adjust($color-primary, $lightness: 10%);
     }
 }
 

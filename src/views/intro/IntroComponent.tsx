@@ -40,7 +40,7 @@ export const IntroComponent = () => {
                 </p>
                 <br />
                 <p className="subtitle">
-                    Amidst the turmoil, the young man's thoughts turn to his childhood friend, Nikka. A
+                    Amidst the turmoil, the young man&apos;s thoughts turn to his childhood friend, Nikka. A
                     skilled huntress known for her unmatched prowess with a bow. As he contemplates the
                     daunting task ahead, he knows he cannot face it alone. Yet, he is keenly aware that
                     convincing Nikka may not be easy, as her old resentments towards him for choosing the path
@@ -60,7 +60,7 @@ export const IntroComponent = () => {
                         A guardian and musician, he embodies a unique blend of courage, strength, and
                         creativity. Raised in the tranquil village of Vivinra, he have honed his skills
                         through years of diligent training and exploration. Now, their journey takes a new
-                        turn as there seems to be something mysterious hiding behind wolves' activity. With
+                        turn as there seems to be something mysterious hiding behind wolves&apos; activity. With
                         determination etched into their every step, he stand ready to face whatever challenges
                         lie ahead...
                     </p>

@@ -1,3 +1,4 @@
+@use 'sass:color';
 @import '../../common/styles/variables.scss';
 @import '../../common/styles/mixins.scss';
 
@@ -9,7 +10,7 @@
     font-weight: 600;
 
     b {
-        color: darken($color-epic, 30);
+        color: color.adjust($color-epic, $lightness: -30%);
     }
 }
 
@@ -23,17 +24,17 @@
     gap: 4px;
     padding: 2px;
     text-align: center;
-    border: 2px groove darken($color-primary, 20);
+    border: 2px groove color.adjust($color-primary, $lightness: -20%);
 
     .item {
         @include insetShadow($color-primary);
         width: 4rem;
         height: 4rem;
         position: relative;
-        border: 1px solid darken($color-primary, 20);
+        border: 1px solid color.adjust($color-primary, $lightness: -20%);
 
         &:hover {
-            background: rgba(darken($color-primary, 20), 0.1);
+            background: rgba(color.adjust($color-primary, $lightness: -20%), 0.1);
         }
     }
 

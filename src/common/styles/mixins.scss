@@ -17,6 +17,7 @@
 }
 
 @mixin fadeInAnimation($time: 0.5s, $length: 1.25rem) {
+    animation: fadeIn $time ease-out;
     @keyframes fadeIn {
         from {
             opacity: 0;
@@ -27,5 +28,4 @@
             transform: translateY(0);
         }
     }
-    animation: fadeIn $time ease-out;
 }

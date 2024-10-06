@@ -66,7 +66,8 @@ export const SkillsComponent = () => {
                 </div>
                 <div className={style.skillTreesWrapper}>
                     <div className={style.skillTreeWrapper}>
-                        <b>{character.class}</b><br />
+                        <b>{character.class}</b>
+                        <br />
                         {classSkills?.map((skill, index) => (
                             <div key={skill.name} className={style.skillWrapper}>
                                 <SkillComponent skill={skill} />
@@ -75,7 +76,8 @@ export const SkillsComponent = () => {
                         ))}
                     </div>
                     <div className={style.skillTreeWrapper}>
-                        <b>Bloodline</b><br />
+                        <b>Bloodline</b>
+                        <br />
                         {uniqueSkills?.map((skill, index) => (
                             <div key={skill.name} className={style.skillWrapper}>
                                 <SkillComponent skill={skill} />

@@ -1,3 +1,4 @@
+@use 'sass:color';
 @import '../../common/styles/variables.scss';
 @import '../../common/styles/mixins.scss';
 
@@ -112,9 +113,9 @@
         &:hover {
             @include boxShadowSm();
             cursor: pointer;
-            color: lighten($color-primary, 10);
-            background: darken($color-dark, 10);
-            border-bottom: 2px solid lighten($color-primary, 10);
+            color: color.adjust($color-primary, $lightness: 10%);
+            background: color.adjust($color-dark, $lightness: -10%);
+            border-bottom: 2px solid color.adjust($color-primary, $lightness: 10%);
         }
 
         &:disabled {
@@ -132,7 +133,7 @@
         border-radius: 0.5rem;
         font-size: 1.25rem;
         color: $color-dark;
-        background: lighten($color-primary, 10);
+        background: color.adjust($color-primary, $lightness: 10%);
 
         border-bottom: 2px solid $color-dark;
         border-radius: 0.7rem;
@@ -140,9 +141,9 @@
         &:hover {
             @include boxShadowSm();
             cursor: pointer;
-            color: darken($color-dark, 10);
-            background: lighten($color-primary, 20);
-            border-bottom: 2px solid darken($color-dark, 10);
+            color: color.adjust($color-dark, $lightness: -10%);
+            background: color.adjust($color-primary, $lightness: 20%);
+            border-bottom: 2px solid color.adjust($color-dark, $lightness: -10%);
         }
     }
 }
@@ -153,7 +154,7 @@
     right: 1rem;
     font-size: 25px;
     font-weight: 900;
-    color: darken($color-primary, 10);
+    color: color.adjust($color-primary, $lightness: -10%);
     background: none;
 
     p {
@@ -165,6 +166,6 @@
     &:hover p {
         cursor: pointer;
         transform: scale(1.2);
-        color: darken($color-primary, 5);
+        color: color.adjust($color-primary, $lightness: -5%);
     }
 }

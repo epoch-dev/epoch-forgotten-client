@@ -16,7 +16,9 @@ export class DialogueService {
         { onNodeChange, onComplete }: { onNodeChange: (node: DialogueNode) => void; onComplete: () => void },
     ) {
         this.dialogue = npcDialogue.nodes;
-        npcDialogue.effects && this.effectsAll.push(npcDialogue.effects);
+        if (npcDialogue.effects) {
+            this.effectsAll.push(npcDialogue.effects);
+        }
         this.decisions = { name, nodes: {} };
         this.onNodeChange = onNodeChange;
         this.onComplete = () => {
@@ -38,7 +40,9 @@ export class DialogueService {
         const currentNode = this.dialogue[this.currentNodeIndex];
         const chosenOption = currentNode.options![optionIndex];
         if (chosenOption.flagValue || chosenOption.effects) {
-            chosenOption.effects && this.effectsAll.push(chosenOption.effects);
+            if (chosenOption.effects) {
+                this.effectsAll.push(chosenOption.effects);
+            }
             this.decisions.nodes[currentNode.id] = chosenOption.id;
         }
 
