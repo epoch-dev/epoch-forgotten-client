@@ -18,7 +18,11 @@ export const AuthComponent = () => {
     musicService.mainTheme();
 
     const toggleViewMode = () => {
-        view === ViewMode.Signin ? setView(ViewMode.Signup) : setView(ViewMode.Signin);
+        if (view === ViewMode.Signin) {
+            setView(ViewMode.Signup);
+        } else {
+            setView(ViewMode.Signin);
+        }
     };
 
     return (

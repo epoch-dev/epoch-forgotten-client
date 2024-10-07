@@ -1,3 +1,4 @@
+@use 'sass:color';
 @import './variables.scss';
 @import './mixins.scss';
 
@@ -31,7 +32,7 @@ fieldset {
     appearance: none;
     padding: 0.5rem;
     font-size: 16px;
-    border: 1px solid darken($color-light, 25);
+    border: 1px solid color.adjust($color-light, $lightness: -25%);
 }
 
 .formActionsWrapper {
@@ -51,13 +52,13 @@ fieldset {
     font-size: 18px;
     padding: 0.5rem 1rem;
     text-align: center;
-    background: darken($color-primary, 10);
+    background: color.adjust($color-primary, $lightness: -10%);
     color: $color-light;
 
     &:hover {
         @include boxShadow;
         cursor: pointer;
-        background: darken($color-primary, 15);
+        background: color.adjust($color-primary, $lightness: -15%);
     }
 }
 
@@ -68,12 +69,12 @@ fieldset {
     font-size: 18px;
     padding: 0.5rem 1rem;
     text-align: center;
-    background: darken($color-light, 10);
+    background: color.adjust($color-light, $lightness: -10%);
 
     &:hover {
         @include boxShadow;
         cursor: pointer;
-        background: darken($color-light, 15);
+        background: color.adjust($color-light, $lightness: -15%);
     }
 }
 

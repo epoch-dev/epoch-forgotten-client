@@ -81,7 +81,7 @@ const ShopBuyComponent = () => {
             setTotalCost(0);
             setCheckout({});
             ToastService.success({ message: 'Items bought' });
-        } catch (error) {
+        } catch {
             ToastService.error({ message: 'Error buying items' });
         }
         setLoading(false);

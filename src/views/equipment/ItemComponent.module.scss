@@ -1,3 +1,4 @@
+@use 'sass:color';
 @import '../../common/styles/variables.scss';
 @import '../../common/styles/mixins.scss';
 
@@ -9,27 +10,27 @@
 
     &.Common {
         @include insetShadow($color-common);
-        border: 2px solid darken($color-common, 10);
+        border: 2px solid color.adjust($color-common, $lightness: 10%);
     }
 
     &.Rare {
         @include insetShadow($color-rare);
-        border: 2px solid darken($color-rare, 10);
+        border: 2px solid color.adjust($color-rare, $lightness: 10%);
     }
 
     &.Unique {
         @include insetShadow($color-unique);
-        border: 1px solid darken($color-unique, 10);
+        border: 1px solid color.adjust($color-unique, $lightness: 10%);
     }
 
     &.Epic {
         @include insetShadow($color-epic);
-        border: 2px solid darken($color-epic, 10);
+        border: 2px solid color.adjust($color-epic, $lightness: 10%);
     }
 
     &.Mythical {
         @include insetShadow($color-mythical);
-        border: 2px solid darken($color-mythical, 10);
+        border: 2px solid color.adjust($color-mythical, $lightness: 10%);
     }
 
     img {

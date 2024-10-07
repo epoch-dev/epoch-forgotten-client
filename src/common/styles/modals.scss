@@ -1,3 +1,4 @@
+@use 'sass:color';
 @import './variables.scss';
 @import './mixins.scss';
 
@@ -11,7 +12,7 @@
     padding: 1rem;
     z-index: 50;
     overflow-x: hidden;
-    background: transparentize(darken($color-dark, 10), 0.05);
+    background: rgba(color.adjust($color-dark, $lightness: -10%), 0.05);
 }
 
 .modalWrapper {
@@ -40,8 +41,8 @@
     &:hover {
         @include boxShadowSm();
         cursor: pointer;
-        color: lighten($color-primary, 10);
-        background: darken($color-dark, 10);
-        border-bottom: 2px solid lighten($color-primary, 10);
+        color: color.adjust($color-primary, $lightness: 10%);
+        background: color.adjust($color-dark, $lightness: -10%);
+        border-bottom: 2px solid color.adjust($color-primary, $lightness: 10%);
     }
 }

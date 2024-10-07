@@ -133,7 +133,7 @@ export class SceneRenderer extends Scene {
             });
         }
         if (sceneChanged) {
-            this.loadScene();
+            void this.loadScene();
         }
         if (encounter) {
             this.onEncounter(encounter);

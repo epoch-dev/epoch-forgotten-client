@@ -25,7 +25,7 @@ export const ScenesComponent = () => {
     const { view, setScene, setView, setEncounter, setNpcName: setNpc } = useGameStore();
 
     useEffect(() => {
-        ScenesService.initialize();
+        void ScenesService.initialize();
         const scene = new SceneRenderer({
             onMove,
             onEncounter: (encounter) => {

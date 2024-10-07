@@ -16,12 +16,14 @@ export class DialogueService {
         { onNodeChange, onComplete }: { onNodeChange: (node: DialogueNode) => void; onComplete: () => void },
     ) {
         this.dialogue = npcDialogue.nodes;
-        npcDialogue.effects && this.effectsAll.push(npcDialogue.effects);
+        if (npcDialogue.effects) {
+            this.effectsAll.push(npcDialogue.effects);
+        }
         this.decisions = { name, nodes: {} };
         this.onNodeChange = onNodeChange;
         this.onComplete = () => {
             onComplete();
-            this.sendDialogueUpdates();
+            void this.sendDialogueUpdates();
         };
     }
 
@@ -38,7 +40,9 @@ export class DialogueService {
         const currentNode = this.dialogue[this.currentNodeIndex];
         const chosenOption = currentNode.options![optionIndex];
         if (chosenOption.flagValue || chosenOption.effects) {
-            chosenOption.effects && this.effectsAll.push(chosenOption.effects);
+            if (chosenOption.effects) {
+                this.effectsAll.push(chosenOption.effects);
+            }
             this.decisions.nodes[currentNode.id] = chosenOption.id;
         }
 
@@ -47,7 +51,7 @@ export class DialogueService {
         const newCurrentNodeIndex = this.getNextNodeIndex(this.dialogue, chosenOption.targetNodeId);
         if (newCurrentNodeIndex >= 0) {
             this.currentNodeIndex = newCurrentNodeIndex;
-            this.handleDialogue();
+            await this.handleDialogue();
         } else {
             this.onComplete();
         }
@@ -83,7 +87,7 @@ export class DialogueService {
     public async sendDialogueUpdates() {
         if (this.shouldUpdateService()) {
             await npcsClient.updateFromDialogue(this.decisions);
-            EffectsService.showEffects(this.effectsAll);
+            await EffectsService.showEffects(this.effectsAll);
         }
     }
 

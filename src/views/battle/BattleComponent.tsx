@@ -180,10 +180,10 @@ export const BattleComponent = () => {
             style={
                 scene
                     ? {
-                          backgroundImage: `url(${AssetsService.getSceneUri(
-                              battleAssets?.battleImageUri ?? scene?.battleImageUri,
-                          )})`,
-                      }
+                        backgroundImage: `url(${AssetsService.getSceneUri(
+                            battleAssets?.battleImageUri ?? scene?.battleImageUri,
+                        )})`,
+                    }
                     : {}
             }>
             <p className={style.infoItem}>{hint}</p>
