@@ -8,7 +8,17 @@ export default [
     ...tseslint.configs.recommended,
     pluginReact.configs.flat.recommended,
     { files: ['**/*.{js,mjs,cjs,ts,jsx,tsx}'] },
-    { languageOptions: { globals: globals.browser } },
+    {
+        languageOptions: {
+            globals: globals.browser,
+            parserOptions: {
+                projectService: {
+                    allowDefaultProject: ['eslint.config.js'],
+                },
+                tsconfigRootDir: import.meta.dirname,
+            },
+        },
+    },
     { ignores: ['node_modules/*', 'dist/*', 'public/*', 'src/common/api/.generated/*'] },
     {
         rules: {
@@ -24,6 +34,13 @@ export default [
             eqeqeq: 'error',
             'keyword-spacing': 'warn',
             'comma-dangle': ['error', 'always-multiline'],
+            '@typescript-eslint/no-floating-promises': 'error',
+            '@typescript-eslint/no-misused-promises': ['error', { checksVoidReturn: false }],
+        },
+        settings: {
+            react: {
+                version: 'detect',
+            },
         },
     },
 ];

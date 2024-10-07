@@ -46,7 +46,7 @@ const DialogueComponent = () => {
             },
             onComplete: () => setView(GameView.World),
         });
-        newService.start();
+        void newService.start();
 
         setService(newService);
         setIsLoading(false);
@@ -58,7 +58,7 @@ const DialogueComponent = () => {
 
     const handleOkClick = async () => {
         if (!currentNode?.options) {
-            service?.proceedToNextNode();
+            await service?.proceedToNextNode();
         }
     };
 
@@ -66,10 +66,10 @@ const DialogueComponent = () => {
         event.preventDefault();
         const pressedKey = event.key;
         if (pressedKey === ' ' || pressedKey === 'Spacebar') {
-            handleOkClick();
+            void handleOkClick();
         } else if (currentNode?.options && /^[1-9]$/.test(pressedKey)) {
             const keyIndex = parseInt(pressedKey, 10) - 1;
-            handleOptionClick(keyIndex);
+            void handleOptionClick(keyIndex);
         }
     };
 

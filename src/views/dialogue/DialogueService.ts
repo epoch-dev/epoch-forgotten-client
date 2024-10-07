@@ -23,7 +23,7 @@ export class DialogueService {
         this.onNodeChange = onNodeChange;
         this.onComplete = () => {
             onComplete();
-            this.sendDialogueUpdates();
+            void this.sendDialogueUpdates();
         };
     }
 
@@ -51,7 +51,7 @@ export class DialogueService {
         const newCurrentNodeIndex = this.getNextNodeIndex(this.dialogue, chosenOption.targetNodeId);
         if (newCurrentNodeIndex >= 0) {
             this.currentNodeIndex = newCurrentNodeIndex;
-            this.handleDialogue();
+            await this.handleDialogue();
         } else {
             this.onComplete();
         }
@@ -87,7 +87,7 @@ export class DialogueService {
     public async sendDialogueUpdates() {
         if (this.shouldUpdateService()) {
             await npcsClient.updateFromDialogue(this.decisions);
-            EffectsService.showEffects(this.effectsAll);
+            await EffectsService.showEffects(this.effectsAll);
         }
     }
 
