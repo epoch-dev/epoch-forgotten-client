@@ -19,11 +19,11 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  build:
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -62,6 +62,11 @@ jobs:
       - name: Build client
         run: yarn build
 
+  deploy:
+    needs: build  # Ensure that the 'deploy' job runs after the 'build' job
+    if: github.event_name == 'push'  # Only run deploy on push to main
+    runs-on: ubuntu-latest
+    steps:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
