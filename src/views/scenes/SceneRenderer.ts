@@ -1,7 +1,7 @@
 import { Scene } from 'phaser';
 import { AssetsService } from '../../common/services/AssetsService';
 import { ScenesService } from './ScenesService';
-import { SceneImage, TILE_SIZE, UserSprite } from './types';
+import { TILE_SIZE, UserSprite } from './types';
 import {
     SceneMoveDirection,
     SceneMoveResultDtoEncounterData,
@@ -17,7 +17,6 @@ export class SceneRenderer extends Scene {
     public blockMovement = false;
     public musicUri?: string;
     private user?: UserSprite;
-    private sceneImageRef?: SceneImage;
     private onMove: (direction: SceneMoveDirection) => void;
     private onEncounter: (encounter: SceneMoveResultDtoEncounterData) => void;
     private onNpc: (encounter: SceneMoveResultDtoNpcData) => void;
@@ -62,7 +61,7 @@ export class SceneRenderer extends Scene {
         this.musicService.play(sceneData.musicUri);
 
         setTimeout(() => {
-            this.sceneImageRef = this.add.image(width / 2, height / 2, `scene-${sceneData.name}`);
+            this.add.image(width / 2, height / 2, `scene-${sceneData.name}`);
             this.tileRenderer.drawTiles({ tiles: sceneData.tiles });
 
             this.user?.destroy();
