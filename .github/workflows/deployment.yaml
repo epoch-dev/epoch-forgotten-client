@@ -63,8 +63,8 @@ jobs:
         run: yarn build
 
   deploy:
-    needs: build  # Ensure that the 'deploy' job runs after the 'build' job
-    if: github.event_name == 'push'  # Only run deploy on push to main
+    needs: build
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - name: Setup Pages
