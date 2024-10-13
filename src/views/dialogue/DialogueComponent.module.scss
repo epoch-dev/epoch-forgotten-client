@@ -25,8 +25,9 @@
     .dialogueItem {
         @include boxShadow;
         position: absolute;
-        bottom: 60px;
+        bottom: 10rem;
         padding: 1rem;
+        min-width: 30rem;
         max-width: 80%;
         background-color: rgba($color-dark, 0.8);
         color: $color-light;

@@ -17,10 +17,9 @@
         background: rgba($color-light-grey, 0.88);
         border-radius: 0.62rem;
         padding: 1.25rem;
-        width: 90%;
-        height: 29.5rem;
+        width: 80%;
+        height: 80%;
         position: relative;
-        max-height: 32rem;
         overflow: hidden;
         display: flex;
         justify-content: space-between;
@@ -28,11 +27,12 @@
 }
 
 .shopItems {
+    height: min-content;
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
+    align-content: center;
     gap: 1rem;
     text-align: center;
-    min-height: 24rem;
 
     .shopItemEmpty {
         width: 6rem;

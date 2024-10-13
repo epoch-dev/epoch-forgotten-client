@@ -91,7 +91,7 @@ const ShopBuyComponent = () => {
 
     const emptyItems = useMemo(() => {
         const totalItems = shopItems.length;
-        const gridSize = 16;
+        const gridSize = 25;
         const emptyItemsCount = Math.max(0, gridSize - totalItems);
         return Array.from({ length: emptyItemsCount });
     }, [shopItems]);

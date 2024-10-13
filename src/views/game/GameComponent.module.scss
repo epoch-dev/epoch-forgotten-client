@@ -20,12 +20,12 @@
     @include insetShadow();
 
     position: relative;
-    max-width: 1100px;
+    max-width: 1450px;
     width: 90%;
+    height: 750px;
     overflow-y: auto;
     overflow-x: hidden;
-    height: 600px;
-    margin: 10vh auto 1rem auto;
+    margin: 5rem auto 1rem auto;
     padding: 1rem;
     color: $color-dark;
     background: linear-gradient(

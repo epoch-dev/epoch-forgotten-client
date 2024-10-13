@@ -11,11 +11,13 @@ export default class TileRenderer {
         this.scene = scene;
     }
 
-    public drawTiles({ tiles }: { tiles: SceneTileDto[] }) {
-        this.tiles.forEach((t) => t.spriteRef?.destroy());
+    public clearTiles() {
+        this.scene.children.removeAll();
         this.tiles = [];
         this.tileMap.clear();
+    }
 
+    public drawTiles({ tiles }: { tiles: SceneTileDto[] }) {
         tiles.forEach((tile) => {
             const key = `${tile.position.x},${tile.position.y}`;
             this.tileMap.set(key, tile);
@@ -78,9 +80,10 @@ export default class TileRenderer {
                 rect = this.scene.add.rectangle(tile.position.x, tile.position.y, size, size, 0x121212, 1);
                 break;
             }
-            case SceneTileType.Passage:
+            case SceneTileType.Passage: {
                 return this.scene.add.rectangle(tile.position.x, tile.position.y, 8, 8, 0x90ee90, 0.7);
-            case SceneTileType.Quest:
+            }
+            case SceneTileType.Quest: {
                 rect = this.scene.add.rectangle(tile.position.x, tile.position.y, 8, 8, 0xffff00, 0.7);
                 this.scene.tweens.add({
                     targets: rect,
@@ -90,11 +93,13 @@ export default class TileRenderer {
                     duration: 1000,
                 });
                 break;
-            case SceneTileType.Npc:
+            }
+            case SceneTileType.Npc: {
                 rect = this.scene.add.rectangle(tile.position.x, tile.position.y, 8, 8, 0xadd8e6, 0.7);
                 rect.setStrokeStyle(1, 0x00008b, 0.6);
                 break;
-            case SceneTileType.Encounter:
+            }
+            case SceneTileType.Encounter: {
                 rect = this.scene.add.rectangle(tile.position.x, tile.position.y, 8, 8, 0xff0000, 0.7);
                 this.scene.tweens.add({
                     targets: rect,
@@ -105,6 +110,7 @@ export default class TileRenderer {
                     duration: 1000,
                 });
                 break;
+            }
         }
     }
 }

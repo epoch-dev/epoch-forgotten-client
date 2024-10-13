@@ -54,7 +54,7 @@ export class SceneRenderer extends Scene {
         const { width, height } = await ScenesService.getSceneSize();
         const userPosition = await ScenesService.getUserPosition();
 
-        this.sceneImageRef?.destroy();
+        this.tileRenderer.clearTiles();
         this.load.image(`scene-${sceneData.name}`, AssetsService.getSceneUri(sceneData.imageUri));
         this.load.start();
 
