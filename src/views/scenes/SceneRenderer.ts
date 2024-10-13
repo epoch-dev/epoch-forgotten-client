@@ -60,7 +60,7 @@ export class SceneRenderer extends Scene {
         this.musicUri = sceneData.musicUri;
         this.musicService.play(sceneData.musicUri);
 
-        setTimeout(() => {
+        this.load.on('complete', () => {
             this.add.image(width / 2, height / 2, `scene-${sceneData.name}`);
             this.tileRenderer.drawTiles({ tiles: sceneData.tiles });
 
@@ -79,7 +79,7 @@ export class SceneRenderer extends Scene {
             this.cameras.main.setSize(this.scale.width, this.scale.height);
             this.cameras.main.startFollow(this.user, true, 0.1, 0.1);
             this.cameras.main.setZoom(2);
-        }, 100);
+        });
     }
 
     update() {
