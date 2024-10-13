@@ -3,8 +3,8 @@
 
 .characterItem {
     position: relative;
-    width: 6rem;
-    height: 7rem;
+    width: 7rem;
+    height: 8rem;
     font-size: 12px;
     opacity: 0.9;
     text-align: center;
@@ -12,7 +12,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
+    gap: 1rem;
     background: rgba($color-light, 0.5);
     transition: all 0.5s;
 
@@ -22,7 +22,7 @@
     }
 
     img {
-        width: 5rem;
+        width: 6rem;
         animation: bounceAnimation 5s infinite;
     }
 }

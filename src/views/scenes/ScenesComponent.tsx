@@ -38,8 +38,8 @@ export const ScenesComponent = () => {
             },
         });
         const game = new Phaser.Game({
-            width: 1100,
-            height: 600,
+            width: 1450,
+            height: 750,
             scene: scene,
             physics: {
                 default: 'arcade',

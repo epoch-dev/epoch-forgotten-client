@@ -3,12 +3,13 @@
 @import '../../common/styles/mixins.scss';
 
 .battleWrapper {
-    height: 600px;
+    height: 750px;
     margin: -1rem;
     padding: 1rem;
     position: relative;
     display: flex;
     flex-direction: column;
+    background-repeat: round;
 }
 
 .infoItem {
@@ -16,15 +17,16 @@
     left: 0;
     top: 0rem;
     width: 100%;
-    font-size: 20px;
+    font-size: 24px;
+    font-weight: 600;
     text-align: center;
     color: $color-dark;
-    text-shadow: 1px 1px 2px $color-dark;
+    text-shadow: 0px 0px 5px $color-light;
 }
 
 .fieldWrapper {
     width: 100%;
-    height: 26.5rem;
+    height: 575px;
     display: flex;
 }
 
@@ -33,7 +35,7 @@
     display: flex;
     flex-direction: column;
     align-content: flex-start;
-    justify-content: flex-end;
+    justify-content: space-evenly;
     flex-wrap: wrap;
     gap: 0.5rem 1rem;
 }
@@ -43,13 +45,13 @@
     display: flex;
     flex-direction: column;
     align-content: flex-end;
-    justify-content: flex-end;
+    justify-content: space-evenly;
     flex-wrap: wrap;
     gap: 0.5rem 1rem;
 }
 
 .actionsWrapper {
-    height: 8rem;
+    height: 125px;
     margin-top: 1rem;
     display: grid;
     grid-template-columns: 2fr 1fr;
