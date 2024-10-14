@@ -60,7 +60,7 @@ jobs:
         run: yarn build
 
       - name: Cache dist folder
-        # if: github.event_name == 'push'
+        if: github.event_name == 'push'
         uses: actions/cache@v3
         with:
           path: ./dist
@@ -68,7 +68,7 @@ jobs:
 
   deploy:
     needs: build
-    # if: github.event_name == 'push'
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     environment:
       name: github-pages

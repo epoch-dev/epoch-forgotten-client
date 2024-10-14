@@ -1,5 +1,8 @@
 # Epoch: Forgotten - client
 
+[![PR check](https://github.com/epoch-dev/epoch-forgotten-client/actions/workflows/deployment.yaml/badge.svg?event=pull_request)](https://github.com/epoch-dev/epoch-forgotten-client/actions/workflows/deployment.yaml)
+[![Deploy Epoch Forgotten client to Pages](https://github.com/epoch-dev/epoch-forgotten-client/actions/workflows/deployment.yaml/badge.svg)](https://github.com/epoch-dev/epoch-forgotten-client/actions/workflows/deployment.yaml)
+
 ### Installation
 
 1. Get client generated in the service repo by moving `./generated` folder to `./src/common/api`.
