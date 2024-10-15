@@ -1,5 +1,6 @@
 import { useGameStore } from '../../views/game/GameStore';
 import { GameView } from '../../views/game/types';
+import { ScenesService } from '../../views/scenes/ScenesService';
 import { Effects } from '../api/.generated';
 import { questsClient } from '../api/client';
 import { SoundService } from './SoundService';
@@ -33,6 +34,9 @@ export class EffectsService {
             }
             if (effects.exp) {
                 this.handleExpEffect(effects.exp);
+            }
+            if (effects.teleport) {
+                await this.handleTeleportEffect();
             }
         }
     }
@@ -84,5 +88,10 @@ export class EffectsService {
 
     private static handleExpEffect(exp: Required<Effects>['exp']) {
         ToastService.success({ message: `Obtained ${exp} experience!` });
+    }
+
+    private static async handleTeleportEffect() {
+        await ScenesService.initialize();
+        await useGameStore.getState().scene?.loadScene();
     }
 }
