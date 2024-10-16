@@ -1,5 +1,6 @@
 import { SceneDataDto, ScenePoint } from '../../common/api/.generated';
 import { scenesClient } from '../../common/api/client';
+import { EffectsService } from '../../common/services/EffectsService';
 
 export class ScenesService {
     private static sceneData?: SceneDataDto;
@@ -9,6 +10,9 @@ export class ScenesService {
         const data = (await scenesClient.currentScene()).data;
         this.sceneData = data;
         this.userPosition = data.userPosition;
+        if (data.plotPoint) {
+            await EffectsService.showEffects([{ dialogue: data.plotPoint }]);
+        }
     }
 
     public static async getSceneData() {

@@ -6,6 +6,7 @@ export class DialogueService {
     private readonly decisions: NpcDialogueUpdatesDto;
     private currentNodeIndex = 0;
     private dialogue;
+    private isPlotPoint;
     private onNodeChange;
     private onComplete;
     private effectsAll: Effects[] = [];
@@ -16,6 +17,7 @@ export class DialogueService {
         { onNodeChange, onComplete }: { onNodeChange: (node: DialogueNode) => void; onComplete: () => void },
     ) {
         this.dialogue = npcDialogue.nodes;
+        this.isPlotPoint = npcDialogue.isPlotPoint;
         if (npcDialogue.effects) {
             this.effectsAll.push(npcDialogue.effects);
         }
@@ -92,5 +94,5 @@ export class DialogueService {
     }
 
     private shouldUpdateService = () =>
-        Object.keys(this.decisions.nodes).length > 0 || Object.keys(this.effectsAll).length > 0;
+        Object.keys(this.decisions.nodes).length > 0 || Object.keys(this.effectsAll).length > 0 || this.isPlotPoint;
 }
