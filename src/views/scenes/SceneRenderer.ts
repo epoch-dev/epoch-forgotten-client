@@ -1,7 +1,7 @@
 import { Scene } from 'phaser';
 import { AssetsService } from '../../common/services/AssetsService';
 import { ScenesService } from './ScenesService';
-import { TILE_SIZE, UserSprite } from './types';
+import { SceneImage, TILE_SIZE, UserSprite } from './types';
 import {
     SceneMoveDirection,
     SceneMoveResultDtoEncounterData,
@@ -23,6 +23,7 @@ export class SceneRenderer extends Scene {
     private musicService = MusicService.getInstance();
     private tileRenderer: TileRenderer;
     private lastMove = getCurrentTimeStamp();
+    private sceneImageRef?: SceneImage;
 
     constructor({
         onMove,
@@ -53,14 +54,19 @@ export class SceneRenderer extends Scene {
         const { width, height } = await ScenesService.getSceneSize();
         const userPosition = await ScenesService.getUserPosition();
 
-        this.tileRenderer.clearTiles();
-        this.load.image(`scene-${sceneData.name}`, AssetsService.getSceneUri(sceneData.imageUri));
-        this.load.start();
+        setTimeout(() => {
+            this.load.image(`scene-${sceneData.name}`, AssetsService.getSceneUri(sceneData.imageUri));
+            this.load.start();
 
-        this.musicUri = sceneData.musicUri;
-        this.musicService.play(sceneData.musicUri);
+            this.musicUri = sceneData.musicUri;
+            this.musicService.play(sceneData.musicUri);
+        }, 0);
 
         this.load.on('complete', () => {
+            this.sceneImageRef?.destroy();
+            this.tileRenderer.clearTiles();
+
+            this.sceneImageRef = this.add.image(width / 2, height / 2, `scene-${sceneData.name}`);
             this.add.image(width / 2, height / 2, `scene-${sceneData.name}`);
             this.tileRenderer.drawTiles({ tiles: sceneData.tiles });
 
