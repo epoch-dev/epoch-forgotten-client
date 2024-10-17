@@ -28,8 +28,9 @@ export const IntroComponent = () => {
 
     return (
         <section className={style.introWrapper}>
-            <b className="title dark">You are about to start a new journey</b>
-            <p></p>
+            <b className="title dark" style={{ gridColumn: 'span 2' }}>
+                You are about to start a new journey
+            </b>
             <div>
                 <p className="subtitle">
                     A young man, having just completed his rigorous guardian training, finds himself thrust
@@ -60,9 +61,9 @@ export const IntroComponent = () => {
                         A guardian and musician, he embodies a unique blend of courage, strength, and
                         creativity. Raised in the tranquil village of Vivinra, he have honed his skills
                         through years of diligent training and exploration. Now, their journey takes a new
-                        turn as there seems to be something mysterious hiding behind wolves&apos; activity. With
-                        determination etched into their every step, he stand ready to face whatever challenges
-                        lie ahead...
+                        turn as there seems to be something mysterious hiding behind wolves&apos; activity.
+                        With determination etched into their every step, he stand ready to face whatever
+                        challenges lie ahead...
                     </p>
                 </figure>
                 <fieldset>

@@ -3,12 +3,12 @@
 @import '../../common/styles/mixins.scss';
 
 .introWrapper {
-    height: 100%;
+    margin-top: 2rem;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 9fr;
+    grid-template-rows: 1fr 10fr;
     align-items: stretch;
-    gap: 1rem;
+    gap: 2rem;
     color: $color-dark;
 
     fieldset {
@@ -17,7 +17,7 @@
     }
 
     b {
-        margin: 0;
+        font-size: 30px;
         color: color.adjust($color-primary, $lightness: -20%);
     }
 
@@ -26,6 +26,10 @@
         font-size: 18px;
         text-align: justify;
         color: $color-dark;
+    }
+
+    div {
+        max-height: min-content;
     }
 
     fieldset {
@@ -58,7 +62,7 @@
     margin: 0;
 
     img {
-        width: 10rem;
+        width: 12rem;
         float: left;
         margin: 0.5rem 1rem 0 0;
     }
