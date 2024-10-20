@@ -59,7 +59,7 @@ export const BattleCharacterComponent = ({
                         </div>
                     )}
 
-                    {(character.statistics.statuses.length > 0) && (
+                    {character.statistics.statuses.length > 0 && (
                         <BattleCharacterStatus statuses={character.statistics.statuses} />
                     )}
 
@@ -125,7 +125,8 @@ const BattleCharacterStatus = ({ statuses }: { statuses: BattleStatus[] }) => {
                     {statusModifiers.map(({ key, label }) =>
                         status[key] ? (
                             <p key={key}>
-                                {label} +{100 * + status[key]!}% ({status.duration} turns)
+                                {label} {+status[key] > 0 ? '+' : ''}
+                                {100 * +status[key]}% ({status.duration} turns)
                             </p>
                         ) : (
                             <></>
