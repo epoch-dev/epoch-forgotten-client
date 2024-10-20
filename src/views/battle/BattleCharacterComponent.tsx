@@ -74,7 +74,14 @@ export const BattleCharacterComponent = ({
             }>
             <div onClick={onClick} className={characterClass}>
                 {animatedSkill?.characterId === character.id && (
-                    <div className={style.logItem}>{animatedSkill.skillLabel}</div>
+                    <div className={style.logItem}>
+                        <p>{animatedSkill.skillLabel}</p>
+                        {animatedSkill.statusLogs.map((statusLog) => (
+                            <p key={`${character.id}-${statusLog.label}`} className={style.logItemStatus}>
+                                -{statusLog.value} ({statusLog.label})
+                            </p>
+                        ))}
+                    </div>
                 )}
                 {animatedLog &&
                     animatedLog.hits.map((hit, hitInd) => (
@@ -104,17 +111,25 @@ export const BattleCharacterComponent = ({
 };
 
 const BattleCharacterStatus = ({ statuses }: { statuses: BattleStatus[] }) => {
-    const statusModifiers: { key: keyof BattleStatus; label: string }[] = [
-        { key: 'maxHealthMod', label: 'Max health' },
-        { key: 'maxManaMod', label: 'Max mana' },
-        { key: 'pAtkMod', label: 'Physical attack' },
-        { key: 'mAtkMod', label: 'Magical attack' },
-        { key: 'pDefMod', label: 'Physical defense' },
-        { key: 'mDefMod', label: 'Magical defense' },
-        { key: 'speedMod', label: 'Speed' },
-        { key: 'dodgeMod', label: 'Dodge' },
-        { key: 'critChanceMod', label: 'Critical chance' },
-        { key: 'critPowerMod', label: 'Critical power' },
+    const statusModifiers: { key: keyof BattleStatus; label: string | ((amount: number) => string) }[] = [
+        { key: 'maxHealthMod', label: (amount: number) => `${amount > 0 ? '+' : ''}${amount} Max health` },
+        { key: 'maxManaMod', label: (amount: number) => `${amount > 0 ? '+' : ''}${amount} Max max mana` },
+        { key: 'pAtkMod', label: (amount: number) => `${amount > 0 ? '+' : ''}${amount} Physical attack` },
+        { key: 'mAtkMod', label: (amount: number) => `${amount > 0 ? '+' : ''}${amount} Magical attack` },
+        { key: 'pDefMod', label: (amount: number) => `${amount > 0 ? '+' : ''}${amount} Physical defense` },
+        { key: 'mDefMod', label: (amount: number) => `${amount > 0 ? '+' : ''}${amount} Magical defense` },
+        { key: 'speedMod', label: (amount: number) => `${amount > 0 ? '+' : ''}${amount} Speed` },
+        { key: 'dodgeMod', label: (amount: number) => `${amount > 0 ? '+' : ''}${amount} Dodge chance` },
+        {
+            key: 'critChanceMod',
+            label: (amount: number) => `${amount > 0 ? '+' : ''}${amount} Critical chance`,
+        },
+        {
+            key: 'critPowerMod',
+            label: (amount: number) => `${amount > 0 ? '+' : ''}${amount} Critical power`,
+        },
+        { key: 'bleeding', label: 'Bleeding' },
+        { key: 'poison', label: 'Poison' },
     ];
 
     return (
@@ -125,8 +140,8 @@ const BattleCharacterStatus = ({ statuses }: { statuses: BattleStatus[] }) => {
                     {statusModifiers.map(({ key, label }) =>
                         status[key] ? (
                             <p key={key}>
-                                {label} {+status[key] > 0 ? '+' : ''}
-                                {100 * +status[key]}% ({status.duration} turns)
+                                {typeof label === 'string' ? label : label(+status[key])} ({status.duration}{' '}
+                                turns)
                             </p>
                         ) : (
                             <></>
