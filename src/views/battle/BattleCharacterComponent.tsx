@@ -5,7 +5,7 @@ import { AssetsService } from '../../common/services/AssetsService';
 import { ProgressBarComponent } from '../../common/components/ProgressBarComponent';
 import { formatNumber, generateRandomId } from '../../common/utils';
 import { CSS_COLOR } from '../../common/styles';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { SoundService } from '../../common/services/SoundService';
 
 const soundService = SoundService.getInstance();
@@ -23,15 +23,24 @@ export const BattleCharacterComponent = ({
     animatedSkill: BattleMoveResult | undefined;
     onClick: () => void;
 }) => {
+    const [animating, setAnimating] = useState(false);
+
     useEffect(() => {
         if (animatedSkill && animatedSkill.characterId === character.id) {
             soundService.play(`skills/${animatedSkill.skillSoundUri}`);
+            setAnimating(true);
+        } else {
+            setAnimating(false);
         }
     }, [animatedSkill]);
 
-    const characterClass = `${style.characterItem} ${character.isControlled ? style.characterAlly : ''} ${
-        isTargeted ? style.targetActive : ''
-    } ${isSelected ? style.characterActive : ''} ${!character.isAlive ? style.characterDead : ''}`;
+    const characterClass = `
+        ${style.characterItem} 
+        ${character.isControlled ? style.characterAlly : ''}
+        ${isTargeted ? style.targetActive : ''} 
+        ${isSelected ? style.characterActive : ''} 
+        ${!character.isAlive ? style.characterDead : ''}
+        ${animating && (character.isControlled ? style.allyAttacking : style.enemyAttacking)}`;
 
     const characterImgUri = character.isControlled
         ? AssetsService.getCharacterUri(character.imageUri)
@@ -105,6 +114,14 @@ export const BattleCharacterComponent = ({
                     max={character.statistics.maxHealth}
                     fillColor={CSS_COLOR.MYTHICAL}
                 />
+                {character.isControlled && (
+                    <ProgressBarComponent
+                        current={character.statistics.mana}
+                        max={character.statistics.maxMana}
+                        fillColor={CSS_COLOR.RARE}
+                        style={{ width: '80%', height: '0.4rem' }}
+                    />
+                )}
             </div>
         </TooltipComponent>
     );

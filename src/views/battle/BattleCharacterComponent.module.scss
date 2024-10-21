@@ -12,7 +12,6 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 1rem;
     background: rgba($color-light, 0.5);
     transition: all 0.5s;
 
@@ -23,6 +22,7 @@
 
     img {
         width: 6rem;
+        margin-bottom: 0.5rem;
         animation: bounceAnimation 5s infinite;
     }
 }
@@ -87,6 +87,34 @@
 .logItemStatus {
     line-height: 1;
     font-size: 12px;
+}
+
+.allyAttacking {
+    animation: attackAnimationAlly 1s forwards;
+}
+
+.enemyAttacking {
+    animation: attackAnimation 1s forwards;
+}
+
+@keyframes attackAnimation {
+    0%,
+    100% {
+        transform: translateX(0px);
+    }
+    50% {
+        transform: translateX(-20px);
+    }
+}
+
+@keyframes attackAnimationAlly {
+    0%,
+    100% {
+        transform: translateX(0px);
+    }
+    50% {
+        transform: translateX(20px);
+    }
 }
 
 @keyframes bounceAnimation {
