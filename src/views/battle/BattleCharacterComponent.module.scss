@@ -84,6 +84,11 @@
     color: $color-dark;
 }
 
+.logItemStatus {
+    line-height: 1;
+    font-size: 12px;
+}
+
 @keyframes bounceAnimation {
     0%,
     100% {

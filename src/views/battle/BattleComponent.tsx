@@ -160,6 +160,7 @@ export const BattleComponent = () => {
                 target.statistics.health -= log.hits.reduce((prev, curr) => prev + curr.value, 0);
                 if (target.statistics.health < 0) {
                     target.isAlive = false;
+                    target.statistics.statuses = [];
                     setCommands((prev) => prev.filter((c) => c.targetId !== target.id));
                 }
                 target.statistics.health = Math.max(
@@ -168,6 +169,18 @@ export const BattleComponent = () => {
                 );
                 updateCharacters(target);
             });
+            character.statistics.statuses.forEach((status) => {
+                if (status.bleeding) {
+                    character.statistics.health -= status.bleeding;
+                } else if (status.poison) {
+                    character.statistics.health -= status.poison;
+                }
+            });
+            if (character.statistics.health <= 0) {
+                character.isAlive = false;
+                character.statistics.health = 0;
+                character.statistics.statuses = [];
+            }
             updateCharacters(character);
             await wait(ANIMATION_TIME_MS); // animating
         }
@@ -178,13 +191,11 @@ export const BattleComponent = () => {
         <section
             className={style.battleWrapper}
             style={
-                scene
-                    ? {
-                        backgroundImage: `url(${AssetsService.getSceneUri(
-                            battleAssets?.battleImageUri ?? scene?.battleImageUri,
-                        )})`,
-                    }
-                    : {}
+                scene && {
+                    backgroundImage: `url(${AssetsService.getSceneUri(
+                        battleAssets?.battleImageUri ?? scene.battleImageUri,
+                    )})`,
+                }
             }>
             <p className={style.infoItem}>{hint}</p>
             {(victoryResults || defeatResults) && (
