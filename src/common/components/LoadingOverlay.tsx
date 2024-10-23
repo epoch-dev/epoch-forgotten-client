@@ -1,4 +1,4 @@
-import './LoadingOverlay.scss';
+import './LoadingOverlay.module.scss';
 
 const LoadingOverlay = () => (
     <div className="loading-screen">
