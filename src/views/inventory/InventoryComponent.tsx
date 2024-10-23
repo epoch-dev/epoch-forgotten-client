@@ -51,9 +51,9 @@ export const InventoryComponent = () => {
                     <div key={item.id} className={style.item}>
                         <ItemComponent item={item} />
                         {item.stackable && <div className={style.quantityLabel}>{item.quantity}</div>}
-                        <div onClick={() => setItemToDelete(item)} className={style.deleteLabel}>
+                        {item.type !== 'Quest' && <div onClick={() => setItemToDelete(item)} className={style.deleteLabel}>
                             X
-                        </div>
+                        </div>}
                     </div>
                 ))}
                 {emptyItems.map((_, index) => (
