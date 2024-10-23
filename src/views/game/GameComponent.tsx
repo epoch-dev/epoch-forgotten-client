@@ -67,6 +67,18 @@ export const GameComponent = () => {
         musicService.stopCurrent();
     };
 
+    const AsidePanel = () => (
+        <aside className={style.asidePanel}>
+            <MusicPanel />
+            <InfoPanel />
+            {user?.role === UserRole.Administrator && (
+                <button onClick={() => setView(GameView._Dev)} className="fixedPanelButton">
+                    _Dev
+                </button>
+            )}
+        </aside>
+    );
+
     return (
         <>
             <main className={style.contentWrapper} style={{ ...overflowHidden }}>
@@ -102,15 +114,7 @@ export const GameComponent = () => {
                     </button>
                 </nav>
             )}
-            <aside>
-                <MusicPanel />
-                <InfoPanel />
-                {user?.role === UserRole.Administrator && (
-                    <button onClick={() => setView(GameView._Dev)} className='fixedPanelButton' style={{ top: '5rem' }}>
-                        _Dev
-                    </button>
-                )}
-            </aside>
+            <AsidePanel />
         </>
     );
 };

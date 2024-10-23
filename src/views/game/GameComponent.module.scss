@@ -70,3 +70,12 @@
         }
     }
 }
+
+.asidePanel {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+}
