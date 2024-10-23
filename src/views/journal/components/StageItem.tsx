@@ -16,7 +16,7 @@ const StageItem = ({ stage, unlocked }: { stage: QuestStage; unlocked: QuestUnlo
                     <b>Rewards:</b>
                     {stage.effects.gold && ` ${stage.effects.gold} Gold${stage.effects.gold ? ', ' : ''}`}
                     {stage.effects.exp &&
-                        `${stage.effects.exp} Exp${stage.effects.items?.length ? ', ' : ''}`}
+                        ` ${stage.effects.exp} Exp${stage.effects.items?.length ? ', ' : ''}`}
                     {stage.effects.items
                         ?.map((item) => `${item.label ?? item.name} (${item.quantity})`)
                         .join(', ')}

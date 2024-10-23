@@ -84,7 +84,7 @@ export const ShopSellComponent = () => {
                                 hint={<ItemTooltip item={item} isShopItem={true} />}
                                 config={{ width: '16rem' }}>
                                 <p>
-                                    {item.name} {item.stackable && ` (${item.quantity})`} |
+                                    {item.label} {item.stackable && ` (${item.quantity})`} |
                                     <b> {checkout[item.id] ? checkout[item.id] : '-'}</b>
                                 </p>
                             </TooltipComponent>
