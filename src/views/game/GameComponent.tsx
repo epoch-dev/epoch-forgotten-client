@@ -72,7 +72,7 @@ export const GameComponent = () => {
             <MusicPanel />
             <InfoPanel />
             {user?.role === UserRole.Administrator && (
-                <button onClick={() => setView(GameView._Dev)} className="fixedPanelButton">
+                <button onClick={() => setView(GameView._Dev)} className="panelBtn">
                     _Dev
                 </button>
             )}

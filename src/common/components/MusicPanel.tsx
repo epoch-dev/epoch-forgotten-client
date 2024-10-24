@@ -33,7 +33,7 @@ const MusicPanel = () => {
 
     return (
         <>
-            <button className='fixedPanelButton' onClick={togglePanel}>
+            <button className='panelBtn' onClick={togglePanel}>
                 Music Controls
             </button>
             {isPanelOpen && (

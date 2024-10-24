@@ -22,7 +22,7 @@ const InfoPanel = () => {
 
     return (
         <>
-            <button className='fixedPanelButton' style={{ top: '3rem' }} onClick={togglePanel}>
+            <button className='panelBtn' style={{ top: '3rem' }} onClick={togglePanel}>
                 Guide Post
             </button>
             {isPanelOpen && (
