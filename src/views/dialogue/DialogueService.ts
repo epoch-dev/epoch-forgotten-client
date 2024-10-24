@@ -41,7 +41,7 @@ export class DialogueService {
     public async handleUserInput(optionIndex: number) {
         const currentNode = this.dialogue[this.currentNodeIndex];
         const chosenOption = currentNode.options![optionIndex];
-        if (chosenOption.flagValue || chosenOption.effects) {
+        if (chosenOption.effects) {
             if (chosenOption.effects) {
                 this.effectsAll.push(chosenOption.effects);
             }
