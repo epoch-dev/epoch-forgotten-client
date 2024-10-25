@@ -20,6 +20,7 @@ import { ShopSellComponent } from '../shop/ShopSellComponent';
 import { useEffect } from 'react';
 import { battleClient, charactersClient } from '../../common/api/client';
 import { UserRole } from '../../common/api/.generated';
+import InfoPanel from '../../common/components/InfoPanel';
 
 const NOT_SCROLLABLE_VIEWS = [
     GameView.World,
@@ -66,6 +67,18 @@ export const GameComponent = () => {
         musicService.stopCurrent();
     };
 
+    const AsidePanel = () => (
+        <aside className={style.asidePanel}>
+            <MusicPanel />
+            <InfoPanel />
+            {user?.role === UserRole.Administrator && (
+                <button onClick={() => setView(GameView._Dev)} className="panelBtn">
+                    _Dev
+                </button>
+            )}
+        </aside>
+    );
+
     return (
         <>
             <main className={style.contentWrapper} style={{ ...overflowHidden }}>
@@ -101,14 +114,7 @@ export const GameComponent = () => {
                     </button>
                 </nav>
             )}
-            <aside>
-                <MusicPanel />
-                {user?.role === UserRole.Administrator && (
-                    <button onClick={() => setView(GameView._Dev)} className={style.navItemDev}>
-                        _Dev
-                    </button>
-                )}
-            </aside>
+            <AsidePanel />
         </>
     );
 };

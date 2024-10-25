@@ -71,18 +71,11 @@
     }
 }
 
-.navItemDev {
-    position: fixed;
-    top: 3rem;
+.asidePanel {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    position: absolute;
+    top: 1rem;
     left: 1rem;
-    padding: 5px 10px;
-    color: $color-light;
-    background: $color-dark;
-    border: 2px solid $color-primary;
-    border-radius: 0.7rem;
-
-    &:hover {
-        cursor: pointer;
-        background-color: $color-primary;
-    }
 }

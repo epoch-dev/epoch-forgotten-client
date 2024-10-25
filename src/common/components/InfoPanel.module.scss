@@ -1,0 +1,64 @@
+@import '../styles/variables.scss';
+@import '../styles/mixins.scss';
+
+.infoPanel {
+    @include boxShadow;
+    position: fixed;
+    top: 5rem;
+    z-index: 1000;
+    left: 0.62rem;
+    background: rgba($color-light, 0.8);
+    border: 1px solid $color-primary;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    max-width: 26rem;
+    font-family: Arial, sans-serif;
+
+    .title {
+        font-size: 1.5rem;
+        margin-bottom: 0.75rem;
+        color: #333;
+    }
+
+    .section {
+        margin-bottom: 1rem;
+    }
+
+    .roadmap {
+        margin-top: 2rem;
+        max-height: 40rem;
+        max-height: calc(60vh - 10rem);
+        overflow-y: auto;
+        padding-right: 0.5rem;
+    }
+
+    .milestone {
+        margin-bottom: 1rem;
+        padding: 1rem;
+        border: 1px solid $color-primary;
+        border-radius: 0.5rem;
+        background: rgba($color-light, 0.9);
+
+        span {
+            font-size: 0.875rem;
+            font-weight: bold;
+            padding: 0.2rem 0.5rem;
+            border-radius: 0.3rem;
+        }
+
+        .Ready {
+            background-color: $color-success;
+            color: white;
+        }
+
+        .Developing {
+            background-color: $color-epic;
+            color: white;
+        }
+
+        .Planning {
+            background-color: $color-rare;
+            color: white;
+        }
+    }
+}
