@@ -1,7 +1,7 @@
 import style from './InfoPanel.module.scss';
 import { useState } from "react";
 
-const initialRoadmap: RoadmapMilestone[] = [
+const roadmap: RoadmapMilestone[] = [
     { title: 'Prologue Release', description: 'Initial game release with core features.', status: 'Ready' },
     { title: 'Chapter 1 Development', description: 'Adding new areas and characters.', status: 'Developing' },
     { title: 'Mobile Support', description: 'Optimizing the game for mobile platforms.', status: 'Planning' },
@@ -43,18 +43,18 @@ const InfoPanel = () => {
                         </ul>
                     </p>
                 </div>
-                <div className={style.roadmap}>
-                        <h2 className={style.title}>Game Roadmap</h2>
-                        {initialRoadmap.map((milestone, index) => (
-                            <div className={style.milestone} key={index}>
-                                <h3>{milestone.title}</h3>
-                                <p>{milestone.description}</p>
-                                <span className={style[milestone.status]}>
-                                    {milestone.status}
-                                </span>
-                            </div>
-                        ))}
-                    </div>
+                {/* <div className={style.roadmap}>
+                    <h2 className={style.title}>Game Roadmap</h2>
+                    {roadmap.map((milestone, index) => (
+                        <div className={style.milestone} key={index}>
+                            <h3>{milestone.title}</h3>
+                            <p>{milestone.description}</p>
+                            <span className={style[milestone.status]}>
+                                {milestone.status}
+                            </span>
+                        </div>
+                    ))}
+                </div> */}
             </div>
             )}
         </>
