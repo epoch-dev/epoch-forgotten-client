@@ -2,24 +2,20 @@ import { Scene } from 'phaser';
 import { AssetsService } from '../../common/services/AssetsService';
 import { ScenesService } from './ScenesService';
 import { SceneImage, TILE_SIZE, UserSprite } from './types';
-import {
-    SceneMoveDirection,
-    SceneMoveResultDtoEncounterData,
-    SceneMoveResultDtoNpcData,
-    ScenePoint,
-} from '../../common/api/.generated';
+import { ScenePoint } from '../../common/api/.generated';
 import { MusicService } from '../../common/services/MusicService';
 import TileRenderer from './TileRenderer';
 import { getCurrentTimeStamp } from '../../common/utils';
 import { appConfig } from '../../common/config';
+import { SceneMoveDirection, SceneMoveResultDto } from '../../common/api/sceneTypes';
 
 export class SceneRenderer extends Scene {
     public blockMovement = false;
     public musicUri?: string;
     private user?: UserSprite;
     private onMove: (direction: SceneMoveDirection) => void;
-    private onEncounter: (encounter: SceneMoveResultDtoEncounterData) => void;
-    private onNpc: (encounter: SceneMoveResultDtoNpcData) => void;
+    private onEncounter: (encounter: SceneMoveResultDto['encounterData']) => void;
+    private onNpc: (encounter: SceneMoveResultDto['npcData']) => void;
     private musicService = MusicService.getInstance();
     private tileRenderer: TileRenderer;
     private lastMove = getCurrentTimeStamp();
@@ -31,8 +27,8 @@ export class SceneRenderer extends Scene {
         onNpc,
     }: {
         onMove: (direction: SceneMoveDirection) => void;
-        onEncounter: (encounter: SceneMoveResultDtoEncounterData) => void;
-        onNpc: (encounter: SceneMoveResultDtoNpcData) => void;
+        onEncounter: (encounter: SceneMoveResultDto['encounterData']) => void;
+        onNpc: (encounter: SceneMoveResultDto['npcData']) => void;
     }) {
         super({ key: 'WorldScene' });
         this.onMove = onMove;
@@ -125,8 +121,8 @@ export class SceneRenderer extends Scene {
     }: {
         newPosition: ScenePoint;
         sceneChanged: boolean;
-        encounter?: SceneMoveResultDtoEncounterData;
-        npc?: SceneMoveResultDtoNpcData;
+        encounter?: SceneMoveResultDto['encounterData'];
+        npc?: SceneMoveResultDto['npcData'];
     }) {
         if (this.user) {
             this.tweens.add({

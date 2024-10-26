@@ -1,20 +1,21 @@
 import { create } from 'zustand';
 import { GameView } from './types';
 import { SceneRenderer } from '../scenes/SceneRenderer';
-import { CharacterDto, NpcDialogue, SceneMoveResultDtoEncounterData } from '../../common/api/.generated';
+import { CharacterDto, NpcDialogue } from '../../common/api/.generated';
 import { MusicService } from '../../common/services/MusicService';
+import { SceneMoveResultDto } from '../../common/api/sceneTypes';
 
 type GameStore = {
     scene: SceneRenderer | undefined;
     view: GameView;
-    encounter: SceneMoveResultDtoEncounterData | undefined;
+    encounter: SceneMoveResultDto['encounterData'] | undefined;
     encounterName: string | undefined;
     npcName: string | undefined;
     dialogue: NpcDialogue | undefined;
     character: CharacterDto | undefined;
     setView: (view: GameView) => void;
     setScene: (scene: SceneRenderer) => void;
-    setEncounter: (encounter: SceneMoveResultDtoEncounterData) => void;
+    setEncounter: (encounter: SceneMoveResultDto['encounterData']) => void;
     setEncounterName: (encounterName: string) => void;
     setNpcName: (npcName: string) => void;
     setDialogue: (dialogue: NpcDialogue | undefined) => void;
@@ -45,7 +46,7 @@ export const useGameStore = create<GameStore>()((set) => ({
                 view,
             };
         }),
-    setEncounter: (encounter: SceneMoveResultDtoEncounterData) => set({ encounter }),
+    setEncounter: (encounter: SceneMoveResultDto['encounterData']) => set({ encounter }),
     setEncounterName: (encounterName: string) => set({ encounterName }),
     setNpcName: (npcName: string) => set({ npcName }),
     setDialogue: (dialogue: NpcDialogue | undefined) => set({ dialogue }),
