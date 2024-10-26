@@ -3,6 +3,7 @@
 @import '../../common/styles/mixins.scss';
 
 .introWrapper {
+    height: -webkit-fill-available;
     margin-top: 2rem;
     display: grid;
     grid-template-columns: 1fr 1fr;
