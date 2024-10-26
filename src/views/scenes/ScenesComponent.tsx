@@ -5,9 +5,9 @@ import { useGameStore } from '../game/GameStore';
 import { GameView } from '../game/types';
 import { io } from 'socket.io-client';
 import { StorageService } from '../../common/services/StorageService';
-import { SceneMoveDirection, SceneMoveResultDto } from '../../common/api/.generated';
 import { ToastService } from '../../common/services/ToastService';
 import { appConfig } from '../../common/config';
+import { SceneMoveDirection, SceneMoveResultDto } from '../../common/api/sceneTypes';
 
 let wsClient = io(appConfig.apiUrl);
 
@@ -29,12 +29,16 @@ export const ScenesComponent = () => {
         const scene = new SceneRenderer({
             onMove,
             onEncounter: (encounter) => {
-                setView(GameView.Battle);
-                setEncounter(encounter);
+                if (encounter) {
+                    setView(GameView.Battle);
+                    setEncounter(encounter);
+                }
             },
             onNpc: (npc) => {
-                setView(GameView.Dialogue);
-                setNpc(npc.npcName);
+                if (npc) {
+                    setView(GameView.Dialogue);
+                    setNpc(npc.npcName);
+                }
             },
         });
         const game = new Phaser.Game({
@@ -57,7 +61,7 @@ export const ScenesComponent = () => {
                 ToastService.error({ message: wsData });
                 return;
             }
-            const moveResult = JSON.parse(wsData) as SceneMoveResultDto;
+            const moveResult: SceneMoveResultDto = JSON.parse(wsData);
             ScenesService.userPosition = moveResult.newPosition;
             if (moveResult.newSceneData) {
                 await ScenesService.initialize();
