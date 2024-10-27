@@ -104,6 +104,7 @@ const DialogueComponent = () => {
                                     <i>{currentNode.text}</i>
                                 )}
                             </p>
+                            <div className={style.dialogueImage} />
                         </div>
                         {currentNode.options && (
                             <>

@@ -43,11 +43,12 @@
         .dialogueContent {
             display: flex;
             align-items: center;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
+            justify-content: space-between;
         
             .dialogueImage {
-                width: 5rem;
-                height: 5rem;
+                width: 4.5rem;
+                height: 4.5rem;
                 margin-right: 1rem;
                 border-radius: 50%;
                 transform: scaleX(-1);
