@@ -3,11 +3,10 @@
 @import '../../common/styles/mixins.scss';
 
 .introWrapper {
-    height: -webkit-fill-available;
-    margin-top: 2rem;
+    height: 100%;
+    padding-top: 2rem;
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 10fr;
+    grid-template: 1fr 10fr / 1fr 1fr;
     align-items: stretch;
     gap: 2rem;
     color: $color-dark;
