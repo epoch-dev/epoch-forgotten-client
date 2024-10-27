@@ -85,15 +85,26 @@ const DialogueComponent = () => {
                 currentNode && (
                     <div className={style.dialogueItem}>
                         {npcTitle && <div className={style.dialogueLabel}>{npcTitle}</div>}
-                        <p>
-                            {currentNode.author ? (
-                                <span>
-                                    <b>{currentNode.author}</b>: {currentNode.text}
-                                </span>
+                        <div className={style.dialogueContent}>
+                            {currentNode.imageUri ? (
+                                <img
+                                    src={AssetsService.getCharacterUri(currentNode.imageUri)}
+                                    alt={currentNode.author}
+                                    className={style.dialogueImage}
+                                />
                             ) : (
-                                <i>{currentNode.text}</i>
+                                <div className={style.dialogueImage} />
                             )}
-                        </p>
+                            <p>
+                                {currentNode.author ? (
+                                    <span>
+                                        <b>{currentNode.author}</b>: {currentNode.text}
+                                    </span>
+                                ) : (
+                                    <i>{currentNode.text}</i>
+                                )}
+                            </p>
+                        </div>
                         {currentNode.options && (
                             <>
                                 {currentNode.options.map((option, index) => (

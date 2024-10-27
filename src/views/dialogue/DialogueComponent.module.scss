@@ -27,7 +27,7 @@
         position: absolute;
         bottom: 10rem;
         padding: 1rem;
-        min-width: 30rem;
+        min-width: 36rem;
         max-width: 80%;
         background-color: rgba($color-dark, 0.8);
         color: $color-light;
@@ -38,6 +38,21 @@
             color: $color-light-grey;
             font-size: 14px;
             line-height: 1;
+        }
+
+        .dialogueContent {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        
+            .dialogueImage {
+                width: 5rem;
+                height: 5rem;
+                margin-right: 1rem;
+                border-radius: 50%;
+                transform: scaleX(-1);
+                background-color: rgba($color-dark, 0.0); /* for placeholder */
+            }
         }
     }
 
