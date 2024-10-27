@@ -115,9 +115,33 @@
     color: $color-mythical;
 }
 
+.route {
+    color: $color-route;
+}
+
+.collision {
+    color: $color-collision;
+}
+
+.passage {
+    color: $color-passage;
+}
+
+.npc {
+    color: $color-npc;
+}
+
+.encounter {
+    color: $color-encounter;
+}
+
 .flex {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 1rem;
+}
+
+.inline {
+    display: inline;
 }
