@@ -58,7 +58,7 @@ export class SceneRenderer extends Scene {
             this.musicService.play(sceneData.musicUri);
         }, 0);
 
-        this.load.on('complete', async () => {
+        this.load.on('complete', () => {
             this.sceneImageRef?.destroy();
             this.tileRenderer.clearTiles();
 
@@ -102,12 +102,12 @@ export class SceneRenderer extends Scene {
         const direction = cursor.left.isDown
             ? SceneMoveDirection.Left
             : cursor.right.isDown
-                ? SceneMoveDirection.Right
-                : cursor.up.isDown
-                    ? SceneMoveDirection.Up
-                    : cursor.down.isDown
-                        ? SceneMoveDirection.Down
-                        : undefined;
+            ? SceneMoveDirection.Right
+            : cursor.up.isDown
+            ? SceneMoveDirection.Up
+            : cursor.down.isDown
+            ? SceneMoveDirection.Down
+            : undefined;
         if (direction) {
             this.onMove(direction);
             this.lastMove = getCurrentTimeStamp();
