@@ -68,6 +68,10 @@ export const EquipmentComponent = () => {
                     draggable={false}
                 />
                 <p className={style.statisticLabel}>
+                    Class: <b>{character.class}</b>
+                </p>
+                <hr />
+                <p className={style.statisticLabel}>
                     P. Attack: <b>{character.statistics.pAtk}</b>
                 </p>
                 <p className={style.statisticLabel}>

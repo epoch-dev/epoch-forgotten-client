@@ -43,11 +43,11 @@ export class EffectsService {
 
     private static async handleQuestEffect(quest: Single<Required<Effects>['quests']>) {
         const questData = (await questsClient.getQuest(quest.name, quest.stageId)).data;
-        if (quest.stageId === STARTING_STAGE) {
+        if (questData.isLastStage) {
+            ToastService.success({ message: `"${questData.label}" completed!` });
+        } else if (quest.stageId === STARTING_STAGE) {
             soundService.newQuest();
             ToastService.success({ message: `Quest "${questData.label}" started!` });
-        } else if (questData.isLastStage) {
-            ToastService.success({ message: `"${questData.label}" completed!` });
         } else if (quest.state === 'Failed') {
             ToastService.error({ message: `Quest "${questData.label}" failed!` });
         } else if (quest.state === 'In-progress' && questData.stages[questData.stages.length - 1].objective) {
