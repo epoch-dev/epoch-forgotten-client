@@ -9,7 +9,8 @@ import { ToastService } from '../../common/services/ToastService';
 import { appConfig } from '../../common/config';
 import { SceneMoveDirection, SceneMoveResultDto } from '../../common/api/sceneTypes';
 
-let wsClient = io(appConfig.apiUrl);
+const wsUrl = appConfig.apiUrl.replace(/^http/, 'ws');
+let wsClient = io(wsUrl);
 
 const isSceneMoveResult = (data: unknown): data is SceneMoveResultDto => {
     try {
@@ -55,7 +56,7 @@ export const ScenesComponent = () => {
         });
         setScene(scene);
         const authToken = StorageService.get('user')?.accessToken;
-        wsClient = io(appConfig.apiUrl, { extraHeaders: { authorization: `Bearer ${authToken}` } });
+        wsClient = io(wsUrl, { extraHeaders: { authorization: `Bearer ${authToken}` } });
         wsClient.on('message', async (wsData: string) => {
             if (!isSceneMoveResult(wsData)) {
                 ToastService.error({ message: wsData });
