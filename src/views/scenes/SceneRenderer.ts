@@ -58,7 +58,7 @@ export class SceneRenderer extends Scene {
             this.musicService.play(sceneData.musicUri);
         }, 0);
 
-        this.load.on('complete', () => {
+        this.load.on('complete', async () => {
             this.sceneImageRef?.destroy();
             this.tileRenderer.clearTiles();
 
@@ -81,6 +81,7 @@ export class SceneRenderer extends Scene {
             this.cameras.main.setSize(this.scale.width, this.scale.height);
             this.cameras.main.startFollow(this.user, true, 0.1, 0.1);
             this.cameras.main.setZoom(2);
+            this.fadeIn();
         });
     }
 
@@ -101,12 +102,12 @@ export class SceneRenderer extends Scene {
         const direction = cursor.left.isDown
             ? SceneMoveDirection.Left
             : cursor.right.isDown
-            ? SceneMoveDirection.Right
-            : cursor.up.isDown
-            ? SceneMoveDirection.Up
-            : cursor.down.isDown
-            ? SceneMoveDirection.Down
-            : undefined;
+                ? SceneMoveDirection.Right
+                : cursor.up.isDown
+                    ? SceneMoveDirection.Up
+                    : cursor.down.isDown
+                        ? SceneMoveDirection.Down
+                        : undefined;
         if (direction) {
             this.onMove(direction);
             this.lastMove = getCurrentTimeStamp();
@@ -142,5 +143,24 @@ export class SceneRenderer extends Scene {
         if (npc) {
             this.onNpc(npc);
         }
+    }
+
+    private fadeIn(duration = 1000) {
+        const width = this.scale.width + TILE_SIZE;
+        const height = this.scale.height + TILE_SIZE;
+
+        const fadeRect = this.add.rectangle(-TILE_SIZE, -TILE_SIZE, width, height, 0x000000)
+            .setOrigin(0)
+            .setAlpha(1)
+            .setDepth(100);
+
+        this.tweens.add({
+            targets: fadeRect,
+            alpha: 0,
+            duration: duration,
+            onComplete: () => {
+                fadeRect.destroy();
+            }
+        });
     }
 }
