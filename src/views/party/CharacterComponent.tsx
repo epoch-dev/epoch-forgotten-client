@@ -5,7 +5,7 @@ import { AssetsService } from '../../common/services/AssetsService';
 import { useGameStore } from '../game/GameStore';
 import { GameView } from '../game/types';
 import { TooltipComponent } from '../../common/components/TooltipComponent';
-import { getLevelExperience } from '../../common/utils';
+import { getLevelExperience } from '../../common/services/LevelService';
 
 export const CharacterComponent = ({ character }: { character: CharacterDto }) => {
     const { setCharacter, setView } = useGameStore();

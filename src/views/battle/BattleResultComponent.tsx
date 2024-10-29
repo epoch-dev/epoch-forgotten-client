@@ -9,10 +9,11 @@ import { GameView } from '../game/types';
 import { AssetsService } from '../../common/services/AssetsService';
 import { ProgressBarComponent } from '../../common/components/ProgressBarComponent';
 import { useEffect, useState } from 'react';
-import { getLevelExperience, wait } from '../../common/utils';
+import { wait } from '../../common/utils';
 import { CSS_COLOR } from '../../common/styles';
 import { ScenesService } from '../scenes/ScenesService';
 import { EffectsService } from '../../common/services/EffectsService';
+import { getLevelExperience } from '../../common/services/LevelService';
 
 export const BattleResultComponent = ({
     victoryResults,
