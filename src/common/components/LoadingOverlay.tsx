@@ -1,8 +1,8 @@
-import './LoadingOverlay.module.scss';
+import style from './LoadingOverlay.module.scss';
 
 const LoadingOverlay = () => (
-    <div className="loading-screen">
-        <div className="loading-spinner"></div>
+    <div className={style['loading-screen']}>
+        <div className={style['loading-spinner']}></div>
     </div>
 );
 
