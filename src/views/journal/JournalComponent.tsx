@@ -33,7 +33,7 @@ const JournalComponent = () => {
             return counts;
         }, {} as Record<QuestState, number>);
     }, [quests]);
-    
+
     const filteredQuests = useMemo(() => {
         return quests?.filter(quest => quest.unlocked[quest.unlocked.length - 1].state === activeTab);
     }, [quests, activeTab]);
@@ -41,7 +41,7 @@ const JournalComponent = () => {
     if (!quests) {
         return <LoadingOverlay />;
     }
-    
+
     return (
         <section className={style.questsWrapper}>
             <div className={style.tabs}>
@@ -58,7 +58,7 @@ const JournalComponent = () => {
                     </button>
                 ))}
             </div>
-            {filteredQuests!.map((quest) => (
+            {filteredQuests?.map((quest) => (
                 <QuestItem key={quest.label} quest={quest} />
             ))}
         </section>
