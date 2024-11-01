@@ -13,6 +13,11 @@
         border: 2px solid color.adjust($color-common, $lightness: 10%);
     }
 
+    &.Uncommon {
+        @include insetShadow($color-uncommon);
+        border: 2px solid color.adjust($color-uncommon, $lightness: 10%);
+    }
+
     &.Rare {
         @include insetShadow($color-rare);
         border: 2px solid color.adjust($color-rare, $lightness: 10%);
