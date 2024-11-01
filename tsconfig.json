@@ -20,6 +20,6 @@
         "noUnusedParameters": true,
         "noFallthroughCasesInSwitch": true
     },
-    "include": ["src", "src/common/api/.generated/levelUtil.ts"],
+    "include": ["src", "src/common/api/definitions/levelUtil.ts"],
     "references": [{ "path": "./tsconfig.node.json" }]
 }
