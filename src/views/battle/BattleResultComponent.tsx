@@ -13,7 +13,7 @@ import { wait } from '../../common/utils';
 import { CSS_COLOR } from '../../common/styles';
 import { ScenesService } from '../scenes/ScenesService';
 import { EffectsService } from '../../common/services/EffectsService';
-import { getLevelExperience } from '../../common/services/LevelService';
+import { getLevelExperience } from '../../common/services/LevelUtil';
 
 export const BattleResultComponent = ({
     victoryResults,
