@@ -3,7 +3,7 @@ import { GameView } from './types';
 import { SceneRenderer } from '../scenes/SceneRenderer';
 import { CharacterDto, NpcDialogue } from '../../common/api/.generated';
 import { MusicService } from '../../common/services/MusicService';
-import { SceneMoveResultDto } from '../../common/api/sceneTypes';
+import { SceneMoveResultDto } from '../../common/api/definitions/sceneTypes';
 
 type GameStore = {
     scene: SceneRenderer | undefined;
