@@ -2,7 +2,7 @@ import style from './DialogueComponent.module.scss';
 import { useEffect, useState, KeyboardEvent, useRef } from 'react';
 import { DialogueService } from './DialogueService';
 import { npcsClient } from '../../common/api/client';
-import type { DialogueNode } from '../../common/api/.generated';
+import type { DialogueNode, NpcDialogue } from '../../common/api/.generated';
 import { useGameStore } from '../game/GameStore';
 import { GameView } from '../game/types';
 import LoadingOverlay from '../../common/components/LoadingOverlay';
@@ -10,8 +10,9 @@ import { AssetsService } from '../../common/services/AssetsService';
 import { throttle } from '../../common/utils';
 
 const DialogueComponent = () => {
-    const { npcName, dialogue, setView, setDialogue } = useGameStore();
+    const { npcName, setView } = useGameStore();
     const [service, setService] = useState<DialogueService>();
+    const [dialogue, setDialogue] = useState<NpcDialogue>();
     const [currentNode, setCurrentNode] = useState<DialogueNode>();
     const [isLoading, setIsLoading] = useState(true);
     const [showOkButton, setShowOkButton] = useState(false);

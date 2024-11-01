@@ -30,8 +30,8 @@ export const BattleResultComponent = ({
 
     const handleBattleEnded = async () => {
         await EffectsService.showEffects([
-            ...(victoryResults?.effects ?? []),
-            ...(defeatResults?.effects ?? []),
+            ...(victoryResults?.effects ? [victoryResults.effects] : []),
+            ...(defeatResults?.effects ? [defeatResults.effects] : []),
         ]);
         await ScenesService.initialize();
         await scene?.loadScene();
