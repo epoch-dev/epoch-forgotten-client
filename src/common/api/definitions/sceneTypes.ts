@@ -1,4 +1,4 @@
-import { CharacterRace, PlotPoint } from '../.generated';
+import { CharacterRace, EffectsDialogue } from '../.generated';
 
 export type ScenePosition = {
     sceneName: string;
@@ -35,7 +35,8 @@ export type SceneDataDto = {
     imageUri: string;
     battleMusicUri: string;
     battleImageUri: string;
-    plotPoint?: PlotPoint | undefined;
+    // TODO - replace type literal with PlotPoint after TSOA detach
+    plotPoint?: EffectsDialogue | undefined;
 };
 
 export type SceneTileDto = {
