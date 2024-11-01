@@ -1,5 +1,4 @@
 export const getLevelExperience = (level: number) => {
-    // exp from 1 mob ~ 5 * (10 + enemy level)
     switch (level) {
         case 0:
         case 1:
