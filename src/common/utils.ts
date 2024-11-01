@@ -14,8 +14,6 @@ export const generateRandomId = () => {
     return Array.from({ length: 12 }, () => Math.floor(Math.random() * 10)).join('');
 };
 
-export const getLevelExperience = (level: number) => Math.round(0 + 25 * Math.pow(level - 1, 1.73));
-
 export const formatNumber = (value: number) => {
     const formatted = new Intl.NumberFormat('en-US', {
         useGrouping: true,

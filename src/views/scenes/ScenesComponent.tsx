@@ -7,7 +7,7 @@ import { io } from 'socket.io-client';
 import { StorageService } from '../../common/services/StorageService';
 import { ToastService } from '../../common/services/ToastService';
 import { appConfig } from '../../common/config';
-import { SceneMoveDirection, SceneMoveResultDto } from '../../common/api/sceneTypes';
+import { SceneMoveDirection, SceneMoveResultDto } from '../../common/api/definitions/sceneTypes';
 
 const wsUrl = appConfig.apiUrl.replace(/^http/, 'ws');
 let wsClient = io(wsUrl);

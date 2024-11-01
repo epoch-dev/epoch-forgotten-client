@@ -1,4 +1,4 @@
-import { CharacterRace, EffectsDialogue } from './.generated';
+import { CharacterRace, EffectsDialogue } from '../.generated';
 
 export type ScenePosition = {
     sceneName: string;

@@ -7,7 +7,7 @@ import { MusicService } from '../../common/services/MusicService';
 import TileRenderer from './TileRenderer';
 import { getCurrentTimeStamp } from '../../common/utils';
 import { appConfig } from '../../common/config';
-import { SceneMoveDirection, SceneMoveResultDto } from '../../common/api/sceneTypes';
+import { SceneMoveDirection, SceneMoveResultDto } from '../../common/api/definitions/sceneTypes';
 
 export class SceneRenderer extends Scene {
     public blockMovement = false;
@@ -149,7 +149,8 @@ export class SceneRenderer extends Scene {
         const width = this.scale.width + TILE_SIZE;
         const height = this.scale.height + TILE_SIZE;
 
-        const fadeRect = this.add.rectangle(-TILE_SIZE, -TILE_SIZE, width, height, 0x000000)
+        const fadeRect = this.add
+            .rectangle(-TILE_SIZE, -TILE_SIZE, width, height, 0x000000)
             .setOrigin(0)
             .setAlpha(1)
             .setDepth(100);
@@ -160,7 +161,7 @@ export class SceneRenderer extends Scene {
             duration: duration,
             onComplete: () => {
                 fadeRect.destroy();
-            }
+            },
         });
     }
 }
