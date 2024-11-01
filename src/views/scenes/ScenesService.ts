@@ -11,7 +11,6 @@ export class ScenesService {
         this.sceneData = data;
         this.userPosition = data.userPosition;
         if (data.plotPoint) {
-            console.log('point!')
             await EffectsService.showEffects([{ dialogue: data.plotPoint }]);
         }
     }
