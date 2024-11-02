@@ -10,7 +10,7 @@ const tabs: { state: QuestState; label: string }[] = [
     { state: 'On-hold', label: 'On Hold' },
     { state: 'Unlocked', label: 'Unlocked' },
     { state: 'Completed', label: 'Completed' },
-    { state: 'Failed', label: 'Failed' }
+    { state: 'Failed', label: 'Failed' },
 ];
 
 const JournalComponent = () => {
@@ -45,7 +45,7 @@ const JournalComponent = () => {
     return (
         <section className={style.questsWrapper}>
             <div className={style.tabs}>
-                {tabs.map(({state, label}) => (
+                {tabs.map(({ state, label }) => (
                     <button
                         key={state}
                         onClick={() => setActiveTab(state)}
