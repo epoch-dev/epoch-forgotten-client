@@ -31,13 +31,13 @@ export const CharacterComponent = ({ character }: { character: CharacterDto }) =
                     </p>
                 }>
                 <p className="bold primary">
-                    {character.name} | {character.level}
+                    {character.label} | {character.level}
                 </p>
             </TooltipComponent>
             <hr />
             <img
                 src={AssetsService.getCharacterUri(character.imageUri)}
-                alt={character.name}
+                alt={character.label}
                 draggable={false}
             />
             <hr />
