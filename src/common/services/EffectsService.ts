@@ -58,7 +58,7 @@ export class EffectsService {
     }
 
     private static handleItemEffect(item: Single<Required<Effects>['items']>) {
-        ToastService.success({ message: `Received ${item.label} (${item.quantity})` });
+        ToastService.success({ message: `Received ${item.label ?? item.name} (${item.quantity})` });
     }
 
     private static handleEncounterEffect(encounter: Required<Effects>['encounter']) {
@@ -78,7 +78,7 @@ export class EffectsService {
     }
 
     private static handleCharacterEffect(character: Required<Effects>['character']) {
-        ToastService.success({ message: `${character.name} joined you party!` });
+        ToastService.success({ message: `${character.label ?? character.name} joined you party!` });
     }
 
     private static handleGoldEffect(gold: Required<Effects>['gold']) {

@@ -35,11 +35,11 @@ export const SkillsComponent = () => {
         <section style={{ display: 'flex', justifyContent: 'space-between' }}>
             <div className={style.characterWrapper}>
                 <h2>
-                    {character.name} | {character.level}
+                    {character.label} | {character.level}
                 </h2>
                 <img
                     src={AssetsService.getCharacterUri(character.imageUri)}
-                    alt={character.name}
+                    alt={character.label}
                     draggable={false}
                 />
                 <AttributeComponent label="Health" amount={character.statistics.health} name={'health'} />
