@@ -21,6 +21,13 @@ type ApiError = {
     message: string;
 };
 
+const logout = () => {
+    MusicService.getInstance().stopCurrent();
+    StorageService.clear();
+    useGameStore.getState().clear();
+    document.location.href = '/';
+};
+
 axios.interceptors.request.use((req) => {
     const authToken = StorageService.get('user')?.accessToken;
     req.headers['Authorization'] = `Bearer ${authToken}`;
@@ -31,17 +38,12 @@ axios.interceptors.response.use(
     (res) => res,
     async (err: AxiosError<ApiError>) => {
         if (err.status === 401 && err.config) {
-            const refreshToken = StorageService.get('user')?.refreshToken;
-            if (!refreshToken) {
-                MusicService.getInstance().stopCurrent();
-                StorageService.clear();
-                useGameStore.getState().clear();
-                document.location.href = '/';
-                return;
+            const user = StorageService.get('user');
+            if (!user || !user.refreshToken) {
+                return logout();
             }
             try {
-                const tokenData = await usersClient.refreshToken({ refreshToken });
-                const user = StorageService.get('user')!;
+                const tokenData = await usersClient.refreshToken({ refreshToken: user.refreshToken });
                 StorageService.set({
                     key: 'user',
                     data: {
@@ -52,13 +54,10 @@ axios.interceptors.response.use(
                 err.config.headers['Authorization'] = `Bearer ${tokenData.data}`;
                 return axios(err.config);
             } catch {
-                MusicService.getInstance().stopCurrent();
-                StorageService.clear();
-                useGameStore.getState().clear();
-                document.location.href = '/';
+                logout();
             }
         } else {
-            ToastService.error({ message: err.response?.data.message || 'errors.unknownError' });
+            ToastService.error({ message: err.response?.data.message ?? 'errors.unknownError' });
             return Promise.reject(err);
         }
     },
