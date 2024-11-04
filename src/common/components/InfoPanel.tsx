@@ -2,18 +2,6 @@ import style from './InfoPanel.module.scss';
 import { useState } from 'react';
 import { TooltipComponent } from './TooltipComponent';
 
-// const roadmap: RoadmapMilestone[] = [
-//     { title: 'Prologue Release', description: 'Initial game release with core features.', status: 'Ready' },
-//     { title: 'Chapter 1 Development', description: 'Adding new areas and characters.', status: 'Developing' },
-//     { title: 'Mobile Support', description: 'Optimizing the game for mobile platforms.', status: 'Planning' },
-// ];
-
-// type RoadmapMilestone = {
-//     title: string;
-//     description: string;
-//     status: 'Planning' | 'Developing' | 'Ready';
-// };
-
 const InfoPanel = () => {
     const [isPanelOpen, setIsPanelOpen] = useState(false);
 
