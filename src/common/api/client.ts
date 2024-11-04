@@ -12,11 +12,20 @@ import {
 import { appConfig } from '../config';
 import { ToastService } from '../services/ToastService';
 import { StorageService } from '../services/StorageService';
+import { useGameStore } from '../../views/game/GameStore';
+import { MusicService } from '../services/MusicService';
 
 type ApiError = {
     name: string;
     code: string;
     message: string;
+};
+
+const logout = () => {
+    MusicService.getInstance().stopCurrent();
+    StorageService.clear();
+    useGameStore.getState().clear();
+    document.location.href = '/';
 };
 
 axios.interceptors.request.use((req) => {
@@ -27,10 +36,30 @@ axios.interceptors.request.use((req) => {
 
 axios.interceptors.response.use(
     (res) => res,
-    (err: AxiosError<ApiError>) => {
-        console.log(err);
-        ToastService.error({ message: err.response?.data.message || 'errors.unknownError' });
-        return Promise.reject(err);
+    async (err: AxiosError<ApiError>) => {
+        if (err.status === 401 && err.config) {
+            const user = StorageService.get('user');
+            if (!user || !user.refreshToken) {
+                return logout();
+            }
+            try {
+                const tokenData = await usersClient.refreshToken({ refreshToken: user.refreshToken });
+                StorageService.set({
+                    key: 'user',
+                    data: {
+                        ...user,
+                        accessToken: tokenData.data,
+                    },
+                });
+                err.config.headers['Authorization'] = `Bearer ${tokenData.data}`;
+                return axios(err.config);
+            } catch {
+                logout();
+            }
+        } else {
+            ToastService.error({ message: err.response?.data.message ?? 'errors.unknownError' });
+            return Promise.reject(err);
+        }
     },
 );
 
