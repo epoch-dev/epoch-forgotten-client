@@ -3,7 +3,6 @@ import { MusicService } from '../../common/services/MusicService';
 import style from './AuthComponent.module.scss';
 import SigninFormComponent from './SigninFormComponent';
 import SignupFormComponent from './SignupFormComponent';
-import { TooltipComponent } from '../../common/components/TooltipComponent';
 import { AssetsService } from '../../common/services/AssetsService';
 import { Roadmap } from '../../common/components/Roadmap';
 
@@ -33,9 +32,7 @@ export const AuthComponent = () => {
         <>
             <main className={style.formWrapper}>
                 <div onClick={() => setShowRoadmap((prev) => !prev)} className={style.roadmapIcon}>
-                    <TooltipComponent hint="Roadmap" config={{ top: '0', left: '5%' }}>
-                        <img src={AssetsService.getIcon('ROADMAP')} alt="roadmap" width={32} height={32} />
-                    </TooltipComponent>
+                    <img src={AssetsService.getIcon('ROADMAP')} alt="roadmap" width={32} height={32} />
                 </div>
                 <figure className={style.logoWrapper}>
                     <img src="./images/brand/brand.png" alt="logo" />

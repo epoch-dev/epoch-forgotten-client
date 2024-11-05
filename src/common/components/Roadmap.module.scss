@@ -49,6 +49,7 @@
     .dateLabel {
         font-size: 12px;
         font-weight: 700;
+        font-style: italic;
     }
 
     hr {
@@ -63,5 +64,17 @@
     p {
         margin: 0.25rem;
         font-size: 14px;
+    }
+
+    .Ready {
+        color: rgb(29, 103, 37);
+    }
+
+    .Developing {
+        color: rgb(58, 46, 236);
+    }
+
+    .Planning {
+        color: rgb(51, 53, 44);
     }
 }
