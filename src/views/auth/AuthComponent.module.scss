@@ -20,6 +20,14 @@
     background: $color-dark;
 }
 
+.roadmapIcon {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    cursor: pointer;
+    z-index: 100;
+}
+
 .logoWrapper {
     margin: auto;
     text-align: center;
