@@ -21,6 +21,7 @@ import { useEffect } from 'react';
 import { battleClient, charactersClient } from '../../common/api/client';
 import { UserRole } from '../../common/api/.generated';
 import InfoPanel from '../../common/components/InfoPanel';
+import { appConfig } from '../../common/config.ts';
 
 const NOT_SCROLLABLE_VIEWS = [
     GameView.World,
@@ -67,10 +68,17 @@ export const GameComponent = () => {
         musicService.stopCurrent();
     };
 
+    const handleReportIssue = () => {
+        window.open(appConfig.reportIssueLink, '_blank', 'noopener,noreferrer');
+    };
+
     const AsidePanel = () => (
         <aside className={style.asidePanel}>
             <MusicPanel />
             <InfoPanel />
+            <button className="panelBtn" onClick={handleReportIssue}>
+                Report issue
+            </button>
             {user?.role === UserRole.Administrator && (
                 <button onClick={() => setView(GameView._Dev)} className="panelBtn">
                     _Dev
