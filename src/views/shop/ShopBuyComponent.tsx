@@ -127,7 +127,10 @@ const ShopBuyComponent = () => {
                             disabled={buyDisabled || !totalCost}>
                             Purchase
                         </button>
-                        <button className={style.closeShopButton} onClick={() => setView(GameView.World)}>
+                        <button
+                            className={style.closeShopButton}
+                            onClick={() => setView(GameView.World)}
+                            disabled={loading}>
                             Close
                         </button>
                     </div>
