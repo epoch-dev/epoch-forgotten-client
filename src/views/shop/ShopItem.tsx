@@ -1,6 +1,7 @@
 import style from './ShopItem.module.scss';
 import type { Item } from '../../common/api/.generated';
-import { ItemComponent } from '../equipment/ItemComponent';
+import { ItemComponent, ItemTooltip } from '../equipment/ItemComponent';
+import { TooltipComponent } from '../../common/components/TooltipComponent';
 
 const ShopItem = ({
     item,
@@ -19,7 +20,14 @@ const ShopItem = ({
 
     return (
         <div className={`${style.shopItem} ${style[item.rarity]} ${disabledStyle}`}>
-            {buyDisabled && <div className={style.shopItemOverlay}>Not Available</div>}
+            {buyDisabled && 
+                <TooltipComponent
+                    hint={<ItemTooltip item={item} showPrice={false} />}
+                    config={{ width: '16rem' }}
+                >
+                    <div className={style.shopItemOverlay}>Not Available</div>
+                </TooltipComponent>
+            }
             {!buyDisabled && (
                 <div
                     onClick={() => addToCheckout(item)}
@@ -36,7 +44,7 @@ const ShopItem = ({
                     ▼
                 </div>
             )}
-            <ItemComponent item={item} isShopItem={true} itemStyle={{ width: '6rem', height: '6rem', borderRadius: '1rem' }} />
+            <ItemComponent item={item} showPrice={true} itemStyle={{ width: '6rem', height: '6rem', borderRadius: '1rem' }} />
             {quantity > 0 && <div className={style.quantityLabel}>{quantity}</div>}
         </div>
     );

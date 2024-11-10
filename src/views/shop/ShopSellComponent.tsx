@@ -81,7 +81,7 @@ export const ShopSellComponent = () => {
                     {userItems.map((item) => (
                         <div key={item.id} className={style.userItem}>
                             <TooltipComponent
-                                hint={<ItemTooltip item={item} isShopItem={true} />}
+                                hint={<ItemTooltip item={item} showPrice={true} />}
                                 config={{ width: '16rem' }}>
                                 <p>
                                     {item.label} {item.stackable && ` (${item.quantity})`} |

@@ -5,7 +5,7 @@ import { AssetsService } from '../../common/services/AssetsService';
 
 type ItemComponentProps = {
     item: ItemDto | Item;
-    isShopItem?: boolean;
+    showPrice?: boolean;
     itemStyle?: {
         width?: string;
         height?: string;
@@ -13,19 +13,20 @@ type ItemComponentProps = {
     };
 };
 
-export const ItemComponent = ({ item, isShopItem, itemStyle }: ItemComponentProps) => {
+export const ItemComponent = ({ item, showPrice, itemStyle }: ItemComponentProps) => {
     return (
         <div className={`${style.itemWrapper} ${style[item.rarity]}`} style={{ ...itemStyle }}>
             <TooltipComponent
-                hint={<ItemTooltip item={item} isShopItem={isShopItem} />}
-                config={{ width: '16rem' }}>
+                hint={<ItemTooltip item={item} showPrice={showPrice} />}
+                config={{ width: '16rem' }}
+            >
                 <img src={AssetsService.getItemUri(item.imageUri)} alt={item.label} draggable={false} />
             </TooltipComponent>
         </div>
     );
 };
 
-export const ItemTooltip = ({ item, isShopItem }: { item: ItemDto | Item; isShopItem?: boolean }) => {
+export const ItemTooltip = ({ item, showPrice }: { item: ItemDto | Item; showPrice?: boolean }) => {
     const getRarityLabel = (rarity: ItemRarity) => {
         return <div className={`${style.rarityLabel} ${rarity.toLowerCase()}`}>{item.rarity}</div>;
     };
@@ -109,7 +110,7 @@ export const ItemTooltip = ({ item, isShopItem }: { item: ItemDto | Item; isShop
                 </>
             )}
 
-            {isShopItem && (
+            {showPrice && (
                 <>
                     <hr />
                     <p className="epic bold">Price: {item.price}</p>
