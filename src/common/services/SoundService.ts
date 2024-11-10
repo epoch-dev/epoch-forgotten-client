@@ -32,7 +32,11 @@ export class SoundService extends AudioService {
     }
 
     public click() {
-        this.play('click.mp3');
+        this.play('click.ogg');
+    }
+
+    public attrUp() {
+        this.play('attr-up.ogg');
     }
 
     public newSkill() {

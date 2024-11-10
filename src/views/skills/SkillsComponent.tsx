@@ -47,8 +47,8 @@ export const SkillsComponent = () => {
                 <hr />
                 <AttributeComponent label="Strength" amount={character.attributes.str} name={'str'} />
                 <AttributeComponent label="Dexterity" amount={character.attributes.dex} name={'dex'} />
-                <AttributeComponent label="Poi" amount={character.attributes.poi} name={'poi'} />
                 <AttributeComponent label="Arcana" amount={character.attributes.arc} name={'arc'} />
+                <AttributeComponent label="Poise" amount={character.attributes.poi} name={'poi'} />
                 <br />
                 <AttributeComponent label="Attribute points:" amount={character.attributePoints} />
                 <AttributeComponent label="Skill points:" amount={character.skillPoints} />

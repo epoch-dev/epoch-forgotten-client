@@ -24,21 +24,21 @@ const ShopBuyComponent = () => {
 
     useEffect(() => {
         void fetchShop();
-        void getGold();
+        void fetchGold();
     }, []);
 
     const fetchShop = async () => {
         if (!npcName) {
             return setView(GameView.World);
         }
+        setLoading(true);
         const npcData = (await npcsClient.getNpc(npcName)).data;
         setShopItems(npcData.shop ?? []);
+        setLoading(false);
     };
 
-    const getGold = async () => {
-        setLoading(true);
+    const fetchGold = async () => {
         setGold(await ShopService.getGold());
-        setLoading(false);
     };
 
     const addToCheckout = (item: Item) => {
@@ -127,7 +127,10 @@ const ShopBuyComponent = () => {
                             disabled={buyDisabled || !totalCost}>
                             Purchase
                         </button>
-                        <button className={style.closeShopButton} onClick={() => setView(GameView.World)}>
+                        <button
+                            className={style.closeShopButton}
+                            onClick={() => setView(GameView.World)}
+                            disabled={loading}>
                             Close
                         </button>
                     </div>

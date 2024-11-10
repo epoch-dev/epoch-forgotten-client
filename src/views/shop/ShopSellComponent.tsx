@@ -9,6 +9,8 @@ import { TooltipComponent } from '../../common/components/TooltipComponent';
 import { ItemTooltip } from '../equipment/ItemComponent';
 import { ToastService } from '../../common/services/ToastService';
 import { throttle } from '../../common/utils';
+import { ShopService } from './ShopService';
+import LoadingOverlay from '../../common/components/LoadingOverlay';
 
 const soundService = SoundService.getInstance();
 
@@ -16,12 +18,15 @@ export const ShopSellComponent = () => {
     const { npcName, setView } = useGameStore();
     const [purchaseFactor, setPurchaseFactor] = useState(0);
     const [userItems, setUserItems] = useState<ItemDto[]>([]);
+    const [gold, setGold] = useState(0);
     const [totalPrice, setTotalPrice] = useState(0);
     const [checkout, setCheckout] = useState<{ [key: string]: number }>({});
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         void fetchMerchant();
         void fetchItems();
+        void fetchGold();
     }, []);
 
     const fetchMerchant = async () => {
@@ -33,8 +38,14 @@ export const ShopSellComponent = () => {
     };
 
     const fetchItems = async () => {
+        setLoading(true);
         const items = await itemsClient.getItems();
         setUserItems(items.data.filter((item) => item.price !== undefined));
+        setLoading(false);
+    };
+
+    const fetchGold = async () => {
+        setGold(await ShopService.getGold());
     };
 
     const addToCheckout = (item: ItemDto) => {
@@ -65,23 +76,30 @@ export const ShopSellComponent = () => {
         if (!npcName) {
             return;
         }
+        setLoading(true);
         const items: ItemSellDtoItemsInner[] = Object.keys(checkout)
             .map((itemId) => ({ id: itemId, quantity: checkout[itemId] }))
             .filter((item) => item.quantity > 0);
         await itemsClient.sellItems({ npcName, items });
         await fetchItems();
+        setGold((prevGold) => prevGold + totalFactored);
+        setTotalPrice(0);
         setCheckout({});
+        setLoading(false);
         ToastService.success({ message: 'Items sold' });
     };
 
+    const totalFactored = Math.round(purchaseFactor * totalPrice);
+
     return (
         <div className={style.shopViewOverlay}>
+            {loading && <LoadingOverlay />}
             <div className={style.shopView}>
                 <div className={style.userItems}>
                     {userItems.map((item) => (
                         <div key={item.id} className={style.userItem}>
                             <TooltipComponent
-                                hint={<ItemTooltip item={item} isShopItem={true} />}
+                                hint={<ItemTooltip item={item} showPrice={true} />}
                                 config={{ width: '16rem' }}>
                                 <p>
                                     {item.label} {item.stackable && ` (${item.quantity})`} |
@@ -103,17 +121,21 @@ export const ShopSellComponent = () => {
                 </div>
                 <div className={style.shopPanel}>
                     <div className={style.goldAmount}>
+                        <p>Gold: {gold}</p>
                         <p>Purchase price: {100 * purchaseFactor}%</p>
-                        <p>Total: {Math.round(purchaseFactor * totalPrice)}</p>
+                        <p>Total: {totalFactored}</p>
                     </div>
                     <div>
                         <button
                             className={style.buyButton}
                             onClick={throttle(sellAll)}
-                            disabled={!totalPrice}>
+                            disabled={loading || !totalPrice}>
                             Sell
                         </button>
-                        <button className={style.closeShopButton} onClick={() => setView(GameView.World)}>
+                        <button
+                            className={style.closeShopButton}
+                            onClick={() => setView(GameView.World)}
+                            disabled={loading}>
                             Close
                         </button>
                     </div>
