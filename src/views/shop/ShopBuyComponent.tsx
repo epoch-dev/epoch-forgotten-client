@@ -23,8 +23,10 @@ const ShopBuyComponent = () => {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
+        setLoading(true);
         void fetchShop();
-        void getGold();
+        void fetchGold();
+        setLoading(false);
     }, []);
 
     const fetchShop = async () => {
@@ -35,10 +37,8 @@ const ShopBuyComponent = () => {
         setShopItems(npcData.shop ?? []);
     };
 
-    const getGold = async () => {
-        setLoading(true);
+    const fetchGold = async () => {
         setGold(await ShopService.getGold());
-        setLoading(false);
     };
 
     const addToCheckout = (item: Item) => {

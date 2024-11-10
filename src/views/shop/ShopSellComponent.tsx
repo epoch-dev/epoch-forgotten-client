@@ -9,6 +9,7 @@ import { TooltipComponent } from '../../common/components/TooltipComponent';
 import { ItemTooltip } from '../equipment/ItemComponent';
 import { ToastService } from '../../common/services/ToastService';
 import { throttle } from '../../common/utils';
+import { ShopService } from './ShopService';
 
 const soundService = SoundService.getInstance();
 
@@ -16,12 +17,14 @@ export const ShopSellComponent = () => {
     const { npcName, setView } = useGameStore();
     const [purchaseFactor, setPurchaseFactor] = useState(0);
     const [userItems, setUserItems] = useState<ItemDto[]>([]);
+    const [gold, setGold] = useState(0);
     const [totalPrice, setTotalPrice] = useState(0);
     const [checkout, setCheckout] = useState<{ [key: string]: number }>({});
 
     useEffect(() => {
         void fetchMerchant();
         void fetchItems();
+        void fetchGold();
     }, []);
 
     const fetchMerchant = async () => {
@@ -35,6 +38,10 @@ export const ShopSellComponent = () => {
     const fetchItems = async () => {
         const items = await itemsClient.getItems();
         setUserItems(items.data.filter((item) => item.price !== undefined));
+    };
+
+    const fetchGold = async () => {
+        setGold(await ShopService.getGold());
     };
 
     const addToCheckout = (item: ItemDto) => {
@@ -70,9 +77,13 @@ export const ShopSellComponent = () => {
             .filter((item) => item.quantity > 0);
         await itemsClient.sellItems({ npcName, items });
         await fetchItems();
+        setGold((prevGold) => prevGold + totalFactored);
+        setTotalPrice(0);
         setCheckout({});
         ToastService.success({ message: 'Items sold' });
     };
+
+    const totalFactored = Math.round(purchaseFactor * totalPrice);
 
     return (
         <div className={style.shopViewOverlay}>
@@ -103,8 +114,9 @@ export const ShopSellComponent = () => {
                 </div>
                 <div className={style.shopPanel}>
                     <div className={style.goldAmount}>
+                        <p>Gold: {gold}</p>
                         <p>Purchase price: {100 * purchaseFactor}%</p>
-                        <p>Total: {Math.round(purchaseFactor * totalPrice)}</p>
+                        <p>Total: {totalFactored}</p>
                     </div>
                     <div>
                         <button
