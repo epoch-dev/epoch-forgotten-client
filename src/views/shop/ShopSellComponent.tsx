@@ -10,6 +10,7 @@ import { ItemTooltip } from '../equipment/ItemComponent';
 import { ToastService } from '../../common/services/ToastService';
 import { throttle } from '../../common/utils';
 import { ShopService } from './ShopService';
+import LoadingOverlay from '../../common/components/LoadingOverlay';
 
 const soundService = SoundService.getInstance();
 
@@ -20,6 +21,7 @@ export const ShopSellComponent = () => {
     const [gold, setGold] = useState(0);
     const [totalPrice, setTotalPrice] = useState(0);
     const [checkout, setCheckout] = useState<{ [key: string]: number }>({});
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         void fetchMerchant();
@@ -36,8 +38,10 @@ export const ShopSellComponent = () => {
     };
 
     const fetchItems = async () => {
+        setLoading(true);
         const items = await itemsClient.getItems();
         setUserItems(items.data.filter((item) => item.price !== undefined));
+        setLoading(false);
     };
 
     const fetchGold = async () => {
@@ -72,6 +76,7 @@ export const ShopSellComponent = () => {
         if (!npcName) {
             return;
         }
+        setLoading(true);
         const items: ItemSellDtoItemsInner[] = Object.keys(checkout)
             .map((itemId) => ({ id: itemId, quantity: checkout[itemId] }))
             .filter((item) => item.quantity > 0);
@@ -80,6 +85,7 @@ export const ShopSellComponent = () => {
         setGold((prevGold) => prevGold + totalFactored);
         setTotalPrice(0);
         setCheckout({});
+        setLoading(false);
         ToastService.success({ message: 'Items sold' });
     };
 
@@ -87,6 +93,7 @@ export const ShopSellComponent = () => {
 
     return (
         <div className={style.shopViewOverlay}>
+            {loading && <LoadingOverlay />}
             <div className={style.shopView}>
                 <div className={style.userItems}>
                     {userItems.map((item) => (
@@ -122,10 +129,13 @@ export const ShopSellComponent = () => {
                         <button
                             className={style.buyButton}
                             onClick={throttle(sellAll)}
-                            disabled={!totalPrice}>
+                            disabled={loading || !totalPrice}>
                             Sell
                         </button>
-                        <button className={style.closeShopButton} onClick={() => setView(GameView.World)}>
+                        <button
+                            className={style.closeShopButton}
+                            onClick={() => setView(GameView.World)}
+                            disabled={loading}>
                             Close
                         </button>
                     </div>

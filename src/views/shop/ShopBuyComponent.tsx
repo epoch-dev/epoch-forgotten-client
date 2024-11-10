@@ -23,18 +23,18 @@ const ShopBuyComponent = () => {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        setLoading(true);
         void fetchShop();
         void fetchGold();
-        setLoading(false);
     }, []);
 
     const fetchShop = async () => {
         if (!npcName) {
             return setView(GameView.World);
         }
+        setLoading(true);
         const npcData = (await npcsClient.getNpc(npcName)).data;
         setShopItems(npcData.shop ?? []);
+        setLoading(false);
     };
 
     const fetchGold = async () => {

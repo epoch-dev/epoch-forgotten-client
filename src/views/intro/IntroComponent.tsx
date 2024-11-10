@@ -59,7 +59,7 @@ export const IntroComponent = () => {
                     <img src="./images/story/story-0-1.png" alt="" />
                     <p className="subtitle">
                         A guardian and musician, he embodies a unique blend of courage, strength, and
-                        creativity. Raised in the tranquil village of Vivinra, he have honed his skills
+                        creativity. Raised in the tranquil village of Delia, he have honed his skills
                         through years of diligent training and exploration. Now, their journey takes a new
                         turn as there seems to be something mysterious hiding behind wolves&apos; activity.
                         With determination etched into their every step, he stand ready to face whatever
