@@ -60,10 +60,14 @@ export class SoundService extends AudioService {
     }
 
     public victory() {
-        this.play('victory.mp3');
+        this.play('victory.ogg');
     }
 
     public defeat() {
-        this.play('defeat.mp3');
+        this.play('defeat.ogg');
+    }
+
+    public pay() {
+        this.play('pay.ogg');
     }
 }

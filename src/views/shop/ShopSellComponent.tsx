@@ -73,6 +73,7 @@ export const ShopSellComponent = () => {
     };
 
     const sellAll = async () => {
+        soundService.pay();
         if (!npcName) {
             return;
         }

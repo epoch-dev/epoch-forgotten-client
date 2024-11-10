@@ -66,7 +66,7 @@ const ShopBuyComponent = () => {
     };
 
     const buyAll = async () => {
-        soundService.click();
+        soundService.pay();
         setLoading(true);
         if (!npcName) {
             return;
