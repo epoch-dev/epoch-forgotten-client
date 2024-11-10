@@ -104,42 +104,39 @@ const CharacterLevelComponent = ({
     expGain: number;
 }) => {
     const [level, setLevel] = useState(levelInfo.oldLevel);
-    const [exp, setExp] = useState(levelInfo.oldExp);
-    const [nextLevelExp, setNextLevelExp] = useState(getLevelExperience(levelInfo.oldLevel + 1));
+    const [exp, setExp] = useState(levelInfo.oldExp - getLevelExperience(levelInfo.oldLevel));
+    const [nextLevelExp, setNextLevelExp] = useState(
+        getLevelExperience(levelInfo.oldLevel + 1) - getLevelExperience(levelInfo.oldLevel),
+    );
+    const [transitionTime, setTransitionTime] = useState(0.75);
 
     useEffect(() => {
-        if (level < levelInfo.oldLevel + levelInfo.gainedLevels) {
-            void handleLevelUp();
-        } else if (levelInfo.gainedLevels === 0) {
-            void handleExpUp();
-        }
-    }, [level]);
+        void animateLevels();
+    }, []);
 
-    const handleLevelUp = async () => {
-        await wait(250);
-        setExp(nextLevelExp);
-        await wait(900);
-        let newLevel = level;
-        setLevel((prevLevel) => {
-            newLevel = prevLevel + 1;
-            setNextLevelExp(getLevelExperience(newLevel + 1) - getLevelExperience(newLevel));
-            setExp(0);
-            return Math.min(newLevel, levelInfo.oldLevel + levelInfo.gainedLevels);
-        });
-        await wait(400);
-        setExp(() => {
-            return levelInfo.oldExp + expGain - getLevelExperience(newLevel - 1);
-        });
-        await wait(250);
-    };
+    const animateLevels = async () => {
+        let currentLevel = levelInfo.oldLevel;
+        let animatedLevels = 0;
 
-    const handleExpUp = async () => {
         await wait(500);
-        const exp =
-            levelInfo.oldLevel > 1
-                ? levelInfo.oldExp + expGain - getLevelExperience(levelInfo.oldLevel)
-                : levelInfo.oldExp + expGain;
-        setExp(exp);
+        setTransitionTime(0.5);
+        while (animatedLevels < levelInfo.gainedLevels) {
+            await wait(250);
+            setTransitionTime(0.75);
+            setExp(getLevelExperience(currentLevel + 1));
+            await wait(750);
+            setTransitionTime(0);
+            currentLevel++;
+            setExp(0);
+            setLevel(currentLevel);
+            setNextLevelExp(getLevelExperience(currentLevel + 1));
+            animatedLevels++;
+        }
+
+        await wait(250);
+        setTransitionTime(0.75);
+        setExp(levelInfo.oldExp + expGain - getLevelExperience(currentLevel));
+        setNextLevelExp(getLevelExperience(currentLevel + 1) - getLevelExperience(currentLevel));
     };
 
     return (
@@ -152,7 +149,12 @@ const CharacterLevelComponent = ({
                 <p>
                     {levelInfo.characterName} | {level}
                 </p>
-                <ProgressBarComponent current={exp} max={nextLevelExp} fillColor={CSS_COLOR.EPIC} />
+                <ProgressBarComponent
+                    current={exp}
+                    max={nextLevelExp}
+                    fillColor={CSS_COLOR.EPIC}
+                    style={{ transitionTime }}
+                />
             </div>
         </div>
     );

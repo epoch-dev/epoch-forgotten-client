@@ -6,8 +6,9 @@ type ProgressBarProps = {
     max: number;
     fillColor: CssColor;
     style?: {
-        width: string;
-        height: string;
+        width?: string;
+        height?: string;
+        transitionTime?: number;
     };
 };
 
@@ -18,7 +19,11 @@ export const ProgressBarComponent = ({ current, max, fillColor, style }: Progres
         <div className={styles.progressBar} style={{ width: style?.width, height: style?.height }}>
             <div
                 className={styles.progressFill}
-                style={{ width: `${percentage}%`, backgroundColor: fillColor }}></div>
+                style={{
+                    width: `${percentage}%`,
+                    backgroundColor: fillColor,
+                    transition: `width ${style?.transitionTime ?? '0.3'}s ease-in-out`,
+                }}></div>
         </div>
     );
 };

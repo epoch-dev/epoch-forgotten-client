@@ -13,7 +13,7 @@ export const ConfirmDialog = ({
     return (
         <div className={style.modalBackdrop}>
             <section className={style.modalWrapper}>
-                <p>{children}</p>
+                <div className={style.modalContent}>{children}</div>
                 <button onClick={onConfirm} className="btn">
                     Confirm
                 </button>
