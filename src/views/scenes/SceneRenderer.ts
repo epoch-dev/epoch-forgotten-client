@@ -107,6 +107,7 @@ export class SceneRenderer extends Scene {
 
     private async handleMove() {
         if (
+            !this.isAnyKeyPressed() ||
             this.lastMove + appConfig.moveInterval > getCurrentTimeStamp() ||
             this.blockMovement ||
             !this.user
@@ -201,5 +202,10 @@ export class SceneRenderer extends Scene {
                 fadeRect.destroy();
             },
         });
+    }
+
+    private isAnyKeyPressed(): boolean {
+        const keys = this.input.keyboard?.keys;
+        return keys !== undefined && keys?.some((key) => key.isDown);
     }
 }
