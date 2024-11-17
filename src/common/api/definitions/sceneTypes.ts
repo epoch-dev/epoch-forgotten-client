@@ -25,6 +25,10 @@ export enum SceneMoveDirection {
     Left = 'Left',
     Right = 'Right',
     Down = 'Down',
+    UpLeft = 'UpLeft',
+    UpRight = 'Upright',
+    DownLeft = 'DownLeft',
+    DownRight = 'DownRight',
 }
 
 export type SceneDataDto = {

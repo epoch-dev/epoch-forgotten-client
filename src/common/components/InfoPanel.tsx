@@ -21,8 +21,9 @@ const InfoPanel = () => {
                     <section className={style.section}>
                         <h3>Movement</h3>
                         <span>
-                            Use the <strong>Arrow Keys</strong> to move your character around the game world.
-                            Different actions will occur based on the tile type:
+                            Use the <b>Arrow Keys</b> or <b>WSAD</b> to move your character around the game
+                            world. You can also use key combinations to move sideways. Different actions will
+                            occur based on the tile type:
                         </span>
                         <TooltipComponent hint="Monsters may attack while traversing these areas">
                             <p className="inline route" style={{ marginLeft: '0.9rem' }}>
