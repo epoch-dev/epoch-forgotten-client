@@ -93,15 +93,15 @@ export const BattleCharacterComponent = ({
                     </div>
                 )}
                 {animatedLog &&
-                    animatedLog.hits.map((hit, hitInd) => (
+                    animatedLog.hits.map((hit, hitIndex) => (
                         <div
                             key={generateRandomId()}
                             className={style.logItem}
-                            style={{ animationDelay: `${hitInd / 2}s` }}>
+                            style={{ animationDelay: `${hitIndex / 2}s` }}>
                             <b className={`${hit.value >= 0 ? 'error' : 'success'}`}>
                                 {formatNumber(Math.round(Math.abs(hit.value)))}
-                                {hit.effectLogs.map((effectLog, effectLogInd) => (
-                                    <p key={`el-${effectLogInd}`} className={style.effectLogItem}>
+                                {hit.effectLogs.map((effectLog, effectLogIndex) => (
+                                    <p key={`el-${effectLogIndex}`} className={style.effectLogItem}>
                                         {effectLog}
                                     </p>
                                 ))}
@@ -152,8 +152,8 @@ const BattleCharacterStatus = ({ statuses }: { statuses: BattleStatus[] }) => {
     return (
         <div className={style.statusWrapper}>
             <hr />
-            {statuses.map((status, statusInd) => (
-                <div key={`status-${statusInd}`}>
+            {statuses.map((status, statusIndex) => (
+                <div key={`status-${statusIndex}`}>
                     {statusModifiers.map(({ key, label }) =>
                         status[key] ? (
                             <p key={key}>

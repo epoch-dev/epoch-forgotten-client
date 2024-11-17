@@ -1,7 +1,7 @@
 import { Scene } from 'phaser';
 import { AssetsService } from '../../common/services/AssetsService';
 import { ScenesService } from './ScenesService';
-import { SceneImage, TILE_SIZE, UserSprite } from './types';
+import { CursorKey, SceneImage, TILE_SIZE, UserSprite } from './types';
 import { ScenePoint } from '../../common/api/.generated';
 import { MusicService } from '../../common/services/MusicService';
 import TileRenderer from './TileRenderer';
@@ -20,6 +20,8 @@ export class SceneRenderer extends Scene {
     private tileRenderer: TileRenderer;
     private lastMove = getCurrentTimeStamp();
     private sceneImageRef?: SceneImage;
+    private arrowsCursor?: CursorKey;
+    private wsadCursor?: Partial<CursorKey>;
 
     constructor({
         onMove,
@@ -43,6 +45,7 @@ export class SceneRenderer extends Scene {
 
     create() {
         void this.loadScene();
+        this.setupMovementCursors();
     }
 
     public async loadScene() {
@@ -82,7 +85,20 @@ export class SceneRenderer extends Scene {
             this.cameras.main.startFollow(this.user, true, 0.1, 0.1);
             this.cameras.main.setZoom(2);
             this.fadeIn();
+
+            this.blockMovement = true;
+            setTimeout(() => (this.blockMovement = false), 1500);
         });
+    }
+
+    private setupMovementCursors() {
+        this.wsadCursor = this.input.keyboard?.addKeys({
+            up: 'W',
+            down: 'S',
+            left: 'A',
+            right: 'D',
+        });
+        this.arrowsCursor = this.input.keyboard?.createCursorKeys();
     }
 
     update() {
@@ -91,23 +107,46 @@ export class SceneRenderer extends Scene {
 
     private async handleMove() {
         if (
+            !this.isAnyKeyPressed() ||
             this.lastMove + appConfig.moveInterval > getCurrentTimeStamp() ||
             this.blockMovement ||
-            !this.user ||
-            !this.input.keyboard
+            !this.user
         ) {
             return;
         }
-        const cursor = this.input.keyboard.createCursorKeys();
-        const direction = cursor.left.isDown
-            ? SceneMoveDirection.Left
-            : cursor.right.isDown
-            ? SceneMoveDirection.Right
-            : cursor.up.isDown
-            ? SceneMoveDirection.Up
-            : cursor.down.isDown
-            ? SceneMoveDirection.Down
-            : undefined;
+
+        const isUpPressed = this.arrowsCursor?.up.isDown || this.wsadCursor?.up?.isDown;
+        const isDownPressed = this.arrowsCursor?.down.isDown || this.wsadCursor?.down?.isDown;
+        const isLeftPressed = this.arrowsCursor?.left.isDown || this.wsadCursor?.left?.isDown;
+        const isRightPressed = this.arrowsCursor?.right.isDown || this.wsadCursor?.right?.isDown;
+
+        if (!isUpPressed && !isDownPressed && !isLeftPressed && !isRightPressed) {
+            return;
+        }
+
+        let direction: SceneMoveDirection | undefined = undefined;
+        if (isUpPressed) {
+            if (isLeftPressed) {
+                direction = SceneMoveDirection.UpLeft;
+            } else if (isRightPressed) {
+                direction = SceneMoveDirection.UpRight;
+            } else {
+                direction = SceneMoveDirection.Up;
+            }
+        } else if (isDownPressed) {
+            if (isLeftPressed) {
+                direction = SceneMoveDirection.DownLeft;
+            } else if (isRightPressed) {
+                direction = SceneMoveDirection.DownRight;
+            } else {
+                direction = SceneMoveDirection.Down;
+            }
+        } else if (isLeftPressed) {
+            direction = SceneMoveDirection.Left;
+        } else if (isRightPressed) {
+            direction = SceneMoveDirection.Right;
+        }
+
         if (direction) {
             this.onMove(direction);
             this.lastMove = getCurrentTimeStamp();
@@ -163,5 +202,10 @@ export class SceneRenderer extends Scene {
                 fadeRect.destroy();
             },
         });
+    }
+
+    private isAnyKeyPressed(): boolean {
+        const keys = this.input.keyboard?.keys;
+        return keys !== undefined && keys?.some((key) => key.isDown);
     }
 }
