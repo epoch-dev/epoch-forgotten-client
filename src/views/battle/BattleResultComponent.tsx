@@ -81,8 +81,8 @@ export const BattleResultComponent = ({
                     {victoryResults.items.length > 0 && (
                         <div className={style.itemsWrapper}>
                             <b>Loots:</b>
-                            {victoryResults?.items.map((item, ind) => (
-                                <p key={`${ind}-${item.id}`}>{item.label}</p>
+                            {victoryResults?.items.map((item, itemIndex) => (
+                                <p key={`${itemIndex}-${item.id}`}>{item.label}</p>
                             ))}
                         </div>
                     )}
