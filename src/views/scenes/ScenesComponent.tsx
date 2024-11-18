@@ -23,7 +23,7 @@ const isSceneMoveResult = (data: unknown): data is SceneMoveResultDto => {
 };
 
 export const ScenesComponent = () => {
-    const { view, setScene, setView, setEncounter, setNpcName: setNpc } = useGameStore();
+    const { scene, view, setScene, setView, setEncounter, setNpcName: setNpc } = useGameStore();
 
     useEffect(() => {
         void ScenesService.initialize();
@@ -74,11 +74,25 @@ export const ScenesComponent = () => {
                 npc: moveResult.npcData,
             });
         });
+        wsClient.on('connection_error', () => {
+            wsClient = io(wsUrl, { extraHeaders: { authorization: `Bearer ${authToken}` } });
+        });
         return () => {
             game.destroy(true);
             wsClient.disconnect();
         };
     }, []);
+
+    useEffect(() => {
+        if (!scene?.input.keyboard) {
+            return;
+        }
+        if (view === GameView.World) {
+            scene.setupMovementCursors();
+        } else {
+            scene.input.keyboard.removeAllKeys();
+        }
+    }, [view]);
 
     const onMove = (direction: SceneMoveDirection) => {
         wsClient.send({ direction });

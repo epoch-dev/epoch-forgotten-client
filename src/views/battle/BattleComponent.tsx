@@ -74,11 +74,19 @@ export const BattleComponent = () => {
     };
 
     const loadBattle = async () => {
-        const battleData = await battleClient.loadBattle();
-        setBattleAssets({ ...battleData.data });
-        setParty(battleData.data.state.characters.filter((c) => c.isControlled));
-        setEnemies(battleData.data.state.characters.filter((c) => !c.isControlled));
-        setCanEscape(battleData.data.canEscape);
+        try {
+            const battleData = await battleClient.loadBattle();
+            if (battleData.data.finished) {
+                setView(GameView.World);
+                return;
+            }
+            setBattleAssets({ ...battleData.data });
+            setParty(battleData.data.state.characters.filter((c) => c.isControlled));
+            setEnemies(battleData.data.state.characters.filter((c) => !c.isControlled));
+            setCanEscape(battleData.data.canEscape);
+        } catch {
+            setView(GameView.World);
+        }
     };
 
     const handleCharacterSelection = (target: BattleCharacter) => {
@@ -113,17 +121,19 @@ export const BattleComponent = () => {
         setSelectedCharacter(undefined);
         setSelectedSkill(undefined);
 
-        const turnResult = await battleClient.continueBattle({ commands });
-
-        await animateTurn(turnResult.data);
-
-        if (turnResult.data.victory) {
-            setVictoryResults(turnResult.data.victory);
-            soundService.victory();
-        }
-        if (turnResult.data.defeat) {
-            setDefeatResults(turnResult.data.defeat);
-            soundService.defeat();
+        try {
+            const turnResult = await battleClient.continueBattle({ commands });
+            await animateTurn(turnResult.data);
+            if (turnResult.data.victory) {
+                setVictoryResults(turnResult.data.victory);
+                soundService.victory();
+            }
+            if (turnResult.data.defeat) {
+                setDefeatResults(turnResult.data.defeat);
+                soundService.defeat();
+            }
+        } catch {
+            setView(GameView.World);
         }
     };
 
