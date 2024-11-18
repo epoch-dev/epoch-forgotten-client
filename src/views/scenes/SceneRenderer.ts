@@ -91,7 +91,7 @@ export class SceneRenderer extends Scene {
         });
     }
 
-    private setupMovementCursors() {
+    public setupMovementCursors() {
         this.wsadCursor = this.input.keyboard?.addKeys({
             up: 'W',
             down: 'S',
@@ -206,6 +206,6 @@ export class SceneRenderer extends Scene {
 
     private isAnyKeyPressed(): boolean {
         const keys = this.input.keyboard?.keys;
-        return keys !== undefined && keys?.some((key) => key.isDown);
+        return keys !== undefined && keys?.some((key) => key && key.isDown);
     }
 }
