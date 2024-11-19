@@ -117,7 +117,11 @@ export const BattleCharacterComponent = ({
                             </b>
                         </div>
                     ))}
-                <img src={characterImgUri} alt={character.label} />
+                <img
+                    src={characterImgUri}
+                    alt={character.label}
+                    style={{ animationDuration: `${character.size / 20}s` }}
+                />
                 <ProgressBarComponent
                     current={character.statistics.health}
                     max={character.statistics.maxHealth}
