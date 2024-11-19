@@ -10,6 +10,9 @@ import { SoundService } from '../../common/services/SoundService';
 
 const soundService = SoundService.getInstance();
 
+const WIDTH_FACTOR = 1.1;
+const HEIGHT_FACTOR = 1.3;
+
 export const BattleCharacterComponent = ({
     character,
     isSelected,
@@ -81,7 +84,13 @@ export const BattleCharacterComponent = ({
                     </p>
                 </div>
             }>
-            <div onClick={onClick} className={characterClass}>
+            <div
+                onClick={onClick}
+                className={characterClass}
+                style={{
+                    width: `${WIDTH_FACTOR * character.size}px`,
+                    height: `${HEIGHT_FACTOR * character.size}px`,
+                }}>
                 {animatedSkill?.characterId === character.id && (
                     <div className={style.logItem}>
                         <p>{animatedSkill.skillLabel}</p>

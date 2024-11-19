@@ -12,20 +12,12 @@ import {
 import { appConfig } from '../config';
 import { ToastService } from '../services/ToastService';
 import { StorageService } from '../services/StorageService';
-import { useGameStore } from '../../views/game/GameStore';
-import { MusicService } from '../services/MusicService';
+import { signout } from '../utils';
 
 type ApiError = {
     name: string;
     code: string;
     message: string;
-};
-
-const logout = () => {
-    MusicService.getInstance().stopCurrent();
-    StorageService.clear();
-    useGameStore.getState().clear();
-    document.location.href = '/';
 };
 
 axios.interceptors.request.use((req) => {
@@ -40,7 +32,7 @@ axios.interceptors.response.use(
         if (err.status === 401 && err.config) {
             const user = StorageService.get('user');
             if (!user || !user.refreshToken) {
-                return logout();
+                return signout();
             }
             try {
                 const tokenData = await usersClient.refreshToken({ refreshToken: user.refreshToken });
@@ -54,7 +46,7 @@ axios.interceptors.response.use(
                 err.config.headers['Authorization'] = `Bearer ${tokenData.data}`;
                 return axios(err.config);
             } catch {
-                logout();
+                signout();
             }
         } else {
             ToastService.error({ message: err.response?.data.message ?? 'errors.unknownError' });

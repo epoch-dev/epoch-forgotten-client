@@ -3,8 +3,6 @@
 
 .characterItem {
     position: relative;
-    width: 7rem;
-    height: 8rem;
     font-size: 12px;
     opacity: 0.9;
     text-align: center;
@@ -21,7 +19,7 @@
     }
 
     img {
-        width: 6rem;
+        width: 90%;
         margin-bottom: 0.5rem;
         animation: bounceAnimation 5s infinite;
     }
