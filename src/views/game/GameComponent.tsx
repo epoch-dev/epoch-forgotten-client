@@ -22,6 +22,7 @@ import { battleClient, charactersClient } from '../../common/api/client';
 import { UserRole } from '../../common/api/.generated';
 import InfoPanel from '../../common/components/InfoPanel';
 import { appConfig } from '../../common/config.ts';
+import { useYellowToast } from '../../common/hooks.ts';
 
 const NOT_SCROLLABLE_VIEWS = [
     GameView.World,
@@ -36,6 +37,7 @@ const musicService = MusicService.getInstance();
 export const GameComponent = () => {
     const navigate = useNavigate();
     const { view, setView, clear } = useGameStore();
+    useYellowToast();
 
     const user = StorageService.get('user');
 
