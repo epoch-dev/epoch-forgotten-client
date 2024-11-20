@@ -13,7 +13,7 @@ export const useYellowToast = () => {
             const now = new Date();
 
             const targetTime = new Date();
-            targetTime.setHours(21, 36, 0, 0);
+            targetTime.setHours(21, 37, 0, 0);
 
             if (now >= targetTime) {
                 targetTime.setDate(targetTime.getDate() + 1);
