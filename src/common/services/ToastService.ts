@@ -24,4 +24,12 @@ export class ToastService {
             className: 'toastWrapper toastError',
         });
     }
+
+    public static yellow() {
+        toast.warn('GET', {
+            autoClose: 10_000,
+            position: 'top-center',
+            className: 'toastYellow',
+        });
+    }
 }
