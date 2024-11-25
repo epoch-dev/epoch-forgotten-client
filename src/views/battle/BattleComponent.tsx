@@ -121,6 +121,19 @@ export const BattleComponent = () => {
         setSelectedCharacter(undefined);
         setSelectedSkill(undefined);
 
+        for (const command of commands) {
+            const character = party.find((character) => character.id === command.characterId);
+            const skill = character?.skills.find((skill) => skill.name === command.skillName);
+            if (!character || !skill) {
+                ToastService.error({ message: 'Invalid command' });
+                return;
+            }
+            if (skill.manaCost && character.statistics.mana < skill.manaCost) {
+                ToastService.error({ message: `Not enough mana to cast ${skill.label}` });
+                return;
+            }
+        }
+
         try {
             const turnResult = await battleClient.continueBattle({ commands });
             await animateTurn(turnResult.data);
