@@ -21,6 +21,7 @@ import { UserRole } from '../../common/api/.generated';
 import InfoPanel from '../../common/components/InfoPanel';
 import { appConfig } from '../../common/config.ts';
 import { signout } from '../../common/utils.ts';
+import { useYellowToast } from '../../common/hooks.ts';
 
 const NOT_SCROLLABLE_VIEWS = [
     GameView.World,
@@ -31,7 +32,9 @@ const NOT_SCROLLABLE_VIEWS = [
 ];
 
 export const GameComponent = () => {
+    const navigate = useNavigate();
     const { view, setView } = useGameStore();
+    useYellowToast();
 
     const user = StorageService.get('user');
 
