@@ -1,3 +1,7 @@
+import { useGameStore } from '../views/game/GameStore';
+import { MusicService } from './services/MusicService';
+import { StorageService } from './services/StorageService';
+
 export const isEmpty = (obj: Record<string, string>) => {
     return Object.keys(obj).length === 0;
 };
@@ -43,3 +47,10 @@ export function throttle<T extends (...args: never[]) => void>(
         }
     };
 }
+
+export const signout = () => {
+    MusicService.getInstance().stopCurrent();
+    StorageService.clear();
+    useGameStore.getState().clear();
+    document.location.href = '/';
+};

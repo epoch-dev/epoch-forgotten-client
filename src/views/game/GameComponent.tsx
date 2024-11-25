@@ -5,14 +5,12 @@ import { PartyComponent } from '../party/PartyComponent';
 import { useGameStore } from './GameStore';
 import { BattleComponent } from '../battle/BattleComponent';
 import DialogueComponent from '../dialogue/DialogueComponent';
-import { useNavigate } from 'react-router-dom';
 import { StorageService } from '../../common/services/StorageService';
 import { IntroComponent } from '../intro/IntroComponent';
 import { SkillsComponent } from '../skills/SkillsComponent';
 import { DevComponent } from '../_dev/DevComponent';
 import { EquipmentComponent } from '../equipment/EquipmentComponent';
 import JournalComponent from '../journal/JournalComponent';
-import { MusicService } from '../../common/services/MusicService';
 import MusicPanel from '../../common/components/MusicPanel';
 import { InventoryComponent } from '../inventory/InventoryComponent';
 import ShopBuyComponent from '../shop/ShopBuyComponent';
@@ -22,6 +20,7 @@ import { battleClient, charactersClient } from '../../common/api/client';
 import { UserRole } from '../../common/api/.generated';
 import InfoPanel from '../../common/components/InfoPanel';
 import { appConfig } from '../../common/config.ts';
+import { signout } from '../../common/utils.ts';
 import { useYellowToast } from '../../common/hooks.ts';
 
 const NOT_SCROLLABLE_VIEWS = [
@@ -32,11 +31,8 @@ const NOT_SCROLLABLE_VIEWS = [
     GameView.Battle,
 ];
 
-const musicService = MusicService.getInstance();
-
 export const GameComponent = () => {
-    const navigate = useNavigate();
-    const { view, setView, clear } = useGameStore();
+    const { view, setView } = useGameStore();
     useYellowToast();
 
     const user = StorageService.get('user');
@@ -61,13 +57,6 @@ export const GameComponent = () => {
         if (!battle.data.finished) {
             setView(GameView.Battle);
         }
-    };
-
-    const handleSignout = () => {
-        StorageService.clear();
-        clear();
-        navigate('/');
-        musicService.stopCurrent();
     };
 
     const handleReportIssue = () => {
@@ -119,7 +108,7 @@ export const GameComponent = () => {
                     <button onClick={() => setView(GameView.Journal)} className={style.navItem}>
                         Journal
                     </button>
-                    <button onClick={handleSignout} className={style.navItem}>
+                    <button onClick={signout} className={style.navItem}>
                         Signout
                     </button>
                 </nav>
