@@ -32,7 +32,6 @@ const NOT_SCROLLABLE_VIEWS = [
 ];
 
 export const GameComponent = () => {
-    const navigate = useNavigate();
     const { view, setView } = useGameStore();
     useYellowToast();
 
