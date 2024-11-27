@@ -97,7 +97,7 @@ export class SceneRenderer extends Scene {
             down: 'S',
             left: 'A',
             right: 'D',
-        });
+        }, false);
         this.arrowsCursor = this.input.keyboard?.createCursorKeys();
     }
 

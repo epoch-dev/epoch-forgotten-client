@@ -84,13 +84,13 @@ export const ScenesComponent = () => {
     }, []);
 
     useEffect(() => {
-        if (!scene?.input.keyboard) {
+        if (!scene) {
             return;
         }
         if (view === GameView.World) {
-            scene.setupMovementCursors();
+            scene.blockMovement = false;
         } else {
-            scene.input.keyboard.removeAllKeys();
+            scene.blockMovement = true;
         }
     }, [view]);
 
