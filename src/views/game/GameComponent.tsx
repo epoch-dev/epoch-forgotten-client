@@ -108,12 +108,14 @@ export const GameComponent = () => {
                     <button onClick={() => setView(GameView.Journal)} className={style.navItem}>
                         Journal
                     </button>
-                    <button onClick={signout} className={style.navItem}>
-                        Signout
-                    </button>
                 </nav>
             )}
             <AsidePanel />
+            <aside className={style.asideSignout}>
+                <button onClick={signout} className='panelBtn'>
+                    Signout
+                </button>
+            </aside>
         </>
     );
 };
