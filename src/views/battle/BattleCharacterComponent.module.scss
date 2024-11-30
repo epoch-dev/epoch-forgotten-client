@@ -39,6 +39,10 @@
     @include insetShadow($color-error);
 }
 
+.targetDefaultActive {
+    @include insetShadow($color-unique, 25px);
+}
+
 .characterDead {
     opacity: 0.5;
 

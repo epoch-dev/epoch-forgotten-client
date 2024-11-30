@@ -1,5 +1,5 @@
 import style from './BattleComponent.module.scss';
-import { useEffect, useState } from 'react';
+import { KeyboardEvent, useEffect, useState } from 'react';
 import {
     BattleCharacter,
     BattleDefeatResults,
@@ -28,6 +28,8 @@ const ANIMATION_TIME_MS = 1000;
 const musicService = MusicService.getInstance();
 const soundService = SoundService.getInstance();
 
+type BattleCommand = Omit<BattleMoveCommand, 'targetId'> & { targetId?: string };
+
 export const BattleComponent = () => {
     const { setView } = useGameStore();
     const [battleAssets, setBattleAssets] =
@@ -38,7 +40,8 @@ export const BattleComponent = () => {
     const [canEscape, setCanEscape] = useState(false);
     const [selectedCharacter, setSelectedCharacter] = useState<BattleCharacter | undefined>();
     const [selectedSkill, setSelectedSkill] = useState<BattleSkill | undefined>();
-    const [commands, setCommands] = useState<BattleMoveCommand[]>([]);
+    const [defaultTargetId, setDefaultTargetId] = useState<string>();
+    const [commands, setCommands] = useState<BattleCommand[]>([]);
     const [animatedSkill, setAnimatedSkill] = useState<BattleMoveResult | undefined>();
     const [victoryResults, setVictoryResults] = useState<BattleVictoryRewards | undefined>();
     const [defeatResults, setDefeatResults] = useState<BattleDefeatResults | undefined>();
@@ -80,18 +83,51 @@ export const BattleComponent = () => {
                 setView(GameView.World);
                 return;
             }
+
+            const party = battleData.data.state.characters.filter((c) => c.isControlled);
+            const enemies = battleData.data.state.characters.filter((c) => !c.isControlled);
+            const defaultTargetId = enemies.find((e) => e.isAlive)?.id;
+            const commands: BattleCommand[] = party.map((character) => {
+                const skill = character.skills[1];
+                return { characterId: character.id, skillName: skill.name };
+            });
+
+            if (!defaultTargetId) {
+                setView(GameView.World);
+                return;
+            }
+
             setBattleAssets({ ...battleData.data });
-            setParty(battleData.data.state.characters.filter((c) => c.isControlled));
-            setEnemies(battleData.data.state.characters.filter((c) => !c.isControlled));
+            setParty(party);
+            setEnemies(enemies);
             setCanEscape(battleData.data.canEscape);
+            setDefaultTargetId(defaultTargetId);
+            setCommands(commands);
         } catch {
             setView(GameView.World);
         }
     };
 
+    const handleSkillSelection = (skill: BattleSkill) => {
+        if (!selectedCharacter?.isAlive) {
+            return;
+        }
+        setSelectedSkill(skill);
+        setCommands((prev) =>
+            prev.map((command) =>
+                command.characterId === selectedCharacter.id
+                    ? { ...command, skillName: skill.name }
+                    : command,
+            ),
+        );
+    };
+
     const handleCharacterSelection = (target: BattleCharacter) => {
         if (!target.isAlive) {
             return;
+        }
+        if (!target.isControlled) {
+            setDefaultTargetId(target.id);
         }
         if (selectedCharacter && selectedSkill) {
             setCommands((prev) => [
@@ -135,7 +171,13 @@ export const BattleComponent = () => {
         }
 
         try {
-            const turnResult = await battleClient.continueBattle({ commands });
+            const filledCommands: BattleMoveCommand[] = commands.map((c) => ({
+                ...c,
+                targetId: c.targetId ?? defaultTargetId ?? '',
+            }));
+            const turnResult = await battleClient.continueBattle({
+                commands: filledCommands,
+            });
             await animateTurn(turnResult.data);
             if (turnResult.data.victory) {
                 setVictoryResults(turnResult.data.victory);
@@ -184,7 +226,9 @@ export const BattleComponent = () => {
                 if (target.statistics.health < 0) {
                     target.isAlive = false;
                     target.statistics.statuses = [];
-                    setCommands((prev) => prev.filter((c) => c.targetId !== target.id));
+                    setCommands((prev) =>
+                        prev.map((c) => (c.targetId === target.id ? { ...c, targetId: undefined } : c)),
+                    );
                 }
                 target.statistics.health = Math.max(
                     0,
@@ -208,10 +252,22 @@ export const BattleComponent = () => {
             await wait(ANIMATION_TIME_MS); // animating
         }
         setAnimatedSkill(undefined);
+        setDefaultTargetId(enemies.find((e) => !e.isControlled && e.isAlive)?.id);
+    };
+
+    const handleKeyPress = (event: KeyboardEvent) => {
+        event.preventDefault();
+        const pressedKey = event.key;
+        if (pressedKey === 'Escape' || pressedKey === 'Backspace') {
+            setSelectedCharacter(undefined);
+            setSelectedSkill(undefined);
+        }
     };
 
     return (
         <section
+            onKeyDown={handleKeyPress}
+            tabIndex={-1}
             className={style.battleWrapper}
             style={
                 scene && {
@@ -244,6 +300,7 @@ export const BattleComponent = () => {
                             character={enemy}
                             isSelected={selectedCharacter?.id === enemy.id}
                             isTargeted={characterCommand?.targetId === enemy.id}
+                            isDefaultTargeted={!animatedSkill && defaultTargetId === enemy.id}
                             animatedSkill={animatedSkill}
                             onClick={throttle(() => handleCharacterSelection(enemy), 100)}
                         />
@@ -268,7 +325,7 @@ export const BattleComponent = () => {
                                         </>
                                     }>
                                     <button
-                                        onClick={throttle(() => setSelectedSkill(skill), 100)}
+                                        onClick={throttle(() => handleSkillSelection(skill), 100)}
                                         className={`${style.skillItem} ${
                                             selectedSkill?.name === skill.name ||
                                             (!selectedSkill && characterCommand?.skillName === skill.name)

@@ -1,3 +1,4 @@
+@use 'sass:color';
 @import '../styles/variables.scss';
 @import '../styles/mixins.scss';
 
@@ -44,7 +45,7 @@
     margin: 0.5rem;
     padding: 0.5rem;
     border-radius: 0.5rem;
-    background-color: transparentize($color-primary, 0.7);
+    background-color: color.adjust($color-primary, $alpha: -0.7);
 
     .dateLabel {
         font-size: 12px;

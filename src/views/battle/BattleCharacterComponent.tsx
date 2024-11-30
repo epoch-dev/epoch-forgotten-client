@@ -17,12 +17,14 @@ export const BattleCharacterComponent = ({
     character,
     isSelected,
     isTargeted,
+    isDefaultTargeted,
     animatedSkill,
     onClick,
 }: {
     character: BattleCharacter;
     isSelected: boolean;
     isTargeted: boolean;
+    isDefaultTargeted?: boolean;
     animatedSkill: BattleMoveResult | undefined;
     onClick: () => void;
 }) => {
@@ -41,6 +43,7 @@ export const BattleCharacterComponent = ({
         ${style.characterItem} 
         ${character.isControlled ? style.characterAlly : ''}
         ${isTargeted ? style.targetActive : ''} 
+        ${isDefaultTargeted ? style.targetDefaultActive : ''} 
         ${isSelected ? style.characterActive : ''} 
         ${!character.isAlive ? style.characterDead : ''}
         ${animating && (character.isControlled ? style.allyAttacking : style.enemyAttacking)}`;
@@ -95,7 +98,7 @@ export const BattleCharacterComponent = ({
                     <div className={style.logItem}>
                         <p>{animatedSkill.skillLabel}</p>
                         {animatedSkill.statusLogs.map((statusLog) => (
-                            <p key={`${character.id}-${statusLog.label}`} className={style.logItemStatus}>
+                            <p key={generateRandomId()} className={style.logItemStatus}>
                                 -{statusLog.value} ({statusLog.label})
                             </p>
                         ))}
@@ -109,8 +112,8 @@ export const BattleCharacterComponent = ({
                             style={{ animationDelay: `${hitIndex / 2}s` }}>
                             <b className={`${hit.value >= 0 ? 'error' : 'success'}`}>
                                 {formatNumber(Math.round(Math.abs(hit.value)))}
-                                {hit.effectLogs.map((effectLog, effectLogIndex) => (
-                                    <p key={`el-${effectLogIndex}`} className={style.effectLogItem}>
+                                {hit.effectLogs.map((effectLog) => (
+                                    <p key={generateRandomId()} className={style.effectLogItem}>
                                         {effectLog}
                                     </p>
                                 ))}
@@ -165,11 +168,11 @@ const BattleCharacterStatus = ({ statuses }: { statuses: BattleStatus[] }) => {
     return (
         <div className={style.statusWrapper}>
             <hr />
-            {statuses.map((status, statusIndex) => (
-                <div key={`status-${statusIndex}`}>
+            {statuses.map((status) => (
+                <div key={generateRandomId()}>
                     {statusModifiers.map(({ key, label }) =>
                         status[key] ? (
-                            <p key={key}>
+                            <p key={generateRandomId()}>
                                 {typeof label === 'string' ? label : label(+status[key])} ({status.duration}{' '}
                                 turns)
                             </p>
