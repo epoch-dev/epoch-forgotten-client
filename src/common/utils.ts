@@ -1,4 +1,5 @@
 import { useGameStore } from '../views/game/GameStore';
+import { BANNED_LABELS } from './bannedLabels';
 import { MusicService } from './services/MusicService';
 import { StorageService } from './services/StorageService';
 
@@ -53,4 +54,14 @@ export const signout = () => {
     StorageService.clear();
     useGameStore.getState().clear();
     document.location.href = '/';
+};
+
+export const verifyLabel = (label: string) => {
+    const normalizedLabel = label.toLowerCase().replace(/[\s-.]+/g, '');
+    for (const bannedLabel of BANNED_LABELS) {
+        if (normalizedLabel.includes(bannedLabel.toLowerCase())) {
+            return false;
+        }
+    }
+    return true;
 };
