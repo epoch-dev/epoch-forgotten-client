@@ -7,15 +7,43 @@ import { GameView } from '../game/types';
 import { ScenesService } from '../scenes/ScenesService';
 import { CharacterClass } from '../../common/api/.generated';
 import { TooltipComponent } from '../../common/components/TooltipComponent';
-import { throttle } from '../../common/utils';
+import { throttle, verifyLabel } from '../../common/utils';
+import { sharedConfig } from '../../common/config';
 
 export const IntroComponent = () => {
     const [mainName, setMainName] = useState('');
     const [mainClass, setMainClass] = useState<CharacterClass>(CharacterClass.Mercenary);
+    const [mainNameError, setMainNameError] = useState<string>();
+    const [offensiveLabelWarning, setOffensiveLabelWarning] = useState<string>();
     const { setView } = useGameStore();
 
+    const onInput = (name: string) => {
+        checkOffensiveLabel(name);
+        setMainName(name);
+    };
+
+    const checkOffensiveLabel = (name: string) => {
+        if (!verifyLabel(name)) {
+            setOffensiveLabelWarning(
+                'Offensive phrase detected, you will be allowed to create an account but administrator may block it after verification',
+            );
+        } else {
+            setOffensiveLabelWarning(undefined);
+        }
+    };
+
     const handleNameChoice = async () => {
-        if (!mainName.length || !mainClass) {
+        setMainNameError(undefined);
+        if (!mainName) {
+            setMainNameError('Name required');
+            return;
+        } else if (
+            mainName.length < sharedConfig.nameLength.min ||
+            mainName.length > sharedConfig.nameLength.max
+        ) {
+            setMainNameError(
+                `Name must be between ${sharedConfig.nameLength.min} and ${sharedConfig.nameLength.max} characters`,
+            );
             return;
         }
         await Promise.all([
@@ -59,11 +87,11 @@ export const IntroComponent = () => {
                     <img src="./images/story/story-0-1.png" alt="" />
                     <p className="subtitle">
                         A guardian and musician, he embodies a unique blend of courage, strength, and
-                        creativity. Raised in the tranquil village of Delia, he have honed his skills
-                        through years of diligent training and exploration. Now, their journey takes a new
-                        turn as there seems to be something mysterious hiding behind wolves&apos; activity.
-                        With determination etched into their every step, he stand ready to face whatever
-                        challenges lie ahead...
+                        creativity. Raised in the tranquil village of Delia, he have honed his skills through
+                        years of diligent training and exploration. Now, their journey takes a new turn as
+                        there seems to be something mysterious hiding behind wolves&apos; activity. With
+                        determination etched into their every step, he stand ready to face whatever challenges
+                        lie ahead...
                     </p>
                 </figure>
                 <fieldset>
@@ -72,14 +100,15 @@ export const IntroComponent = () => {
                     </label>
                     <input
                         value={mainName}
-                        onChange={(e) => setMainName(e.target.value)}
+                        onChange={(e) => onInput(e.target.value)}
                         type="text"
                         autoComplete="off"
                         className="formInput"
-                        minLength={3}
-                        maxLength={12}
-                        required
                     />
+                    {mainNameError && <span className="formError">{mainNameError}</span>}
+                    {!mainNameError && offensiveLabelWarning && (
+                        <span className="formError">{offensiveLabelWarning}</span>
+                    )}
                 </fieldset>
                 <fieldset>
                     <legend className="formLabel">Which path will he follow?</legend>

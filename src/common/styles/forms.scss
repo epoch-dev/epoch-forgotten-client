@@ -84,3 +84,10 @@ fieldset {
     font-weight: 600;
     color: $color-error;
 }
+
+.formWarning {
+    margin: 0.5rem 0 0 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: $color-warning;
+}
