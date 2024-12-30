@@ -28,15 +28,15 @@ const ROADMAP: RoadmapMilestone[] = [
     },
     {
         title: 'Battles Expansion',
-        date: 'early December',
+        date: '14.12.2024',
         description: 'More battle effects & statuses, flexible characters size, more flexible controls.',
-        status: 'Developing',
+        status: 'Ready',
     },
     {
         title: 'Second Chapter of the Main Story',
         date: 'early January',
         description: 'Adding the main story continuation with new locations, characters, enemies and items.',
-        status: 'Planning',
+        status: 'Developing',
     },
     // { title: 'Mobile Support', description: 'Dedicated app for mobile platform', status: 'Planning' },
 ];
