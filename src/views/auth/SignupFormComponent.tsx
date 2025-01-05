@@ -4,11 +4,16 @@ import { UserAuthDto } from '../../common/api/.generated';
 import { usersClient } from '../../common/api/client';
 import { StorageService } from '../../common/services/StorageService';
 import { ToastService } from '../../common/services/ToastService';
-import { isEmpty, throttle } from '../../common/utils';
+import { throttle, verifyLabel } from '../../common/utils';
 import { useGameStore } from '../game/GameStore';
 import { GameView } from '../game/types';
+import { sharedConfig } from '../../common/config';
 
-type UserAuthConfirm = UserAuthDto & { confirmPassword: string };
+type UserAuthConfirm = UserAuthDto & {
+    usernameError?: string;
+    passwordError?: string;
+    confirmPassword: string;
+};
 
 export const SignupFormComponent = () => {
     const [formData, setFormData] = useState<UserAuthConfirm>({
@@ -17,12 +22,17 @@ export const SignupFormComponent = () => {
         confirmPassword: '',
     });
     const [formErrors, setFormErrors] = useState<Partial<UserAuthConfirm>>();
+    const [offensiveLabelWarning, setOffensiveLabelWarning] = useState<string>();
     const navigate = useNavigate();
     const { setView } = useGameStore();
 
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
         const { id, value } = event.target;
         setFormData({ ...formData, [id]: value });
+        setFormErrors((errors) => ({
+            ...errors,
+            [id]: undefined,
+        }));
     };
 
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -31,7 +41,7 @@ export const SignupFormComponent = () => {
     };
 
     const handleSignup = async () => {
-        if (!validateForm()) {
+        if (formErrors?.username || formErrors?.password || formErrors?.confirmPassword) {
             return;
         }
         const res = await usersClient.signup({
@@ -44,22 +54,73 @@ export const SignupFormComponent = () => {
         navigate('game');
     };
 
-    const validateForm = () => {
-        const newErrors: Partial<UserAuthConfirm> = {};
+    const validateUsername = () => {
+        setOffensiveLabelWarning(undefined);
         if (!formData.username) {
-            newErrors.username = 'Username required';
+            setFormErrors((errors) => ({
+                ...errors,
+                username: 'Username required',
+            }));
+        } else if (
+            formData.username.length < sharedConfig.nameLength.min ||
+            formData.username.length > sharedConfig.nameLength.max
+        ) {
+            setFormErrors((errors) => ({
+                ...errors,
+                username: `Username must be between ${sharedConfig.nameLength.min} and ${sharedConfig.nameLength.max} characters`,
+            }));
+        } else if (!verifyLabel(formData.username)) {
+            setOffensiveLabelWarning(
+                'Offensive phrase detected, you will be allowed to create an account but administrator may block it after verification',
+            );
+        } else {
+            setFormErrors((errors) => ({
+                ...errors,
+                username: undefined,
+            }));
         }
+    };
+
+    const validatePassword = () => {
         if (!formData.password) {
-            newErrors.password = 'Password required';
+            setFormErrors((errors) => ({
+                ...errors,
+                password: 'Password required',
+            }));
+        } else if (
+            formData.password.length < sharedConfig.passwordLength.min ||
+            formData.password.length > sharedConfig.passwordLength.max
+        ) {
+            setFormErrors((errors) => ({
+                ...errors,
+                password: `Password must be between ${sharedConfig.passwordLength.min} and ${sharedConfig.passwordLength.max} characters`,
+            }));
+        } else {
+            setFormErrors((errors) => ({
+                ...errors,
+                password: undefined,
+            }));
         }
+        validateConfirmPassword();
+    };
+
+    const validateConfirmPassword = () => {
         if (!formData.confirmPassword) {
-            newErrors.confirmPassword = 'Confirm password required';
+            setFormErrors((errors) => ({
+                ...errors,
+                confirmPassword: 'Confirm password required',
+            }));
+        } else if (formData.password !== formData.confirmPassword) {
+            setFormErrors((errors) => ({
+                ...errors,
+                confirmPassword: `Passwords don't match`,
+            }));
+        } else {
+            setFormErrors((errors) => ({
+                ...errors,
+                confirmPassword: undefined,
+            }));
         }
-        if (formData.password !== formData.confirmPassword) {
-            newErrors.confirmPassword = 'Passwords don\'t match';
-        }
-        setFormErrors(newErrors);
-        return isEmpty(newErrors);
     };
 
     return (
@@ -69,18 +130,21 @@ export const SignupFormComponent = () => {
                 <input
                     value={formData.username}
                     onChange={handleInputChange}
+                    onBlur={validateUsername}
                     type="text"
                     autoComplete="off"
                     id="username"
                     className="formInput"
                 />
                 {formErrors?.username && <p className="formError">{formErrors?.username}</p>}
+                {offensiveLabelWarning && <p className="formWarning">{offensiveLabelWarning}</p>}
             </fieldset>
             <fieldset>
                 <label className="formLabel">Password:</label>
                 <input
                     value={formData.password}
                     onChange={handleInputChange}
+                    onBlur={validatePassword}
                     type="password"
                     autoComplete="off"
                     id="password"
@@ -93,6 +157,7 @@ export const SignupFormComponent = () => {
                 <input
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
+                    onBlur={validateConfirmPassword}
                     type="password"
                     autoComplete="off"
                     id="confirmPassword"

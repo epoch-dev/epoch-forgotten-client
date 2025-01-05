@@ -6,7 +6,7 @@ import { ScenePoint } from '../../common/api/.generated';
 import { MusicService } from '../../common/services/MusicService';
 import TileRenderer from './TileRenderer';
 import { getCurrentTimeStamp } from '../../common/utils';
-import { appConfig } from '../../common/config';
+import { sharedConfig } from '../../common/config';
 import { SceneMoveDirection, SceneMoveResultDto } from '../../common/api/definitions/sceneTypes';
 
 export class SceneRenderer extends Scene {
@@ -92,12 +92,15 @@ export class SceneRenderer extends Scene {
     }
 
     public setupMovementCursors() {
-        this.wsadCursor = this.input.keyboard?.addKeys({
-            up: 'W',
-            down: 'S',
-            left: 'A',
-            right: 'D',
-        }, false);
+        this.wsadCursor = this.input.keyboard?.addKeys(
+            {
+                up: 'W',
+                down: 'S',
+                left: 'A',
+                right: 'D',
+            },
+            false,
+        );
         this.arrowsCursor = this.input.keyboard?.createCursorKeys();
     }
 
@@ -108,7 +111,7 @@ export class SceneRenderer extends Scene {
     private async handleMove() {
         if (
             !this.isAnyKeyPressed() ||
-            this.lastMove + appConfig.moveInterval > getCurrentTimeStamp() ||
+            this.lastMove + sharedConfig.moveInterval > getCurrentTimeStamp() ||
             this.blockMovement ||
             !this.user
         ) {
@@ -169,7 +172,7 @@ export class SceneRenderer extends Scene {
                 targets: this.user,
                 x: newPosition.x,
                 y: newPosition.y,
-                duration: 0.9 * appConfig.moveInterval,
+                duration: 0.9 * sharedConfig.moveInterval,
                 ease: 'Linear',
             });
         }
