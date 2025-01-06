@@ -153,6 +153,8 @@ const BattleCharacterStatus = ({ statuses }: { statuses: BattleStatus[] }) => {
         { key: 'mDefMod', label: (amount: number) => `${amount > 0 ? '+' : ''}${amount} Magical defense` },
         { key: 'speedMod', label: (amount: number) => `${amount > 0 ? '+' : ''}${amount} Speed` },
         { key: 'dodgeMod', label: (amount: number) => `${amount > 0 ? '+' : ''}${amount} Dodge chance` },
+        { key: 'dodgeMod', label: (amount: number) => `${amount > 0 ? '+' : ''}${amount} Dodge chance` },
+        { key: 'dodgeMod', label: (amount: number) => `${amount > 0 ? '+' : ''}${amount} Dodge chance` },
         {
             key: 'critChanceMod',
             label: (amount: number) => `${amount > 0 ? '+' : ''}${amount} Critical chance`,
@@ -163,6 +165,7 @@ const BattleCharacterStatus = ({ statuses }: { statuses: BattleStatus[] }) => {
         },
         { key: 'bleeding', label: 'Bleeding' },
         { key: 'poison', label: 'Poison' },
+        { key: 'provoking', label: 'Provoking' },
     ];
 
     return (
