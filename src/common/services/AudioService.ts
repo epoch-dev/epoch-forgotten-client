@@ -19,9 +19,6 @@ export abstract class AudioService {
     protected abstract loadTrack(name: string): void;
 
     protected playAnyVoice(name: string) {
-        if (this.muted) {
-            return;
-        }
         const track = this.tracks[name];
         if (!track) {
             this.trackError(name);

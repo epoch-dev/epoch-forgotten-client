@@ -24,7 +24,9 @@ export class SoundService extends AudioService {
         if (!(name in this.tracks)) {
             this.loadTrack(name);
         }
-        this.playAnyVoice(name);
+        if (!this.muted) {
+            this.playAnyVoice(name);
+        }
     }
 
     public newQuest() {

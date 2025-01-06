@@ -1,9 +1,7 @@
 import { UserSignedDto } from '../api/.generated';
-import { UserSettings } from '../types';
 
 type StorageData = {
     user: UserSignedDto;
-    userSettings: UserSettings;
 };
 
 type StorageKey = keyof StorageData;
