@@ -2,13 +2,12 @@ import { Scene } from 'phaser';
 import { AssetsService } from '../../common/services/AssetsService';
 import { ScenesService } from './ScenesService';
 import { CursorKey, SceneImage, TILE_SIZE, UserSprite } from './types';
-import { ScenePoint, SceneTileDto } from '../../common/api/.generated';
+import { ScenePoint } from '../../common/api/.generated';
 import { MusicService } from '../../common/services/MusicService';
 import TileRenderer from './TileRenderer';
 import { getCurrentTimeStamp } from '../../common/utils';
 import { appConfig } from '../../common/config';
 import { SceneMoveDirection, SceneMoveResultDto } from '../../common/api/definitions/sceneTypes';
-import { useSettingsStore } from '../../common/state/SettingsStore';
 
 export class SceneRenderer extends Scene {
     public blockMovement = false;
@@ -21,7 +20,6 @@ export class SceneRenderer extends Scene {
     private tileRenderer: TileRenderer;
     private lastMove = getCurrentTimeStamp();
     private sceneImageRef?: SceneImage;
-    private sceneTiles: SceneTileDto[] = [];
     private arrowsCursor?: CursorKey;
     private wsadCursor?: Partial<CursorKey>;
 
@@ -69,11 +67,7 @@ export class SceneRenderer extends Scene {
 
             this.sceneImageRef = this.add.image(width / 2, height / 2, `scene-${sceneData.name}`);
             this.add.image(width / 2, height / 2, `scene-${sceneData.name}`);
-
-            this.sceneTiles = sceneData.tiles;
-            if (useSettingsStore.getState().showSceneGrid) {
-                this.tileRenderer.drawTiles({ tiles: this.sceneTiles });
-            }
+            this.tileRenderer.drawTiles({ tiles: sceneData.tiles });
 
             this.user?.destroy();
             this.user = this.physics.add
@@ -190,14 +184,6 @@ export class SceneRenderer extends Scene {
         }
         if (npc) {
             this.onNpc(npc);
-        }
-    }
-
-    public toggleTiles(show: boolean) {
-        if (show) {
-            this.tileRenderer.drawTiles({ tiles: this.sceneTiles });
-        } else {
-            this.tileRenderer.clearTiles();
         }
     }
 

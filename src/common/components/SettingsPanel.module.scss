@@ -5,8 +5,8 @@
 .controlPanel {
     @include boxShadow;
     position: fixed;
-    top: 5rem;
-    left: 0.75rem;
+    top: 3rem;
+    left: 2rem;
     z-index: 1000;
     max-width: 30rem;
     max-height: 80vh;

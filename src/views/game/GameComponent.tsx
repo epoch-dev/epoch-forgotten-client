@@ -40,7 +40,6 @@ export const GameComponent = () => {
     const overflowHidden = NOT_SCROLLABLE_VIEWS.includes(view) ? { overflow: 'hidden' } : {};
 
     useEffect(() => {
-        console.log('setup GameComponent');
         void checkParty();
         void checkBattle();
 
