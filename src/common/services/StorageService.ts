@@ -1,7 +1,9 @@
 import { UserSignedDto } from '../api/.generated';
+import { UserSettings } from '../types';
 
 type StorageData = {
     user: UserSignedDto;
+    userSettings: UserSettings;
 };
 
 type StorageKey = keyof StorageData;
@@ -16,7 +18,11 @@ export class StorageService {
         return rawData ? JSON.parse(rawData) : undefined;
     }
 
-    public static clear() {
+    public static clear(key: StorageKey) {
+        localStorage.removeItem(key);
+    }
+
+    public static clearAll() {
         localStorage.clear();
     }
 }

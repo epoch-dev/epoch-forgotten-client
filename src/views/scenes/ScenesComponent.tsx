@@ -8,6 +8,7 @@ import { StorageService } from '../../common/services/StorageService';
 import { ToastService } from '../../common/services/ToastService';
 import { appConfig } from '../../common/config';
 import { SceneMoveDirection, SceneMoveResultDto } from '../../common/api/definitions/sceneTypes';
+import { useSettingsStore } from '../../common/state/SettingsStore';
 
 const wsUrl = appConfig.apiUrl.replace(/^http/, 'ws');
 let wsClient = io(wsUrl);
@@ -24,6 +25,7 @@ const isSceneMoveResult = (data: unknown): data is SceneMoveResultDto => {
 
 export const ScenesComponent = () => {
     const { scene, view, setScene, setView, setEncounter, setNpcName: setNpc } = useGameStore();
+    const { showSceneGrid } = useSettingsStore();
 
     useEffect(() => {
         void ScenesService.initialize();
@@ -93,6 +95,12 @@ export const ScenesComponent = () => {
             scene.blockMovement = true;
         }
     }, [view]);
+
+    useEffect(() => {
+        if (scene) {
+            scene.toggleTiles(showSceneGrid);
+        }
+    }, [showSceneGrid]);
 
     const onMove = (direction: SceneMoveDirection) => {
         wsClient.send({ direction });
