@@ -6,11 +6,16 @@ import { GameView } from '../game/types';
 import { io } from 'socket.io-client';
 import { StorageService } from '../../common/services/StorageService';
 import { ToastService } from '../../common/services/ToastService';
-import { appConfig } from '../../common/config';
+import { appConfig, AppProfiles } from '../../common/config';
 import { SceneMoveDirection, SceneMoveResultDto } from '../../common/api/definitions/sceneTypes';
 
+let extraHeaders = {}
+if (appConfig.profile === AppProfiles.Stage) {
+    extraHeaders = { 'ngrok-skip-browser-warning': 'true' };
+}
+
 const wsUrl = appConfig.apiUrl.replace(/^http/, 'ws');
-let wsClient = io(wsUrl);
+let wsClient = io(wsUrl, { extraHeaders });
 
 const isSceneMoveResult = (data: unknown): data is SceneMoveResultDto => {
     try {
@@ -56,7 +61,7 @@ export const ScenesComponent = () => {
         });
         setScene(scene);
         const authToken = StorageService.get('user')?.accessToken;
-        wsClient = io(wsUrl, { extraHeaders: { authorization: `Bearer ${authToken}` } });
+        wsClient = io(wsUrl, { extraHeaders: { authorization: `Bearer ${authToken}`, ...extraHeaders } });
         wsClient.on('message', async (wsData: string) => {
             if (!isSceneMoveResult(wsData)) {
                 ToastService.error({ message: wsData });
@@ -75,7 +80,7 @@ export const ScenesComponent = () => {
             });
         });
         wsClient.on('connection_error', () => {
-            wsClient = io(wsUrl, { extraHeaders: { authorization: `Bearer ${authToken}` } });
+            wsClient = io(wsUrl, { extraHeaders: { authorization: `Bearer ${authToken}`, ...extraHeaders } });
         });
         return () => {
             game.destroy(true);

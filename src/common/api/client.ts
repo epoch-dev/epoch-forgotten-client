@@ -9,7 +9,7 @@ import {
     QuestsApi,
     BattleApi,
 } from './.generated';
-import { appConfig } from '../config';
+import { appConfig, AppProfiles } from '../config';
 import { ToastService } from '../services/ToastService';
 import { StorageService } from '../services/StorageService';
 import { signout } from '../utils';
@@ -19,6 +19,10 @@ type ApiError = {
     code: string;
     message: string;
 };
+
+if (appConfig.profile === AppProfiles.Stage) {
+    axios.defaults.headers.common['ngrok-skip-browser-warning'] = true;
+}
 
 axios.interceptors.request.use((req) => {
     const authToken = StorageService.get('user')?.accessToken;
