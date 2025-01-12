@@ -12,7 +12,11 @@ on:
       environment:
         description: 'Environment to deploy (production or stage)'
         required: true
-        default: 'production'
+        default: ':production'
+        type: choice
+        options:
+          - :production
+          - :stage
 
 permissions:
   contents: read
@@ -62,7 +66,7 @@ jobs:
         run: cp -r ./server/.generated ./src/common/api/
 
       - name: Build client
-        run: yarn build:${{ inputs.environment }}
+        run: yarn build${{ inputs.environment }}
 
       - name: Cache dist folder
         if: github.event_name == 'push'
