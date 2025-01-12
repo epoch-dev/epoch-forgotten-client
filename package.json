@@ -6,7 +6,9 @@
     "homepage": "https://epoch-dev.github.io/epoch-forgotten-client",
     "scripts": {
         "dev": "vite",
+        "stage": "vite --mode stage",
         "build": "tsc && vite build",
+        "build:stage": "tsc && vite build --mode stage",
         "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
         "preview": "vite preview"
     },

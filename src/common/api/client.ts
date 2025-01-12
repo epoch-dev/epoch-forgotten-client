@@ -13,12 +13,17 @@ import { appConfig } from '../config';
 import { ToastService } from '../services/ToastService';
 import { StorageService } from '../services/StorageService';
 import { signout } from '../utils';
+import { appProfile, Profiles } from '../profiles';
 
 type ApiError = {
     name: string;
     code: string;
     message: string;
 };
+
+if (appProfile === Profiles.Stage) {
+    axios.defaults.headers.common['ngrok-skip-browser-warning'] = true;
+}
 
 axios.interceptors.request.use((req) => {
     const authToken = StorageService.get('user')?.accessToken;
