@@ -102,5 +102,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-        with:
-          destination_dir: ${{ github.event.inputs.environment == ':stage' && 'stage/epoch-forgotten-client' || 'epoch-forgotten-client' }}
