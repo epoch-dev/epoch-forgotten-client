@@ -6,12 +6,11 @@ import { GameView } from '../game/types';
 import { io } from 'socket.io-client';
 import { StorageService } from '../../common/services/StorageService';
 import { ToastService } from '../../common/services/ToastService';
-import { appConfig } from '../../common/config';
+import { appConfig, AppProfiles } from '../../common/config';
 import { SceneMoveDirection, SceneMoveResultDto } from '../../common/api/definitions/sceneTypes';
-import { appProfile, Profiles } from '../../common/profiles';
 
 let extraHeaders = {}
-if (appProfile === Profiles.Stage) {
+if (appConfig.profile === AppProfiles.Stage) {
     extraHeaders = { 'ngrok-skip-browser-warning': 'true' };
 }
 

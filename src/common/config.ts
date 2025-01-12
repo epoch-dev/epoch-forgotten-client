@@ -3,4 +3,11 @@ export const appConfig = {
     assetsPath: import.meta.env.VITE_ASSETS_PATH ?? './',
     moveInterval: 200,
     reportIssueLink: 'https://github.com/epoch-dev/epoch-forgotten-client/issues/new?assignees=&labels=bug&projects=&template=bug_report.md&title=',
+    profile: import.meta.env.MODE as AppProfiles,
+};
+
+export enum AppProfiles {
+    Dev = 'dev',
+    Stage = 'stage',
+    Prod = 'production',
 };

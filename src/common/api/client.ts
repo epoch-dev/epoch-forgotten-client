@@ -9,11 +9,10 @@ import {
     QuestsApi,
     BattleApi,
 } from './.generated';
-import { appConfig } from '../config';
+import { appConfig, AppProfiles } from '../config';
 import { ToastService } from '../services/ToastService';
 import { StorageService } from '../services/StorageService';
 import { signout } from '../utils';
-import { appProfile, Profiles } from '../profiles';
 
 type ApiError = {
     name: string;
@@ -21,7 +20,7 @@ type ApiError = {
     message: string;
 };
 
-if (appProfile === Profiles.Stage) {
+if (appConfig.profile === AppProfiles.Stage) {
     axios.defaults.headers.common['ngrok-skip-browser-warning'] = true;
 }
 
