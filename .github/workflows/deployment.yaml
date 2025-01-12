@@ -8,6 +8,11 @@ on:
 
   # allows to run this workflow manually from the Actions tab
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy (production or stage)'
+        required: true
+        default: 'production'
 
 permissions:
   contents: read
@@ -57,7 +62,7 @@ jobs:
         run: cp -r ./server/.generated ./src/common/api/
 
       - name: Build client
-        run: yarn build
+        run: yarn build:${{ inputs.environment }}
 
       - name: Cache dist folder
         if: github.event_name == 'push'
