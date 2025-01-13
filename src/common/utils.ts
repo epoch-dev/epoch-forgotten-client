@@ -50,7 +50,7 @@ export function throttle<T extends (...args: never[]) => void>(
 
 export const signout = () => {
     MusicService.getInstance().stopCurrent();
-    StorageService.clear();
+    StorageService.clear('user');
     useGameStore.getState().clear();
     document.location.href = '/';
 };

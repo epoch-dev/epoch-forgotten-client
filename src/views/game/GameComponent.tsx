@@ -5,23 +5,21 @@ import { PartyComponent } from '../party/PartyComponent';
 import { useGameStore } from './GameStore';
 import { BattleComponent } from '../battle/BattleComponent';
 import DialogueComponent from '../dialogue/DialogueComponent';
-import { StorageService } from '../../common/services/StorageService';
 import { IntroComponent } from '../intro/IntroComponent';
 import { SkillsComponent } from '../skills/SkillsComponent';
 import { DevComponent } from '../_dev/DevComponent';
 import { EquipmentComponent } from '../equipment/EquipmentComponent';
 import JournalComponent from '../journal/JournalComponent';
-import MusicPanel from '../../common/components/MusicPanel';
 import { InventoryComponent } from '../inventory/InventoryComponent';
 import ShopBuyComponent from '../shop/ShopBuyComponent';
 import { ShopSellComponent } from '../shop/ShopSellComponent';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { battleClient, charactersClient } from '../../common/api/client';
-import { UserRole } from '../../common/api/.generated';
-import InfoPanel from '../../common/components/InfoPanel';
-import { appConfig } from '../../common/config.ts';
-import { signout } from '../../common/utils.ts';
 import { useYellowToast } from '../../common/hooks.ts';
+import SettingsPanel from '../../common/components/SettingsPanel.tsx';
+import InfoPanel from '../../common/components/InfoPanel.tsx';
+import { UserRole } from '../../common/api/.generated/api.ts';
+import { StorageService } from '../../common/services/StorageService.ts';
 
 const NOT_SCROLLABLE_VIEWS = [
     GameView.World,
@@ -33,9 +31,10 @@ const NOT_SCROLLABLE_VIEWS = [
 
 export const GameComponent = () => {
     const { view, setView } = useGameStore();
-    useYellowToast();
-
     const user = StorageService.get('user');
+    const viewRef = useRef(view);
+
+    useYellowToast();
 
     const canNavigate = view !== GameView.Battle && view !== GameView.Intro;
     const overflowHidden = NOT_SCROLLABLE_VIEWS.includes(view) ? { overflow: 'hidden' } : {};
@@ -43,7 +42,17 @@ export const GameComponent = () => {
     useEffect(() => {
         void checkParty();
         void checkBattle();
+
+        document.addEventListener('keydown', handleKeyPress);
+
+        return () => {
+            document.removeEventListener('keydown', handleKeyPress);
+        };
     }, []);
+
+    useEffect(() => {
+        viewRef.current = view;
+    }, [view]);
 
     const checkParty = async () => {
         const party = await charactersClient.getParty();
@@ -59,24 +68,25 @@ export const GameComponent = () => {
         }
     };
 
-    const handleReportIssue = () => {
-        window.open(appConfig.reportIssueLink, '_blank', 'noopener,noreferrer');
+    const handleKeyPress = (event: KeyboardEvent) => {
+        const pressedKey = event.key;
+        if (pressedKey !== 'Escape' && pressedKey !== 'Backspace') {
+            return;
+        }
+        switch (viewRef.current) {
+            case GameView.Equipment:
+            case GameView.Skills:
+                setView(GameView.Party);
+                break;
+            case GameView.Party:
+            case GameView.Inventory:
+            case GameView.Journal:
+            case GameView.ShopBuy:
+            case GameView.ShopSell:
+                setView(GameView.World);
+                break;
+        }
     };
-
-    const AsidePanel = () => (
-        <aside className={style.asidePanel}>
-            <MusicPanel />
-            <InfoPanel />
-            <button className="panelBtn" onClick={handleReportIssue}>
-                Report issue
-            </button>
-            {user?.role === UserRole.Administrator && (
-                <button onClick={() => setView(GameView._Dev)} className="panelBtn">
-                    _Dev
-                </button>
-            )}
-        </aside>
-    );
 
     return (
         <>
@@ -110,11 +120,14 @@ export const GameComponent = () => {
                     </button>
                 </nav>
             )}
-            <AsidePanel />
-            <aside className={style.asideSignout}>
-                <button onClick={signout} className='panelBtn'>
-                    Signout
-                </button>
+            <aside className={style.asidePanel}>
+                <SettingsPanel />
+                <InfoPanel />
+                {user?.role === UserRole.Administrator && (
+                    <button onClick={() => setView(GameView._Dev)} className="panelBtn">
+                        _Dev
+                    </button>
+                )}
             </aside>
         </>
     );

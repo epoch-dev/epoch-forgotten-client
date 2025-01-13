@@ -24,6 +24,7 @@ export abstract class AudioService {
             this.trackError(name);
             return;
         }
+        track.volume(this.volume);
         track.play();
     }
 
@@ -91,6 +92,11 @@ export abstract class AudioService {
 
     protected stopAllTracks() {
         Howler.stop();
+    }
+
+    public setVolume(value: number) {
+        this.volume = value;
+        this.currentPlaying?.track.volume(value);
     }
 
     public mute() {

@@ -16,7 +16,11 @@ export class StorageService {
         return rawData ? JSON.parse(rawData) : undefined;
     }
 
-    public static clear() {
+    public static clear(key: StorageKey) {
+        localStorage.removeItem(key);
+    }
+
+    public static clearAll() {
         localStorage.clear();
     }
 }

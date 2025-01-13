@@ -8,6 +8,8 @@ const ICONS = {
     BLANK: 'blank-icon.png',
     SHOP: 'shop-icon.svg',
     ROADMAP: 'roadmap-icon.svg',
+    MUTE: 'mute-icon.svg',
+    UNMUTE: 'unmute-icon.svg',
 } as const;
 
 type IconName = keyof typeof ICONS;
