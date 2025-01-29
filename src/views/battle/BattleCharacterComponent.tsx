@@ -163,6 +163,8 @@ const BattleCharacterStatus = ({ statuses }: { statuses: BattleStatus[] }) => {
         },
         { key: 'bleeding', label: 'Bleeding' },
         { key: 'poison', label: 'Poison' },
+        { key: 'paralyzed', label: 'Paralyzed' },
+        { key: 'healthReg', label: 'HP Regeneration' },
     ];
 
     return (

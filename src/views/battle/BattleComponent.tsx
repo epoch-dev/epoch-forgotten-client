@@ -216,8 +216,8 @@ export const BattleComponent = () => {
         for (const moveResult of turnResult.moveResults) {
             setAnimatedSkill(moveResult);
             const character = [...party, ...enemies].find((c) => c.id === moveResult.characterId)!;
-            const skill = character.skills.find((s) => s.label === moveResult.skillLabel)!;
-            character.statistics.mana -= skill.manaCost ?? 0;
+            const skill = character.skills.find((s) => s.label === moveResult.skillLabel);
+            character.statistics.mana -= skill?.manaCost ?? 0;
             character.statistics.statuses =
                 turnResult.characters.find((c) => c.id === character.id)?.statistics.statuses ?? [];
             moveResult.moveLogs.forEach((log) => {
@@ -241,6 +241,8 @@ export const BattleComponent = () => {
                     character.statistics.health -= status.bleeding;
                 } else if (status.poison) {
                     character.statistics.health -= status.poison;
+                } else if (status.healthReg) {
+                    character.statistics.health += status.healthReg;
                 }
             });
             if (character.statistics.health <= 0) {
