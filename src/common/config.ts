@@ -7,7 +7,7 @@ export const appConfig = {
 };
 
 export enum AppProfiles {
-    Dev = 'dev',
+    Dev = 'development',
     Stage = 'stage',
     Prod = 'production',
 };

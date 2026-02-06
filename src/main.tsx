@@ -1,10 +1,10 @@
-import './common/styles/index.scss';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { RouterProvider, createHashRouter } from 'react-router-dom';
+import './common/styles/index.scss';
+import { GameToastContainer } from './common/ui/toast';
 import { AuthComponent } from './views/auth/AuthComponent';
 import { GameComponent } from './views/game/GameComponent';
-import { ToastContainer } from 'react-toastify';
 
 const router = createHashRouter([
     {
@@ -12,7 +12,7 @@ const router = createHashRouter([
         element: <GameComponent />,
     },
     {
-        path: '*', // least specific, catches all not found routes, keep last
+        path: '*',
         element: <AuthComponent />,
     },
 ]);
@@ -20,6 +20,6 @@ const router = createHashRouter([
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
         <RouterProvider router={router} />
-        <ToastContainer />
+        <GameToastContainer />
     </React.StrictMode>,
 );

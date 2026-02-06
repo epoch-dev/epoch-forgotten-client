@@ -1,25 +1,90 @@
 $mobile-res: 768px;
 
-$color-primary: rgb(131 101 94);
-$color-light: rgb(223 221 220);
-$color-light-grey: rgb(143, 147, 151);
-$color-grey: rgb(85, 85, 85);
-$color-dark: rgb(24 30 42);
-$color-error: rgb(199 62 54);
-$color-success: rgb(55 188 54);
+// Item rarity colors
+$rarity-common: #a0a5aa;
+$rarity-uncommon: #48bb78;
+$rarity-rare: #4299e1;
+$rarity-unique: #b779d9;
+$rarity-epic: #ecc94b;
+$rarity-mythical: #f56565;
 
-$color-common: rgb(200, 200, 200);
-$color-uncommon: rgb(60, 179, 113);
-$color-rare: rgb(30, 144, 255);
-$color-unique: rgb(238, 130, 238);
-$color-epic: rgb(218, 165, 32);
-$color-mythical: rgb(255, 69, 0);
+// Debug/map colors (dev only)
+$debug-route: #dd1331;
+$debug-collision: #121212;
+$debug-passage: #90ee90;
+$debug-npc: #add8e6;
+$debug-encounter: #ff0000;
 
-$color-route: #dd1331;
-$color-collision: #121212;
-$color-passage: #90ee90;
-$color-npc: #add8e6;
-$color-encounter: #ff0000;
+// =============================================
+// HIGH FANTASY RPG THEME
+// =============================================
+:root {
+    // Panel Backgrounds
+    --panel-bg: radial-gradient(ellipse at top, rgba(38, 44, 58, 0.97) 0%, rgba(22, 26, 34, 0.98) 60%, rgba(14, 17, 22, 0.99) 100%);
+    --panel-bg-solid: rgba(18, 22, 30, 0.97);
+    --panel-bg-dark: rgba(12, 15, 20, 0.98);
+    --panel-bg-header: linear-gradient(180deg, rgba(28, 33, 44, 0.98) 0%, rgba(18, 22, 28, 0.99) 100%);
 
-$color-transparent-standard: rgba(249, 249, 249, 0.26);
-$color-transparent-special: rgba(255, 251, 204, 0.25);
+    // Border Colors (Bronze/Gold)
+    --border-ornate: #6b5d4d;
+    --border-ornate-dark: #3d3428;
+    --border-ornate-light: #8a7a64;
+
+    // Text Colors
+    --text-main: #e8e4dc;
+    --text-header: #e2d2ac;
+    --text-secondary: #9ca3af;
+    --text-muted: #6b7280;
+    --text-inverse: #1a1a1a;
+
+    // Accent Colors
+    --accent-primary: #7eb8da;
+    --accent-gold: #d4a84b;
+    --accent-gold-light: #f0d890;
+    --color-success: #5cb85c;
+    --color-warning: #e6a23c;
+    --color-danger: #dc6b6b;
+
+    // Typography
+    --font-header: 'Cinzel', 'Quicksand', serif;
+    --font-body: 'Lato', sans-serif;
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.25rem;
+    --font-size-xl: 1.5rem;
+
+    // Shadows
+    --shadow-panel: 0 4px 16px rgba(0, 0, 0, 0.6);
+    --shadow-panel-sm: 0 2px 8px rgba(0, 0, 0, 0.5);
+    --shadow-inset: inset 0 1px 4px rgba(0, 0, 0, 0.5);
+    --shadow-inset-sm: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-glow-gold: 0 0 8px rgba(212, 168, 75, 0.35);
+    --shadow-text: 0 1px 3px rgba(0, 0, 0, 0.7);
+
+    // Sizing
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 10px;
+    --radius-full: 9999px;
+    --slot-size: 72px;
+
+    // Spacing
+    --space-xs: 0.25rem;
+    --space-sm: 0.5rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+
+    // Z-Index Scale
+    --z-game: 0;
+    --z-ui-layer: 10;
+    --z-window-layer: 20;
+    --z-modal-layer: 1000;
+    --z-toast-layer: 9999;
+    --z-tooltip-layer: 10000;
+
+    // Transitions
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.25s ease;
+}

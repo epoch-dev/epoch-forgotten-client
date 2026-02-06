@@ -1,13 +1,13 @@
 import { Scene } from 'phaser';
-import { AssetsService } from '../../common/services/AssetsService';
-import { ScenesService } from './ScenesService';
-import { CursorKey, SceneImage, TILE_SIZE, UserSprite } from './types';
 import { ScenePoint } from '../../common/api/.generated';
-import { MusicService } from '../../common/services/MusicService';
-import TileRenderer from './TileRenderer';
-import { getCurrentTimeStamp } from '../../common/utils';
-import { appConfig } from '../../common/config';
 import { SceneMoveDirection, SceneMoveResultDto } from '../../common/api/definitions/sceneTypes';
+import { appConfig } from '../../common/config';
+import { AssetsService } from '../../common/services/AssetsService';
+import { MusicService } from '../../common/services/MusicService';
+import { getCurrentTimeStamp } from '../../common/utils';
+import { ScenesService } from './ScenesService';
+import TileRenderer from './TileRenderer';
+import { CursorKey, SceneImage, TILE_SIZE, UserSprite } from './types';
 
 export class SceneRenderer extends Scene {
     public blockMovement = false;

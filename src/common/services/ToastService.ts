@@ -1,35 +1,68 @@
-import { toast } from 'react-toastify';
+import { showToast } from '../ui/toast';
 
 type ToastOptions = {
     message: string;
     duration?: number;
 };
 
+/**
+ * ToastService - Adapter for the new GameToast system
+ * Maintains backward compatibility with existing code
+ */
 export class ToastService {
     private static readonly DEFAULT_DURATION = 3000;
-    private static readonly DEFAULT_POSITION = 'bottom-center';
 
     public static success(options: ToastOptions) {
-        toast.success(options.message, {
-            autoClose: options.duration || this.DEFAULT_DURATION,
-            position: this.DEFAULT_POSITION,
-            bodyClassName: 'toastWrapper toastSuccess',
+        showToast({
+            type: 'success',
+            title: 'Success',
+            message: options.message,
+            duration: options.duration ?? this.DEFAULT_DURATION,
         });
     }
 
     public static error(options: ToastOptions) {
-        toast.error(options.message, {
-            autoClose: options.duration || this.DEFAULT_DURATION,
-            position: this.DEFAULT_POSITION,
-            className: 'toastWrapper toastError',
+        showToast({
+            type: 'error',
+            title: 'Error',
+            message: options.message,
+            duration: options.duration ?? this.DEFAULT_DURATION,
         });
     }
 
+    public static info(options: ToastOptions) {
+        showToast({
+            type: 'info',
+            title: 'Info',
+            message: options.message,
+            duration: options.duration ?? this.DEFAULT_DURATION,
+        });
+    }
+
+    public static quest(title: string, message?: string) {
+        showToast({
+            type: 'quest',
+            title,
+            message,
+            duration: 5000,
+        });
+    }
+
+    public static item(title: string, message?: string) {
+        showToast({
+            type: 'item',
+            title,
+            message,
+            duration: 4000,
+        });
+    }
+
+    /** @deprecated Use info() instead */
     public static yellow() {
-        toast.warn('GET', {
-            autoClose: 10_000,
-            position: 'top-center',
-            className: 'toastYellow',
+        showToast({
+            type: 'info',
+            title: 'Notice',
+            duration: 10000,
         });
     }
 }

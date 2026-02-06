@@ -1,11 +1,12 @@
-import style from './PartyComponent.module.scss';
 import { MouseEvent } from 'react';
 import { CharacterDto } from '../../common/api/.generated';
+import { getLevelExperience } from '../../common/api/definitions/levelUtil';
+import { TooltipComponent } from '../../common/components/TooltipComponent';
 import { AssetsService } from '../../common/services/AssetsService';
+import { GameCard, StatBar } from '../../common/ui';
 import { useGameStore } from '../game/GameStore';
 import { GameView } from '../game/types';
-import { TooltipComponent } from '../../common/components/TooltipComponent';
-import { getLevelExperience } from '../../common/api/definitions/levelUtil';
+import style from './PartyComponent.module.scss';
 
 export const CharacterComponent = ({ character }: { character: CharacterDto }) => {
     const { setCharacter, setView } = useGameStore();
@@ -23,40 +24,43 @@ export const CharacterComponent = ({ character }: { character: CharacterDto }) =
     };
 
     return (
-        <>
+        <GameCard
+            image={AssetsService.getCharacterUri(character.imageUri)}
+            imageAlt={character.label}
+            onClick={() => {}}>
             <TooltipComponent
                 hint={
                     <p>
                         {character.exp} / {getLevelExperience(character.level + 1)} Experience
                     </p>
-                }>
-                <p className="bold primary">
-                    {character.label} | {character.level}
+                }
+                config={{ containerWidth: '100%' }}>
+                <p className={style.characterName}>
+                    {character.label} <span className={style.level}>Lv.{character.level}</span>
                 </p>
             </TooltipComponent>
-            <hr />
-            <img
-                src={AssetsService.getCharacterUri(character.imageUri)}
-                alt={character.label}
-                draggable={false}
-            />
-            <hr />
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
-                <div className={style.characterNavIcon} onClick={(e) => navigateToSkills(e)}>
-                    <img
-                        src={AssetsService.getIcon('SKILLS')}
-                        style={{ width: '2rem', height: '2rem' }}
-                        draggable={false}
-                    />
-                </div>
-                <div className={style.characterNavIcon} onClick={(e) => navigateToEquipment(e)}>
-                    <img
-                        src={AssetsService.getIcon('EQUIPMENT')}
-                        style={{ width: '2rem', height: '2rem' }}
-                        draggable={false}
-                    />
-                </div>
+
+            <div className={style.statsWrapper}>
+                <StatBar
+                    current={character.statistics.health}
+                    max={character.statistics.maxHealth}
+                    type="health"
+                />
+                <StatBar
+                    current={character.statistics.mana}
+                    max={character.statistics.maxMana}
+                    type="mana"
+                />
             </div>
-        </>
+
+            <div className={style.navIcons}>
+                <button className={style.iconBtn} onClick={navigateToSkills} title="Skills">
+                    <img src={AssetsService.getIcon('SKILLS')} alt="Skills" draggable={false} />
+                </button>
+                <button className={style.iconBtn} onClick={navigateToEquipment} title="Equipment">
+                    <img src={AssetsService.getIcon('EQUIPMENT')} alt="Equipment" draggable={false} />
+                </button>
+            </div>
+        </GameCard>
     );
 };

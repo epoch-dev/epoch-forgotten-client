@@ -1,9 +1,12 @@
-@use 'sass:color';
-@import '../../common/styles/variables.scss';
-@import '../../common/styles/mixins.scss';
+@use '../../common/styles/variables.scss' as *;
+@use '../../common/styles/mixins.scss' as *;
+
+// =============================================
+// SHOP VIEW - High Fantasy (Optimized)
+// =============================================
 
 .shopViewOverlay {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
@@ -11,161 +14,219 @@
     display: flex;
     justify-content: center;
     align-items: center;
-
-    .shopView {
-        @include boxShadowSm;
-        background: rgba($color-light-grey, 0.88);
-        border-radius: 0.62rem;
-        padding: 1.25rem;
-        width: 80%;
-        height: 80%;
-        position: relative;
-        overflow: hidden;
-        display: flex;
-        justify-content: space-between;
-    }
+    background: rgba(0, 0, 0, 0.75);
+    z-index: var(--z-modal-layer);
 }
+
+.shopView {
+    @include fantasy-panel;
+    @include panelFadeIn;
+
+    position: relative;
+    width: 90%;
+    max-width: 900px;
+    max-height: 80vh;
+    padding: var(--space-lg);
+    display: flex;
+    gap: var(--space-lg);
+    overflow: hidden;
+}
+
+// =============================================
+// SHOP ITEMS GRID
+// =============================================
 
 .shopItems {
-    height: min-content;
+    flex: 1;
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    align-content: center;
-    gap: 1rem;
-    text-align: center;
+    gap: var(--space-sm);
+    align-content: start;
+    overflow-y: auto;
+    padding-right: var(--space-sm);
 
-    .shopItemEmpty {
-        width: 6rem;
-        height: 6rem;
-        position: relative;
-        border: 1px solid $color-dark;
-        border-radius: 1rem;
-        user-select: none;
-        overflow: hidden;
-        transition: all 0.5s;
-
-        &:hover {
-            cursor: auto;
-            background: rgba($color-grey, 0.2);
-        }
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+    &::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 3px;
+    }
+    &::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, var(--border-ornate) 0%, var(--border-ornate-dark) 100%);
+        border-radius: 3px;
     }
 }
+
+.shopItemEmpty {
+    @include fantasy-slot;
+    aspect-ratio: 1;
+    border-style: dashed;
+}
+
+// =============================================
+// USER ITEMS LIST
+// =============================================
 
 .userItems {
-    .userItem {
-        @include insetShadow(rgba($color-dark, 0.5), 15px);
-        width: 22rem;
-        margin-top: 0.25rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    overflow-y: auto;
+    padding-right: var(--space-sm);
+
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+    &::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 3px;
+    }
+    &::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, var(--border-ornate) 0%, var(--border-ornate-dark) 100%);
+        border-radius: 3px;
+    }
+}
+
+.userItem {
+    @include fantasy-button;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+
+    p {
+        margin: 0;
+        font-size: var(--font-size-base);
+        color: var(--text-main);
+
+        b {
+            color: var(--accent-gold);
+        }
+    }
+
+    .userItemAction {
+        width: 28px;
+        height: 28px;
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        gap: 1rem;
-        padding: 0 1rem;
-        border: 1px solid $color-dark;
+        justify-content: center;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-secondary);
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid var(--border-ornate-dark);
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        transition: all var(--transition-fast);
 
-        p {
-            margin: 0;
-        }
-
-        .userItemAction {
-            font-size: 20px;
-            font-weight: 600;
-            user-select: none;
-            cursor: pointer;
+        &:hover {
+            color: var(--text-header);
+            border-color: var(--border-ornate);
+            background: rgba(0, 0, 0, 0.4);
         }
     }
 }
 
+// =============================================
+// SHOP PANEL
+// =============================================
+
 .shopPanel {
-    width: 16rem;
-    min-height: 24rem;
+    width: 200px;
+    flex-shrink: 0;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    gap: var(--space-md);
+}
 
-    .goldAmount {
-        font-size: 1.2rem;
-        font-weight: bold;
-        color: $color-dark;
+.goldAmount {
+    @include fantasy-slot;
 
-        p {
-            margin: 0;
+    padding: var(--space-md);
+    font-size: var(--font-size-base);
+    color: var(--text-main);
+    border: 2px solid var(--border-ornate-dark);
+    border-radius: var(--radius-md);
+
+    p {
+        margin: var(--space-xs) 0;
+
+        &:first-child {
+            margin-top: 0;
+            color: var(--accent-gold);
+            font-weight: 600;
         }
-    }
-
-    .errorLabel {
-        font-size: 1rem;
-        color: $color-error;
-    }
-
-    .buyButton {
-        display: block;
-        width: 100%;
-        padding: 0.5rem;
-        border-radius: 5px;
-        font-size: 1.2rem;
-        line-height: 1.7rem;
-        color: $color-light;
-        background: $color-dark;
-        border-bottom: 2px solid $color-primary;
-        border-radius: 0.7rem;
-
-        &:hover {
-            @include boxShadowSm();
-            cursor: pointer;
-            color: color.adjust($color-primary, $lightness: 10%);
-            background: color.adjust($color-dark, $lightness: -10%);
-            border-bottom: 2px solid color.adjust($color-primary, $lightness: 10%);
-        }
-
-        &:disabled {
-            cursor: not-allowed;
-            background: rgba($color-dark, 0.8);
-            color: $color-dark;
-            opacity: 0.8;
-        }
-    }
-
-    .closeShopButton {
-        width: 100%;
-        margin-top: 1rem;
-        padding: 0.5rem;
-        border-radius: 0.5rem;
-        font-size: 1.25rem;
-        color: $color-dark;
-        background: color.adjust($color-primary, $lightness: 10%);
-
-        border-bottom: 2px solid $color-dark;
-        border-radius: 0.7rem;
-
-        &:hover {
-            @include boxShadowSm();
-            cursor: pointer;
-            color: color.adjust($color-dark, $lightness: -10%);
-            background: color.adjust($color-primary, $lightness: 20%);
-            border-bottom: 2px solid color.adjust($color-dark, $lightness: -10%);
+        &:last-child {
+            margin-bottom: 0;
         }
     }
 }
 
+.errorLabel {
+    color: var(--danger-color) !important;
+    font-weight: 600;
+}
+
+.buyButton {
+    @include fantasy-button-gold;
+
+    width: 100%;
+    padding: var(--space-md);
+    font-family: var(--font-header);
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: var(--radius-md);
+}
+
+.closeShopButton {
+    @include fantasy-button;
+
+    width: 100%;
+    margin-top: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    font-family: var(--font-header);
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    text-align: center;
+    border-radius: var(--radius-md);
+}
+
+// =============================================
+// MODE TOGGLE
+// =============================================
+
 .modeShopButton {
+    @include fantasy-button;
+
     position: absolute;
-    top: 0.15rem;
-    right: 1rem;
-    font-size: 25px;
-    font-weight: 900;
-    color: color.adjust($color-primary, $lightness: -10%);
-    background: none;
+    top: var(--space-md);
+    right: var(--space-md);
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-color: var(--accent-gold);
 
     p {
-        @include textShadow($color-primary);
         margin: 0;
-        font-size: 50px;
+        font-size: 1.5rem;
+        line-height: 1;
+        color: var(--accent-gold);
+        transition: transform var(--transition-normal);
     }
 
-    &:hover p {
-        cursor: pointer;
-        transform: scale(1.2);
-        color: color.adjust($color-primary, $lightness: -5%);
+    &:hover {
+        p {
+            transform: rotate(180deg);
+        }
     }
 }

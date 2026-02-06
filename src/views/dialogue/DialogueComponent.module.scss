@@ -1,92 +1,117 @@
-@use 'sass:color';
-@import '../../common/styles/variables.scss';
-@import '../../common/styles/mixins.scss';
+@use '../../common/styles/variables.scss' as *;
+@use '../../common/styles/mixins.scss' as *;
 
-@mixin btnEffects {
-    &:hover,
+// =============================================
+// DIALOGUE PANEL - High Fantasy (Optimized)
+// =============================================
+
+.dialogueWrapper {
+    position: fixed;
+    bottom: 125px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 2rem);
+    max-width: 650px;
+    z-index: var(--z-window-layer);
+    
     &:focus {
-        color: color.adjust($color-primary, $lightness: 10%);
-        background-color: rgba($color-dark, 0.9);
-        cursor: pointer;
-        border-bottom: 1px solid $color-primary;
+        outline: none;
     }
 }
 
-.dialogueWrapper {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+.dialogueItem {
+    @include fantasy-panel;
+    @include panelFadeIn;
+
+    position: relative;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    gap: var(--space-sm);
+    padding: var(--space-lg);
+}
+
+.dialogueLabel {
+    @include fantasy-header-text;
+    font-size: var(--font-size-lg);
+    margin: 0 0 var(--space-xs) 0;
+}
+
+.dialogueContent {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-md);
+
+    > p {
+        flex: 1;
+        font-size: var(--font-size-base);
+        line-height: 1.7;
+        color: var(--text-main);
+        margin: 0;
+
+        b {
+            color: var(--text-header);
+            font-weight: 600;
+        }
+
+        i {
+            color: var(--text-secondary);
+        }
+    }
+}
+
+.dialogueImage {
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+    border-radius: var(--radius-md);
+    background: rgba(0, 0, 0, 0.4);
+    border: 2px solid var(--border-ornate-dark);
+    box-shadow: var(--shadow-inset-sm);
+    overflow: hidden;
+    object-fit: cover;
+}
+
+div.dialogueImage {
+    display: none;
+}
+
+.dialogueBtn {
+    @include fantasy-button;
+
+    width: 100%;
+    padding: var(--space-md) var(--space-lg);
+    font-size: var(--font-size-base);
+    text-align: left;
+    border-radius: var(--radius-md);
+
+    &:hover:not(:disabled) {
+        padding-left: calc(var(--space-lg) + 8px);
+        border-color: var(--border-ornate-light);
+    }
+}
+
+.shopButton {
+    @include fantasy-button;
+
+    position: absolute;
+    top: var(--space-md);
+    right: var(--space-md);
+    display: inline-flex;
     align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: var(--space-sm);
+    border-color: var(--accent-gold);
+    border-radius: var(--radius-md);
 
-    .dialogueItem {
-        @include boxShadow;
-        position: absolute;
-        bottom: 10rem;
-        padding: 1rem;
-        min-width: 36rem;
-        max-width: 80%;
-        background-color: rgba($color-dark, 0.8);
-        color: $color-light;
-        border-radius: 0.5rem;
-        text-align: center;
-
-        .dialogueLabel {
-            color: $color-light-grey;
-            font-size: 14px;
-            line-height: 1;
-        }
-
-        .dialogueContent {
-            display: flex;
-            align-items: center;
-            margin-bottom: 0.5rem;
-            justify-content: space-between;
-        
-            .dialogueImage {
-                width: 4.5rem;
-                height: 4.5rem;
-                margin-right: 1rem;
-                border-radius: 50%;
-                transform: scaleX(-1);
-                background-color: rgba($color-dark, 0.0); /* for placeholder */
-            }
-        }
+    img {
+        width: 1.5rem;
+        height: 1.5rem;
+        pointer-events: none;
     }
 
-    .dialogueBtn {
-        @include btnEffects;
-        width: 100%;
-        padding: 0.25rem;
-        border-radius: 0.25rem;
-        border: none;
-        background: none;
-        color: $color-light;
-        background-color: rgba($color-dark, 0.7);
-        border-bottom: 1px solid $color-dark;
-    }
-
-    hr {
-        margin: 1rem auto;
-    }
-
-    .shopButton {
-        @include btnEffects;
-        position: absolute;
-        top: 0.5rem;
-        right: 0.5rem;
-        width: 2rem;
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.5rem;
-        color: $color-light;
-        background: rgba($color-dark, 0.85);
-
-        img {
-            width: 1rem;
-            aspect-ratio: 1/1;
-        }
+    &:hover:not(:disabled) {
+        box-shadow: var(--shadow-panel-sm), var(--shadow-glow-gold);
     }
 }

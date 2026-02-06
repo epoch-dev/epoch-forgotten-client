@@ -1,9 +1,12 @@
-import style from './JournalComponent.module.scss';
 import { useEffect, useMemo, useState } from 'react';
-import { questsClient } from '../../common/api/client';
 import type { QuestState, QuestsDtoInner } from '../../common/api/.generated';
+import { questsClient } from '../../common/api/client';
 import LoadingOverlay from '../../common/components/LoadingOverlay';
+import { GameWindow } from '../../common/ui';
+import { useGameStore } from '../game/GameStore';
+import { GameView } from '../game/types';
 import QuestItem from './components/QuestItem';
+import style from './JournalComponent.module.scss';
 
 const tabs: { state: QuestState; label: string }[] = [
     { state: 'In-progress', label: 'In Progress' },
@@ -14,6 +17,7 @@ const tabs: { state: QuestState; label: string }[] = [
 ];
 
 const JournalComponent = () => {
+    const { setView } = useGameStore();
     const [quests, setQuests] = useState<QuestsDtoInner[] | undefined>();
     const [activeTab, setActiveTab] = useState<QuestState>('In-progress');
 
@@ -27,41 +31,51 @@ const JournalComponent = () => {
     };
 
     const questCounts = useMemo(() => {
-        return quests?.reduce((counts, quest) => {
-            const lastState = quest.unlocked[quest.unlocked.length - 1].state;
-            counts[lastState] = (counts[lastState] || 0) + 1;
-            return counts;
-        }, {} as Record<QuestState, number>);
+        return quests?.reduce(
+            (counts, quest) => {
+                const lastState = quest.unlocked[quest.unlocked.length - 1].state;
+                counts[lastState] = (counts[lastState] || 0) + 1;
+                return counts;
+            },
+            {} as Record<QuestState, number>,
+        );
     }, [quests]);
 
     const filteredQuests = useMemo(() => {
-        return quests?.filter(quest => quest.unlocked[quest.unlocked.length - 1].state === activeTab);
+        return quests?.filter((quest) => quest.unlocked[quest.unlocked.length - 1].state === activeTab);
     }, [quests, activeTab]);
 
     if (!quests) {
-        return <LoadingOverlay />;
+        return (
+            <GameWindow title="Journal" onClose={() => setView(GameView.World)} size="lg">
+                <LoadingOverlay />
+            </GameWindow>
+        );
     }
 
     return (
-        <section className={style.questsWrapper}>
-            <div className={style.tabs}>
+        <GameWindow title="Journal" onClose={() => setView(GameView.World)} size="lg">
+            <div className={style.tabsWrapper}>
                 {tabs.map(({ state, label }) => (
                     <button
                         key={state}
                         onClick={() => setActiveTab(state)}
-                        className={activeTab === state ? style.active : ''}
-                    >
+                        className={`${style.tabBtn} ${activeTab === state ? style.active : ''}`}>
                         {label}
-                        {questCounts![state] > 0 && (
-                            <span className={style.count}>{questCounts![state]}</span>
+                        {questCounts && questCounts[state] > 0 && (
+                            <span className={style.count}>{questCounts[state]}</span>
                         )}
                     </button>
                 ))}
             </div>
-            {filteredQuests?.map((quest) => (
-                <QuestItem key={quest.label} quest={quest} />
-            ))}
-        </section>
+
+            <div className={style.questsList}>
+                {filteredQuests?.length === 0 && (
+                    <p className={style.emptyMessage}>No quests in this category</p>
+                )}
+                {filteredQuests?.map((quest) => <QuestItem key={quest.label} quest={quest} />)}
+            </div>
+        </GameWindow>
     );
 };
 

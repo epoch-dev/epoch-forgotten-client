@@ -1,6 +1,5 @@
-@use 'sass:color';
-@import '../styles/variables.scss';
-@import '../styles/mixins.scss';
+@use '../styles/variables.scss' as *;
+@use '../styles/mixins.scss' as *;
 
 .modalBackdrop {
     position: fixed;
@@ -8,74 +7,70 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba($color-dark, 0.9);
-    z-index: 200;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: var(--z-modal-layer);
 }
 
 .modalWrapper {
-    @include insetShadow($color-primary);
+    @include fantasy-panel;
     width: 90%;
     max-width: 40rem;
     max-height: 80vh;
     overflow-y: auto;
-    transform: translateX(calc(50vw - 50%)) translateY(calc(50vh - 50%));
     position: fixed;
-    padding: 1rem 0.5rem;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: var(--space-md);
     text-align: center;
-    align-content: center;
-    background: $color-light;
+    color: var(--text-main);
 
     h2 {
-        margin-bottom: 1.5rem;
+        @include fantasy-header-text;
+        margin-bottom: var(--space-lg);
     }
 
     button {
+        @include fantasy-button;
         width: 40%;
-        height: 2rem;
         max-width: 12rem;
-        margin: 1.5rem 0 1rem 0;
-        padding: 0;
-        display: inline;
-        font-size: 16px;
+        margin: var(--space-lg) 0 var(--space-md) 0;
+        padding: var(--space-sm) var(--space-md);
     }
 }
 
 .milestoneItem {
-    @include insetShadow($color-primary);
-    margin: 0.5rem;
-    padding: 0.5rem;
-    border-radius: 0.5rem;
-    background-color: color.adjust($color-primary, $alpha: -0.7);
+    margin: var(--space-sm);
+    padding: var(--space-sm);
+    border-radius: var(--radius-md);
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-ornate-dark);
 
     .dateLabel {
-        font-size: 12px;
+        font-size: var(--font-size-xs);
         font-weight: 700;
         font-style: italic;
+        color: var(--text-secondary);
     }
 
     hr {
         border: none;
-        border-top: 1px solid $color-dark;
+        border-top: 1px solid var(--border-ornate-dark);
+        margin: var(--space-sm) 0;
     }
 
     h3 {
-        margin: 0.25rem;
+        @include fantasy-header-text;
+        margin: var(--space-xs);
     }
 
     p {
-        margin: 0.25rem;
-        font-size: 14px;
+        margin: var(--space-xs);
+        font-size: var(--font-size-sm);
+        color: var(--text-secondary);
     }
 
-    .Ready {
-        color: rgb(29, 103, 37);
-    }
-
-    .Developing {
-        color: rgb(58, 46, 236);
-    }
-
-    .Planning {
-        color: rgb(51, 53, 44);
-    }
+    .Ready { color: var(--color-success); }
+    .Developing { color: var(--accent-primary); }
+    .Planning { color: var(--text-muted); }
 }

@@ -1,27 +1,20 @@
-@import '../../common/styles/variables.scss';
-@import '../../common/styles/mixins.scss';
+@use '../../common/styles/variables.scss' as *;
+@use '../../common/styles/mixins.scss' as *;
 
 .characterItem {
+    @include fantasy-panel-solid;
+
     position: relative;
-    font-size: 12px;
-    opacity: 0.9;
-    text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    background: rgba($color-light, 0.5);
-    transition: all 0.5s;
+    padding: var(--space-sm);
+    cursor: pointer;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    min-width: 110px;
 
     &:hover {
-        opacity: 1;
-        cursor: pointer;
-    }
-
-    img {
-        width: 90%;
-        margin-bottom: 0.5rem;
-        animation: bounceAnimation 5s infinite;
+        border-color: var(--border-ornate);
     }
 }
 
@@ -32,153 +25,152 @@
 }
 
 .characterActive {
-    @include insetShadow($color-dark);
+    border-color: var(--accent-gold);
+    box-shadow: var(--shadow-panel-sm), 0 0 20px rgba(212, 168, 75, 0.5), 0 0 40px rgba(212, 168, 75, 0.25);
+
+    // Pulsing indicator
+    &::before {
+        content: '';
+        position: absolute;
+        inset: -4px;
+        border: 2px solid var(--accent-gold);
+        border-radius: calc(var(--radius-lg) + 4px);
+        opacity: 0.5;
+        animation: pulseGlow 1.5s ease-in-out infinite;
+    }
+}
+
+@keyframes pulseGlow {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.02); }
 }
 
 .targetActive {
-    @include insetShadow($color-error);
+    border-color: var(--danger-color);
+    box-shadow: var(--shadow-panel-sm), 0 0 16px rgba(220, 107, 107, 0.5);
 }
 
 .targetDefaultActive {
-    @include insetShadow($color-unique, 25px);
+    border-color: $rarity-unique;
+    box-shadow: var(--shadow-panel-sm), 0 0 12px rgba(183, 121, 217, 0.4);
 }
 
 .characterDead {
-    opacity: 0.5;
+    opacity: 0.4;
 
     &:hover {
-        opacity: 0.7;
-        cursor: auto;
+        opacity: 0.45;
+        cursor: not-allowed;
+        border-color: var(--border-ornate-dark);
     }
 
     img {
         animation: none;
-        filter: grayscale(100%);
+        filter: grayscale(100%) brightness(0.7);
+    }
+}
+
+.imageWrapper {
+    position: relative;
+    
+    img {
+        display: block;
+        width: 64px;
+        height: auto;
+        margin-bottom: var(--space-sm);
+        animation: bounceAnimation 5s infinite;
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+    }
+}
+
+.statsWrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    :global(.statBar) {
+        .track {
+            height: 8px !important;
+        }
     }
 }
 
 .logItem {
-    @include textShadow();
-
-    width: max-content;
     position: absolute;
-    z-index: 100;
+    top: 0;
     left: 50%;
-    font-size: 24px;
-    font-weight: 600;
-    color: $color-light;
+    z-index: var(--z-tooltip-layer);
+    width: max-content;
+    font-family: var(--font-header);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-main);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
     opacity: 0;
     animation: slideTop 1.5s ease-in-out;
 }
 
 .logItemCritical {
-    font-size: 30px;
-    font-weight: 800;
-}
-
-.logItemDodged {
-    color: $color-light;
+    font-size: 1.5rem;
+    color: #ffcc00;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9), 0 0 12px rgba(255, 204, 0, 0.6);
 }
 
 .effectLogItem {
-    @include textShadow();
     margin: 0;
-    line-height: 1;
-    font-size: 18px;
-    color: $color-dark;
+    line-height: 1.2;
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
 }
 
 .logItemStatus {
-    @include textShadow();
-    line-height: 1;
-    font-size: 18px;
+    line-height: 1.2;
+    font-size: var(--font-size-sm);
 }
 
-.allyAttacking {
-    animation: attackAnimationAlly 1s forwards;
-}
-
-.enemyAttacking {
-    animation: attackAnimation 1s forwards;
-}
+.allyAttacking { animation: attackAnimationAlly 1s forwards; }
+.enemyAttacking { animation: attackAnimation 1s forwards; }
 
 @keyframes attackAnimation {
-    0%,
-    100% {
-        transform: translateX(0px);
-    }
-    50% {
-        transform: translateX(-20px);
-    }
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(-20px); }
 }
 
 @keyframes attackAnimationAlly {
-    0%,
-    100% {
-        transform: translateX(0px);
-    }
-    50% {
-        transform: translateX(20px);
-    }
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(20px); }
 }
 
 @keyframes bounceAnimation {
-    0%,
-    100% {
-        transform: translateY(1px);
-    }
-    50% {
-        transform: translateY(-4px);
-    }
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
 }
 
 @keyframes bounceAnimationAlly {
-    0%,
-    100% {
-        transform: translateY(1px) rotateY(180deg);
-    }
-    50% {
-        transform: translateY(-4px) rotateY(180deg);
-    }
+    0%, 100% { transform: translateY(0) rotateY(180deg); }
+    50% { transform: translateY(-4px) rotateY(180deg); }
 }
 
 @keyframes slideTop {
-    0% {
-        transform: translate(-50%, -50px);
-        opacity: 0;
-    }
-    1% {
-        transform: translate(-50%, -55px);
-        opacity: 1;
-    }
-    30% {
-        transform: translate(-55%, -65px);
-        opacity: 1;
-    }
-    60% {
-        transform: translate(-45%, -80px);
-        opacity: 0.8;
-    }
-    80% {
-        transform: translate(-35%, -90px);
-        opacity: 0.5;
-    }
-    100% {
-        transform: translate(-30%, -100%);
-        opacity: 0;
-    }
+    0% { transform: translate(-50%, -20px); opacity: 0; }
+    5% { transform: translate(-50%, -30px); opacity: 1; }
+    60% { transform: translate(-50%, -60px); opacity: 0.8; }
+    100% { transform: translate(-50%, -80px); opacity: 0; }
 }
 
 .tooltipItem {
     text-align: center;
-
     p {
         margin: 0;
+        font-size: var(--font-size-base);
     }
 }
 
 .statusWrapper {
+    margin-top: var(--space-xs);
     p {
-        font-size: 10px;
+        font-size: var(--font-size-sm);
+        color: var(--text-secondary);
     }
 }

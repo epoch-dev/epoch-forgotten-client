@@ -1,59 +1,97 @@
-@use 'sass:color';
-@import '../../common/styles/variables.scss';
-@import '../../common/styles/mixins.scss';
+@use '../../common/styles/variables.scss' as *;
+@use '../../common/styles/mixins.scss' as *;
+
+// =============================================
+// SHOP ITEM - High Fantasy (Optimized)
+// =============================================
 
 .shopItem {
-    width: 6rem;
-    height: 6rem;
+    @include fantasy-slot;
+
+    aspect-ratio: 1;
     position: relative;
-    border: 2px solid $color-dark;
-    border-radius: 1rem;
-    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--border-ornate-dark);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: border-color var(--transition-fast);
     overflow: hidden;
-    transition: all 0.5s;
 
-    .actionIcon {
-        position: absolute;
-        font-size: 1.2rem;
-
-        &:hover {
-            cursor: pointer;
-            color: color.adjust($color-primary, $lightness: -10%);
-        }
+    img {
+        width: 65%;
+        height: 65%;
+        object-fit: contain;
+        pointer-events: none;
     }
 
-    .quantityLabel {
-        position: absolute;
-        top: 0.1rem;
-        right: 0.4rem;
-        font-size: 1rem;
+    &:hover:not(.disabled) {
+        border-color: var(--border-ornate);
     }
 
     &.disabled {
-        cursor: auto;
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+.actionIcon {
+    position: absolute;
+    bottom: 4px;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-main);
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid var(--border-ornate-dark);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    z-index: 2;
+
+    &:first-of-type {
+        left: 4px;
     }
 
-    &:hover,
-    &:focus {
-        background-color: rgba($color-dark, 0.1);
+    &:last-of-type {
+        right: 4px;
     }
 
-    &:disabled {
-        cursor: auto;
-        background: rgba($color-grey, 0.8);
+    &:hover {
+        background: var(--accent-gold);
+        color: var(--text-inverse);
+        border-color: var(--accent-gold);
     }
+}
 
-    .shopItemOverlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        color: $color-light;
-        background-color: rgba($color-dark, 0.5);
-    }
+.quantityLabel {
+    position: absolute;
+    top: 4px;
+    right: 6px;
+    font-size: var(--font-size-sm);
+    font-weight: 700;
+    color: var(--accent-gold);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+    z-index: 2;
+}
+
+.shopItemOverlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(212, 168, 75, 0.1);
+    border: 2px solid var(--accent-gold);
+    border-radius: var(--radius-md);
+    color: var(--text-header);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    z-index: 1;
 }

@@ -1,17 +1,26 @@
-import style from './BattleCharacterComponent.module.scss';
+import { useEffect, useState } from 'react';
 import { BattleCharacter, BattleMoveResult, BattleStatus } from '../../common/api/.generated';
 import { TooltipComponent } from '../../common/components/TooltipComponent';
 import { AssetsService } from '../../common/services/AssetsService';
-import { ProgressBarComponent } from '../../common/components/ProgressBarComponent';
-import { formatNumber, generateRandomId } from '../../common/utils';
-import { CSS_COLOR } from '../../common/styles';
-import { useEffect, useState } from 'react';
 import { SoundService } from '../../common/services/SoundService';
+import { StatBar } from '../../common/ui';
+import { formatNumber, generateRandomId } from '../../common/utils';
+import style from './BattleCharacterComponent.module.scss';
 
 const soundService = SoundService.getInstance();
 
+const DEFAULT_SIZE = 64;
 const WIDTH_FACTOR = 1.1;
 const HEIGHT_FACTOR = 1.3;
+
+type BattleCharacterProps = {
+    character: BattleCharacter;
+    isSelected: boolean;
+    isTargeted: boolean;
+    isDefaultTargeted?: boolean;
+    animatedSkill: BattleMoveResult | undefined;
+    onClick: () => void;
+};
 
 export const BattleCharacterComponent = ({
     character,
@@ -20,14 +29,7 @@ export const BattleCharacterComponent = ({
     isDefaultTargeted,
     animatedSkill,
     onClick,
-}: {
-    character: BattleCharacter;
-    isSelected: boolean;
-    isTargeted: boolean;
-    isDefaultTargeted?: boolean;
-    animatedSkill: BattleMoveResult | undefined;
-    onClick: () => void;
-}) => {
+}: BattleCharacterProps) => {
     const [animating, setAnimating] = useState(false);
 
     useEffect(() => {
@@ -37,22 +39,30 @@ export const BattleCharacterComponent = ({
         } else {
             setAnimating(false);
         }
-    }, [animatedSkill]);
+    }, [animatedSkill, character.id]);
 
-    const characterClass = `
-        ${style.characterItem} 
-        ${character.isControlled ? style.characterAlly : ''}
-        ${isTargeted ? style.targetActive : ''} 
-        ${isDefaultTargeted ? style.targetDefaultActive : ''} 
-        ${isSelected ? style.characterActive : ''} 
-        ${!character.isAlive ? style.characterDead : ''}
-        ${animating && (character.isControlled ? style.allyAttacking : style.enemyAttacking)}`;
+    const characterClass = [
+        style.characterItem,
+        character.isControlled && style.characterAlly,
+        isTargeted && style.targetActive,
+        isDefaultTargeted && style.targetDefaultActive,
+        isSelected && style.characterActive,
+        !character.isAlive && style.characterDead,
+        animating && (character.isControlled ? style.allyAttacking : style.enemyAttacking),
+    ]
+        .filter(Boolean)
+        .join(' ');
 
     const characterImgUri = character.isControlled
         ? AssetsService.getCharacterUri(character.imageUri)
         : AssetsService.getEnemyUri(character.imageUri);
 
     const animatedLog = animatedSkill?.moveLogs.find((log) => log.targetId === character.id);
+
+    // Use size from character if available, otherwise default
+    const charSize = (character as BattleCharacter & { size?: number }).size ?? DEFAULT_SIZE;
+    const imgWidth = WIDTH_FACTOR * charSize;
+    const imgHeight = HEIGHT_FACTOR * charSize;
 
     return (
         <TooltipComponent
@@ -87,13 +97,8 @@ export const BattleCharacterComponent = ({
                     </p>
                 </div>
             }>
-            <div
-                onClick={onClick}
-                className={characterClass}
-                style={{
-                    width: `${WIDTH_FACTOR * character.size}px`,
-                    height: `${HEIGHT_FACTOR * character.size}px`,
-                }}>
+            <div onClick={onClick} className={characterClass}>
+                {/* Skill usage log */}
                 {animatedSkill?.characterId === character.id && (
                     <div className={style.logItem}>
                         <p>{animatedSkill.skillLabel}</p>
@@ -104,13 +109,15 @@ export const BattleCharacterComponent = ({
                         ))}
                     </div>
                 )}
+
+                {/* Damage/heal received log */}
                 {animatedLog &&
                     animatedLog.hits.map((hit, hitIndex) => (
                         <div
                             key={generateRandomId()}
                             className={style.logItem}
                             style={{ animationDelay: `${hitIndex / 2}s` }}>
-                            <b className={`${hit.value >= 0 ? 'error' : 'success'}`}>
+                            <b className={hit.value >= 0 ? 'error' : 'success'}>
                                 {formatNumber(Math.round(Math.abs(hit.value)))}
                                 {hit.effectLogs.map((effectLog) => (
                                     <p key={generateRandomId()} className={style.effectLogItem}>
@@ -120,24 +127,35 @@ export const BattleCharacterComponent = ({
                             </b>
                         </div>
                     ))}
-                <img
-                    src={characterImgUri}
-                    alt={character.label}
-                    style={{ animationDuration: `${character.size / 20}s` }}
-                />
-                <ProgressBarComponent
-                    current={character.statistics.health}
-                    max={character.statistics.maxHealth}
-                    fillColor={CSS_COLOR.MYTHICAL}
-                />
-                {character.isControlled && (
-                    <ProgressBarComponent
-                        current={character.statistics.mana}
-                        max={character.statistics.maxMana}
-                        fillColor={CSS_COLOR.RARE}
-                        style={{ width: '80%', height: '0.4rem' }}
+
+                {/* Character image */}
+                <div className={style.imageWrapper}>
+                    <img
+                        src={characterImgUri}
+                        alt={character.label}
+                        style={{
+                            width: `${imgWidth}px`,
+                            height: `${imgHeight}px`,
+                            animationDuration: `${charSize / 20}s`,
+                        }}
                     />
-                )}
+                </div>
+
+                {/* HP/Mana bars */}
+                <div className={style.statsWrapper} style={{ width: `${imgWidth}px` }}>
+                    <StatBar
+                        current={character.statistics.health}
+                        max={character.statistics.maxHealth}
+                        type="health"
+                    />
+                    {character.isControlled && (
+                        <StatBar
+                            current={character.statistics.mana}
+                            max={character.statistics.maxMana}
+                            type="mana"
+                        />
+                    )}
+                </div>
             </div>
         </TooltipComponent>
     );
@@ -153,14 +171,8 @@ const BattleCharacterStatus = ({ statuses }: { statuses: BattleStatus[] }) => {
         { key: 'mDefMod', label: (amount: number) => `${amount > 0 ? '+' : ''}${amount} Magical defense` },
         { key: 'speedMod', label: (amount: number) => `${amount > 0 ? '+' : ''}${amount} Speed` },
         { key: 'dodgeMod', label: (amount: number) => `${amount > 0 ? '+' : ''}${amount} Dodge chance` },
-        {
-            key: 'critChanceMod',
-            label: (amount: number) => `${amount > 0 ? '+' : ''}${amount} Critical chance`,
-        },
-        {
-            key: 'critPowerMod',
-            label: (amount: number) => `${amount > 0 ? '+' : ''}${amount} Critical power`,
-        },
+        { key: 'critChanceMod', label: (amount: number) => `${amount > 0 ? '+' : ''}${amount} Critical chance` },
+        { key: 'critPowerMod', label: (amount: number) => `${amount > 0 ? '+' : ''}${amount} Critical power` },
         { key: 'bleeding', label: 'Bleeding' },
         { key: 'poison', label: 'Poison' },
         { key: 'paralyzed', label: 'Paralyzed' },
@@ -175,12 +187,9 @@ const BattleCharacterStatus = ({ statuses }: { statuses: BattleStatus[] }) => {
                     {statusModifiers.map(({ key, label }) =>
                         status[key] ? (
                             <p key={generateRandomId()}>
-                                {typeof label === 'string' ? label : label(+status[key])} ({status.duration}{' '}
-                                turns)
+                                {typeof label === 'string' ? label : label(+status[key])} ({status.duration} turns)
                             </p>
-                        ) : (
-                            <></>
-                        ),
+                        ) : null,
                     )}
                 </div>
             ))}

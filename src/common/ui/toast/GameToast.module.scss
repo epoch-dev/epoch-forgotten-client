@@ -1,0 +1,77 @@
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixins.scss' as *;
+
+// =============================================
+// GAME TOAST - High Fantasy (Optimized)
+// =============================================
+
+.toastContainer {
+    position: fixed;
+    top: var(--space-lg);
+    right: var(--space-lg);
+    z-index: var(--z-toast-layer);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    max-width: 360px;
+    pointer-events: none;
+}
+
+.toastItem {
+    @include fantasy-panel-solid;
+    @include slideInRight(0.25s);
+
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md) var(--space-lg);
+    cursor: pointer;
+    pointer-events: auto;
+    transition: border-color var(--transition-fast);
+    border-left: 3px solid var(--accent-gold);
+
+    &:hover {
+        border-left-color: var(--accent-gold-light);
+    }
+
+    &.exiting {
+        animation: slideOutRight 0.2s ease-out forwards;
+    }
+
+    // Type variants
+    &.success { border-left-color: var(--success-color); }
+    &.error { border-left-color: var(--danger-color); }
+    &.quest { border-left-color: var(--accent-gold); }
+    &.item { border-left-color: $rarity-rare; }
+    &.info { border-left-color: var(--accent-color); }
+}
+
+.icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.toastContent {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.title {
+    @include fantasy-header-text;
+    font-size: var(--font-size-base);
+}
+
+.message {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

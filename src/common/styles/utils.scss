@@ -1,159 +1,89 @@
-@use 'sass:color';
-@import './variables.scss';
+@use './variables.scss' as *;
+@use './mixins.scss' as *;
 
+// Typography
 .title {
-    width: 100%;
-    margin: 2rem 0;
-    text-align: center;
-    font-size: 1.8rem;
-    line-height: 2rem;
-    color: color.adjust($color-primary, $lightness: 10%);
+    @include fantasy-header-text;
 }
 
 .subtitle {
-    width: 100%;
-    margin: 1rem 0;
-    text-align: center;
-    font-size: 1.4rem;
-    line-height: 1.5rem;
-    color: $color-light;
+    font-family: var(--font-header);
+    font-weight: 500;
+    color: var(--accent-gold);
 }
 
-.btn {
-    width: 100%;
-    display: block;
-    padding: 2rem 0;
-    font-size: 1.25rem;
-    line-height: 1.75rem;
-    text-align: center;
-    color: $color-light;
-    background: $color-dark;
-    border-bottom: 2px solid $color-primary;
-    border-radius: 0.7rem;
+.textMuted {
+    color: var(--text-muted);
+}
 
-    &:hover {
-        @include boxShadowSm();
-        cursor: pointer;
-        color: color.adjust($color-primary, $lightness: 10%);
-        background: color.adjust($color-dark, $lightness: -10%);
-        border-bottom: 2px solid color.adjust($color-primary, $lightness: 10%);
+// Buttons
+.btn {
+    @include fantasy-button;
+    padding: var(--space-sm) var(--space-md);
+    font-family: var(--font-header);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    border-radius: var(--radius-sm);
+
+    &.btnPrimary {
+        @include fantasy-button-gold;
+    }
+
+    &.btnDanger {
+        background: rgba(252, 129, 129, 0.15);
+        border-color: var(--color-danger);
+        color: var(--color-danger);
+
+        &:hover:not(:disabled) {
+            background: rgba(252, 129, 129, 0.25);
+        }
     }
 }
 
 .panelBtn {
-    padding: 5px 10px;
-    background-color: $color-dark;
-    color: $color-light;
-    cursor: pointer;
-    z-index: 100;
-    border: 2px solid $color-primary;
-    border-radius: 0.7rem;
-
-    &:hover {
-        background-color: $color-primary;
-        transform: translateY(-1px);
-    }
+    @include fantasy-button;
+    position: fixed;
+    left: var(--space-sm);
+    top: var(--space-sm);
+    width: fit-content;
+    padding: var(--space-xs) var(--space-sm);
+    font-size: var(--font-size-xs);
+    z-index: var(--z-ui-layer);
 }
 
-.light {
-    color: $color-light;
-}
+// Color utilities
+.colorPrimary { color: var(--accent-primary); }
+.colorSuccess { color: var(--color-success); }
+.colorDanger { color: var(--color-danger); }
+.colorWarning { color: var(--color-warning); }
+.colorMuted { color: var(--text-muted); }
 
-.dark {
-    color: $color-dark;
-}
+// Rarity colors
+.common { color: $rarity-common; }
+.uncommon { color: $rarity-uncommon; }
+.rare { color: $rarity-rare; }
+.unique { color: $rarity-unique; }
+.epic { color: $rarity-epic; }
+.mythical { color: $rarity-mythical; }
 
-.primary {
-    color: $color-primary;
-}
+// Spacing
+.mt1 { margin-top: var(--space-xs); }
+.mt2 { margin-top: var(--space-sm); }
+.mt3 { margin-top: var(--space-md); }
+.mb1 { margin-bottom: var(--space-xs); }
+.mb2 { margin-bottom: var(--space-sm); }
+.mb3 { margin-bottom: var(--space-md); }
 
-.error {
-    color: $color-error;
-}
+// Flexbox
+.flex { display: flex; }
+.flexCol { flex-direction: column; }
+.flexCenter { align-items: center; justify-content: center; }
+.gap1 { gap: var(--space-xs); }
+.gap2 { gap: var(--space-sm); }
+.gap3 { gap: var(--space-md); }
 
-.success {
-    color: $color-success;
-}
-
-.bold {
-    font-weight: 600;
-}
-
-.thin {
-    font-weight: 200;
-}
-
-.left {
-    text-align: left;
-}
-
-.gone {
-    display: none;
-}
-
-.blur {
-    filter: blur(3px);
-}
-
-.common {
-    color: $color-common;
-}
-
-.uncommon {
-    color: $color-uncommon;
-}
-
-.rare {
-    color: $color-rare;
-}
-
-.unique {
-    color: $color-unique;
-}
-
-.epic {
-    color: $color-epic;
-}
-
-.mythical {
-    color: $color-mythical;
-}
-
-.route {
-    color: $color-route;
-}
-
-.collision {
-    color: $color-collision;
-}
-
-.passage {
-    color: $color-passage;
-}
-
-.npc {
-    color: $color-npc;
-}
-
-.encounter {
-    color: $color-encounter;
-}
-
-.flex {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-}
-
-.inline {
-    display: inline;
-}
-
-.toastYellow {
-    background-color: #ffeb3b;
-    color: #000;
-    border: 2px solid #fdd835;
-    font-weight: bold;
-    text-align: center;
-}
+// Text
+.textCenter { text-align: center; }
+.textRight { text-align: right; }
+.textSm { font-size: var(--font-size-sm); }
+.textXs { font-size: var(--font-size-xs); }

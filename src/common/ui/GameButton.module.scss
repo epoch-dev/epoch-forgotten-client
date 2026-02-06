@@ -1,0 +1,70 @@
+@use '../styles/variables.scss' as *;
+@use '../styles/mixins.scss' as *;
+
+// =============================================
+// GAME BUTTON - High Fantasy RPG Style
+// =============================================
+
+.gameButton {
+    @include fantasy-button;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    font-family: var(--font-header);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+
+    // Sizes
+    &.sm {
+        padding: 0.4rem 0.8rem;
+        font-size: var(--font-size-sm);
+    }
+
+    &.md {
+        padding: 0.6rem 1.25rem;
+        font-size: var(--font-size-base);
+    }
+
+    &.lg {
+        padding: 0.8rem 1.75rem;
+        font-size: var(--font-size-lg);
+    }
+
+    // =============================================
+    // VARIANTS
+    // =============================================
+
+    &.primary {
+        @include fantasy-button-gold;
+    }
+
+    &.secondary {
+        @include fantasy-button;
+    }
+
+    &.danger {
+        background: linear-gradient(180deg, #4a2a2a 0%, #2d1818 100%);
+        border-color: var(--danger-color);
+        color: var(--danger-color);
+
+        &:hover:not(:disabled) {
+            background: linear-gradient(180deg, #5a3535 0%, #3d2020 100%);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6), 0 0 12px rgba(220, 107, 107, 0.4);
+        }
+    }
+
+    &.ghost {
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        color: var(--text-secondary);
+
+        &:hover:not(:disabled) {
+            color: var(--text-header);
+            background: rgba(255, 255, 255, 0.05);
+            transform: none;
+        }
+    }
+}

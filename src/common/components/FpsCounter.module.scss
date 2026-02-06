@@ -1,0 +1,18 @@
+@use '../styles/variables.scss' as *;
+
+.fpsCounter {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    padding: 4px 10px;
+    background: rgba(0, 0, 0, 0.75);
+    border: 1px solid rgba(138, 127, 107, 0.4);
+    border-radius: var(--radius-sm);
+    font-family: monospace;
+    font-size: 12px;
+    font-weight: 600;
+    color: #48bb78;
+    z-index: 100;
+    pointer-events: none;
+    user-select: none;
+}

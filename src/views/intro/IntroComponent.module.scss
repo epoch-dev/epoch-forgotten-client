@@ -1,39 +1,41 @@
-@use 'sass:color';
-@import '../../common/styles/variables.scss';
-@import '../../common/styles/mixins.scss';
+@use '../../common/styles/variables.scss' as *;
+@use '../../common/styles/mixins.scss' as *;
 
 .introWrapper {
-    height: 100%;
-    padding-top: 2rem;
+    @include fantasy-panel;
+    height: auto;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: var(--space-xl);
+    margin: var(--space-lg);
     display: grid;
     grid-template: 1fr 10fr / 1fr 1fr;
     align-items: stretch;
-    gap: 2rem;
-    color: $color-dark;
+    gap: var(--space-xl);
+    color: var(--text-main);
 
     fieldset {
         width: 100%;
-        margin-top: 2rem;
+        margin-top: var(--space-lg);
+        border: none;
+        padding: 0;
     }
 
     b {
-        font-size: 30px;
-        color: color.adjust($color-primary, $lightness: -20%);
+        font-size: var(--font-size-xl);
+        color: var(--accent-gold);
     }
 
     p {
         margin: 0;
-        font-size: 18px;
+        font-size: var(--font-size-base);
         text-align: justify;
-        color: $color-dark;
+        color: var(--text-main);
+        line-height: 1.6;
     }
 
     div {
         max-height: min-content;
-    }
-
-    fieldset {
-        margin-top: 1rem;
     }
 
     input[type='radio'] {
@@ -41,19 +43,19 @@
         width: 1rem;
         height: 1rem;
         border-radius: 50%;
-        border: 2px solid color.adjust($color-primary, $lightness: -10%);
+        border: 2px solid var(--border-ornate);
         outline: none;
         cursor: pointer;
-        margin: -0.15rem 0.5rem;
-        transition: background-color 0.2s ease, border-color 0.2s ease;
+        margin: -0.15rem var(--space-sm);
+        transition: all var(--transition-fast);
 
         &:checked {
-            background-color: $color-primary;
-            border-color: $color-dark;
+            background: var(--accent-gold);
+            border-color: var(--accent-gold);
         }
 
         &:hover {
-            border-color: color.adjust($color-dark, $lightness: 10%);
+            border-color: var(--accent-gold-light);
         }
     }
 }
@@ -64,13 +66,18 @@
     img {
         width: 12rem;
         float: left;
-        margin: 0.5rem 1rem 0 0;
+        margin: var(--space-sm) var(--space-md) 0 0;
+        border-radius: var(--radius-md);
+        border: 2px solid var(--border-ornate-dark);
     }
 }
 
 .confirmBtn {
+    @include fantasy-button-gold;
     width: 100%;
-    margin: 1rem auto;
+    margin: var(--space-md) auto;
+    padding: var(--space-md);
+    font-size: var(--font-size-lg);
 }
 
 @media (max-width: $mobile-res) {

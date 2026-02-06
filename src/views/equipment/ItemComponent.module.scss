@@ -1,41 +1,41 @@
-@use 'sass:color';
-@import '../../common/styles/variables.scss';
-@import '../../common/styles/mixins.scss';
+@use '../../common/styles/variables.scss' as *;
+@use '../../common/styles/mixins.scss' as *;
 
 .itemWrapper {
     width: 4rem;
     height: 4rem;
     max-width: 100%;
     max-height: 100%;
+    border-radius: var(--radius-sm);
 
     &.Common {
-        @include insetShadow($color-common);
-        border: 2px solid color.adjust($color-common, $lightness: 10%);
+        box-shadow: inset 0 0 8px rgba($rarity-common, 0.3);
+        border: 1px solid $rarity-common;
     }
 
     &.Uncommon {
-        @include insetShadow($color-uncommon);
-        border: 2px solid color.adjust($color-uncommon, $lightness: 10%);
+        box-shadow: inset 0 0 8px rgba($rarity-uncommon, 0.3);
+        border: 1px solid $rarity-uncommon;
     }
 
     &.Rare {
-        @include insetShadow($color-rare);
-        border: 2px solid color.adjust($color-rare, $lightness: 10%);
+        box-shadow: inset 0 0 8px rgba($rarity-rare, 0.3);
+        border: 1px solid $rarity-rare;
     }
 
     &.Unique {
-        @include insetShadow($color-unique);
-        border: 1px solid color.adjust($color-unique, $lightness: 10%);
+        box-shadow: inset 0 0 8px rgba($rarity-unique, 0.3);
+        border: 1px solid $rarity-unique;
     }
 
     &.Epic {
-        @include insetShadow($color-epic);
-        border: 2px solid color.adjust($color-epic, $lightness: 10%);
+        box-shadow: inset 0 0 10px rgba($rarity-epic, 0.4);
+        border: 1px solid $rarity-epic;
     }
 
     &.Mythical {
-        @include insetShadow($color-mythical);
-        border: 2px solid color.adjust($color-mythical, $lightness: 10%);
+        box-shadow: inset 0 0 12px rgba($rarity-mythical, 0.5);
+        border: 2px solid $rarity-mythical;
     }
 
     img {
@@ -48,17 +48,33 @@
 
 .itemTooltip {
     p {
-        margin: 0;
+        margin: var(--space-xs) 0;
+        font-size: var(--font-size-sm);
     }
 
     hr {
-        height: 1px;
+        border: none;
+        border-top: 1px solid var(--border-ornate-dark);
+        margin: var(--space-sm) 0;
     }
+
+    b { color: var(--accent-gold); }
 }
 
 .rarityLabel {
     width: 100%;
-    margin-top: 0.25rem;
-    font-size: 12px;
+    margin-top: var(--space-xs);
+    padding: 2px var(--space-sm);
+    font-size: var(--font-size-xs);
     text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 2px;
+
+    &:global(.common) { color: $rarity-common; background: rgba($rarity-common, 0.1); }
+    &:global(.uncommon) { color: $rarity-uncommon; background: rgba($rarity-uncommon, 0.1); }
+    &:global(.rare) { color: $rarity-rare; background: rgba($rarity-rare, 0.1); }
+    &:global(.unique) { color: $rarity-unique; background: rgba($rarity-unique, 0.1); }
+    &:global(.epic) { color: $rarity-epic; background: rgba($rarity-epic, 0.1); }
+    &:global(.mythical) { color: $rarity-mythical; background: rgba($rarity-mythical, 0.1); }
 }
