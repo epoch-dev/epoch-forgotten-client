@@ -1,0 +1,103 @@
+@use '../styles/variables.scss' as *;
+@use '../styles/mixins.scss' as *;
+
+.gameWindow {
+    @include fantasy-panel;
+    @include centeredPanelFadeIn;
+
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: var(--z-window-layer);
+    display: flex;
+    flex-direction: column;
+    max-height: 85vh;
+    overflow: hidden;
+    font-size: var(--font-size-base);
+
+    &.sm {
+        width: 90%;
+        max-width: 420px;
+    }
+
+    &.md {
+        width: 90%;
+        max-width: 640px;
+    }
+
+    &.lg {
+        width: 90%;
+        max-width: 900px;
+    }
+
+    &.full {
+        width: 95%;
+        max-width: 1200px;
+        height: 85vh;
+    }
+}
+
+.header {
+    @include fantasy-header;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-md) var(--space-lg);
+    flex-shrink: 0;
+}
+
+.title {
+    @include fantasy-header-text;
+
+    margin: 0;
+    font-size: var(--font-size-lg);
+}
+
+.closeBtn {
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-ornate-dark);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+
+    &:hover {
+        color: var(--danger-color);
+        border-color: var(--danger-color);
+        background: rgba(220, 107, 107, 0.15);
+    }
+}
+
+.content {
+    flex: 1;
+    padding: var(--space-lg);
+    overflow-y: auto;
+    color: var(--text-main);
+
+    // Styled scrollbar
+    &::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, var(--border-ornate) 0%, var(--border-ornate-dark) 100%);
+        border-radius: 4px;
+
+        &:hover {
+            background: linear-gradient(180deg, var(--border-ornate-light) 0%, var(--border-ornate) 100%);
+        }
+    }
+}

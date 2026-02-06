@@ -1,175 +1,190 @@
-@use 'sass:color';
-@import '../../common/styles/variables.scss';
-@import '../../common/styles/mixins.scss';
+@use '../../common/styles/variables.scss' as *;
+@use '../../common/styles/mixins.scss' as *;
 
-.header {
-    font-size: 2rem;
-    margin-bottom: 1.25rem;
-    text-align: center;
-}
-
-.questsWrapper {
-    width: 100%;
-    padding: 0 0.625rem;
-}
-
-.tabs {
+.tabsWrapper {
     display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-lg);
+    padding-bottom: var(--space-md);
+    border-bottom: 1px solid var(--border-ornate-dark);
+}
+
+.tabBtn {
+    @include fantasy-button;
+    position: relative;
+    padding: var(--space-sm) var(--space-md);
+    font-family: var(--font-header);
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    &.active {
+        background: rgba(200, 170, 110, 0.15);
+        border-color: var(--accent-gold);
+        color: var(--accent-gold);
+    }
+}
+
+.count {
+    display: inline-flex;
+    align-items: center;
     justify-content: center;
-    margin-bottom: 1.25rem;
+    min-width: 1.25rem;
+    height: 1.25rem;
+    margin-left: var(--space-sm);
+    padding: 0 var(--space-xs);
+    background: rgba(200, 170, 110, 0.3);
+    border-radius: 10px;
+    font-size: var(--font-size-xs);
+    color: var(--accent-gold);
+}
 
-    button {
-        background: none;
-        padding: 1rem 2rem;
-        font-size: 1.2rem;
-        cursor: pointer;
-        transition: background-color 0.8s, color 0.4s;
-        border-bottom: 2px solid $color-primary;
-        position: relative;
+.questsList {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
 
-        &:hover {
-            background-color: $color-light;
-            color: $color-dark;
-        }
-
-        .count {
-            position: absolute;
-            top: 0;
-            right: 0;
-            color: $color-light;
-            padding: 0.25rem 0.5rem;
-            font-size: 0.8rem;
-            min-width: 1.5rem;
-            text-align: center;
-            text-shadow: 1px 1px 2px rgba($color-dark, 0.7),
-        }
-    }
-
-    .active {
-        background-color: $color-primary;
-        color: $color-light;
-    }
+.emptyMessage {
+    text-align: center;
+    color: var(--text-secondary);
+    font-style: italic;
+    padding: var(--space-xl);
 }
 
 .questItem {
-    @include boxShadow;
-    @include fadeInAnimation;
-
-    & {
-        width: 90%;
-        max-width: 40rem;
-        margin: 1rem auto;
-        background: $color-transparent-standard;
-        border: 1px solid $color-light;
-        border-radius: 0.5rem;
-        padding: 2rem;
-        transition: background-color 1s ease, border-color 1s ease;
-        user-select: none;
-    }
+    @include panelFadeIn;
+    background: rgba(30, 30, 40, 0.6);
+    border: 1px solid var(--border-ornate-dark);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    transition: all var(--transition-fast);
 
     &:hover {
-        background-color: color.adjust(rgba($color-grey, 0.35), $lightness: 90%);
-        border-color: color.adjust($color-light, $lightness: -90%);
+        border-color: var(--border-ornate);
     }
 
     &.mainQuest {
-        background: $color-transparent-special;
-        border: 2px solid $color-epic;
+        border-color: $rarity-epic;
+        background: linear-gradient(135deg, rgba(218, 165, 32, 0.1) 0%, rgba(30, 30, 40, 0.6) 100%);
 
-        &:hover {
-            background-color: color.adjust(rgba($color-epic, 0.3), $lightness: 10%);
-            border-color: color.adjust($color-epic, $lightness: -10%);
+        .subtitle::before {
+            content: '★ ';
+            color: $rarity-epic;
         }
     }
+}
 
-    .subtitle {
-        font-size: 1.5em;
-        margin-left: -0.825rem;
-        font-weight: bold;
+.subtitle {
+    display: block;
+    width: 100%;
+    padding: var(--space-md) var(--space-lg);
+    font-family: var(--font-header);
+    font-size: var(--font-size-lg);
+    color: var(--text-header);
+    cursor: pointer;
+    list-style: none;
+    transition: background var(--transition-fast);
 
-        &:hover {
-            cursor: pointer;
-        }
+    &::-webkit-details-marker { display: none; }
+
+    &::after {
+        content: '▼';
+        float: right;
+        font-size: var(--font-size-xs);
+        color: var(--text-secondary);
+        transition: transform var(--transition-fast);
     }
 
-    .stagesWrapper {
-        padding: 0 1rem;
+    &:hover {
+        background: rgba(200, 170, 110, 0.1);
     }
+}
 
-    .stageItem {
-        border-top: 1px solid $color-light;
+details[open] .subtitle::after {
+    transform: rotate(180deg);
+}
 
-        &:first-of-type {
-            border-top: none;
-            padding-top: 0;
-            margin-top: 0;
-        }
+.stagesWrapper {
+    padding: 0 var(--space-lg) var(--space-lg) var(--space-lg);
+}
 
-        .objective {
-            font-size: 1.2rem;
-            margin-bottom: 0.3rem;
-            font-weight: bold;
-        }
+.stageItem {
+    padding: var(--space-md);
+    margin-bottom: var(--space-sm);
+    background: rgba(20, 20, 30, 0.5);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--border-ornate-dark);
 
-        .description {
-            font-style: italic;
-            margin-bottom: 0.3rem;
-        }
+    &:last-child { margin-bottom: 0; }
+}
 
-        .goals {
-            margin-bottom: 0.625rem;
+.objective {
+    @include fantasy-header-text;
+    font-size: var(--font-size-base);
+    margin: 0 0 var(--space-sm) 0;
+}
 
-            .goalsHeader {
-                font-weight: bold;
-                margin-bottom: 0.3rem;
-            }
+.description {
+    font-size: var(--font-size-sm);
+    font-style: italic;
+    color: var(--text-secondary);
+    margin: 0 0 var(--space-sm) 0;
+}
 
-            .goalsList {
-                list-style-type: disc;
-                padding-left: 1.25rem;
+.goals { margin-bottom: var(--space-sm); }
 
-                .goalItem {
-                    font-size: 0.9rem;
-                    color: $color-grey;
-                }
-            }
-        }
+.goalsHeader {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: var(--space-xs);
+}
 
-        .rewards {
-            font-size: 0.9rem;
-            color: $color-grey;
-        }
+.goalsList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
 
-        .state {
-            font-size: 0.8rem;
-            color: $color-grey;
-            margin-top: 0.35rem;
-            padding-left: 0.35rem;
+.goalItem {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    padding: var(--space-xs) 0 var(--space-xs) var(--space-md);
+    position: relative;
 
-            &.Unlocked {
-                background-color: $color-light;
-                border-left: 4px solid $color-success;
-            }
-
-            &.In-progress {
-                background-color: $color-light;
-                border-left: 4px solid $color-epic;
-            }
-
-            &.Failed {
-                background-color: $color-light;
-                border-left: 4px solid $color-error;
-            }
-
-            &.On-hold {
-                background-color: $color-light;
-                border-left: 4px solid rgb(142, 36, 170);
-            }
-
-            &.Completed {
-                background-color: $color-light;
-                border-left: 4px solid $color-rare;
-            }
-        }
+    &::before {
+        content: '◇';
+        position: absolute;
+        left: 0;
+        color: var(--border-ornate-dark);
     }
+}
+
+.rewards {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    margin: var(--space-sm) 0;
+
+    b { color: var(--accent-gold); }
+}
+
+.state {
+    display: inline-block;
+    padding: var(--space-xs) var(--space-sm);
+    margin-top: var(--space-sm);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: var(--radius-sm);
+    background: rgba(100, 100, 100, 0.2);
+    color: var(--text-secondary);
+
+    &.Unlocked { background: rgba(92, 184, 92, 0.2); color: var(--color-success); }
+    &.In-progress { background: rgba(236, 201, 75, 0.2); color: $rarity-epic; }
+    &.Failed { background: rgba(220, 107, 107, 0.2); color: var(--color-danger); }
+    &.On-hold { background: rgba(142, 36, 170, 0.2); color: rgb(180, 100, 200); }
+    &.Completed { background: rgba(66, 153, 225, 0.2); color: $rarity-rare; }
 }

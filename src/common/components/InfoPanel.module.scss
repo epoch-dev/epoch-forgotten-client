@@ -1,41 +1,58 @@
-@import '../styles/variables.scss';
-@import '../styles/mixins.scss';
+@use '../styles/variables.scss' as *;
+@use '../styles/mixins.scss' as *;
 
 .infoPanel {
-    @include boxShadow;
+    @include fantasy-panel-solid;
     position: fixed;
-    top: 5rem;
-    left: 2rem;
-    z-index: 1000;
-    max-width: 30rem;
+    top: var(--space-sm);
+    right: var(--space-sm);
+    z-index: var(--z-ui-layer);
+    min-width: 280px;
+    max-width: 400px;
     max-height: 80vh;
     overflow-y: auto;
-    background: rgba($color-light, 0.9);
-    border: 1px solid $color-primary;
-    border-radius: 0.5rem;
-    padding: 1rem;
-    font-family: Arial, sans-serif;
+    padding: 1.5rem;
+    font-size: var(--font-size-sm);
+    color: var(--text-main);
+    line-height: 1.6;
 
-    ul {
-        margin: 0;
-        padding: 0 1.5rem;
+    h3 {
+        @include fantasy-header-text;
+        font-size: var(--font-size-lg);
+        margin: 0 0 var(--space-sm) 0;
+    }
+
+    p {
+        margin: var(--space-xs) 0;
+        color: var(--text-secondary);
     }
 
     hr {
         border: none;
-        border-bottom: 1px solid $color-primary;
+        border-bottom: 1px solid var(--border-ornate-dark);
+        margin: var(--space-md) 0;
     }
 
-    .section {
-        margin-bottom: 1rem;
+    ul, ol {
+        margin: var(--space-sm) 0;
+        padding-left: 1.5rem;
+        list-style-position: outside;
 
-        h3 {
+        li {
             margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
         }
+    }
+}
 
-        p {
-            margin: 0.5rem;
-            line-height: 1;
-        }
+.section {
+    margin-bottom: var(--space-sm);
+
+    span {
+        display: block;
+        margin-bottom: var(--space-sm);
+        color: var(--text-secondary);
+        line-height: 1.6;
     }
 }

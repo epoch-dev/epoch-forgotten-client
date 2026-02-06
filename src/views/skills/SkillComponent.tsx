@@ -7,8 +7,8 @@ import { skillsClient } from '../../common/api/client';
 import { ToastService } from '../../common/services/ToastService';
 import { SoundService } from '../../common/services/SoundService';
 import { useState } from 'react';
-import { ConfirmDialog } from '../../common/components/ConfirmDialog';
 import { throttle } from '../../common/utils';
+import { ConfirmModal } from '../../common/ui';
 
 const soundService = SoundService.getInstance();
 
@@ -39,29 +39,29 @@ export const SkillComponent = ({ skill }: { skill: SkillDto }) => {
 
     return (
         <div key={skill.name} className={skillClass}>
-            <TooltipComponent hint={renderHint(skill)}>
+            <TooltipComponent hint={renderHint(skill)} config={{ width: '16rem' }}>
                 <img
                     src={AssetsService.getSkillUri(skill.imageUri)}
                     alt={skill.label}
-                    style={{ width: '3rem', height: '3rem' }}
                     draggable={false}
                 />
             </TooltipComponent>
             {!skill.learned && (
-                <button onClick={() => setShowConfirmLearnDialog(true)} className="btn" disabled={!canLearn}>
+                <button onClick={() => setShowConfirmLearnDialog(true)} disabled={!canLearn}>
                     Learn
                 </button>
             )}
             {showConfirmLearnDialog && (
-                <ConfirmDialog
+                <ConfirmModal
+                    title="Learn Skill"
                     onConfirm={throttle(learnSkill)}
-                    onCancel={() => setShowConfirmLearnDialog(false)}>
+                    onCancel={() => setShowConfirmLearnDialog(false)}
+                    confirmText="Learn"
+                    cancelText="Cancel">
                     <p>
-                        Are you sure you want to learn <b className="primary">{skill.label}</b>
-                        <br /> by using
-                        <b> {skill.pointsRequired} skill points</b>?
+                        Learn <b>{skill.label}</b> for <b>{skill.pointsRequired} skill points</b>?
                     </p>
-                </ConfirmDialog>
+                </ConfirmModal>
             )}
         </div>
     );
@@ -70,14 +70,15 @@ export const SkillComponent = ({ skill }: { skill: SkillDto }) => {
 const renderHint = (skill: SkillDto) => {
     return (
         <div className={style.skillHintItem}>
-            <h3 className="subheader primary">{skill.label}</h3>
+            <h3>{skill.label}</h3>
             <hr />
             <p>{skill.description}</p>
             {!skill.learned && (
                 <>
                     <hr />
                     <p>Required level: {skill.lvlRequired ?? '---'}</p>
-                    {skill.skillsRequired && (
+                    <p>Skill points: {skill.pointsRequired ?? '---'}</p>
+                    {skill.skillsRequired && skill.skillsRequired.length > 0 && (
                         <>
                             <span>Required skills:</span>
                             {skill.skillsRequired.map((requiredSkill) => (

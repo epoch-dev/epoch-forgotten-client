@@ -1,112 +1,115 @@
-@import '../../common/styles/variables.scss';
-@import '../../common/styles/mixins.scss';
+@use '../../common/styles/variables.scss' as *;
+@use '../../common/styles/mixins.scss' as *;
 
 .battleResultsWrapper {
-    width: 100%;
-    height: 750px;
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
-    padding-top: 5rem;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     text-align: center;
-    font-size: 20px;
-    color: $color-light;
-    background: rgba($color-dark, 0.9);
-    z-index: 100;
+    background: var(--panel-bg-solid);
+    color: var(--text-main);
+    z-index: var(--z-modal-layer);
 
     h1 {
-        letter-spacing: 4px;
+        @include fantasy-header-text;
+        font-size: 2.5rem;
+        font-weight: 700;
+        letter-spacing: 3px;
+        margin: 0 0 var(--space-lg);
     }
 
     hr {
-        width: 80%;
+        width: 60%;
+        max-width: 24rem;
+        border: none;
+        border-top: 1px solid var(--border-ornate-dark);
+        margin: var(--space-lg) 0;
     }
 
     p {
-        margin: 0;
-    }
-
-    * {
-        animation: fadeInAnimation 1s ease-in-out forwards;
+        margin: var(--space-sm) 0;
+        font-size: var(--font-size-lg);
     }
 }
 
-.victory {
-    @include insetShadow($color-primary);
-}
-
-.defeat {
-    @include insetShadow($color-error);
-}
+.victory h1 { color: var(--color-success); }
+.defeat h1 { color: var(--color-danger); }
 
 .resultsWrapper {
-    width: 100%;
-    max-width: 50rem;
-    margin: auto;
     display: flex;
-    justify-content: space-between;
-    gap: 2.5rem;
+    justify-content: center;
+    gap: var(--space-xl);
+    margin: var(--space-lg) 0;
 }
 
 .lootsWrapper {
-    width: 15rem;
+    @include fantasy-panel-solid;
+    min-width: 12rem;
+    padding: var(--space-lg);
+    text-align: left;
+    font-size: var(--font-size-base);
+
+    .subtitle {
+        @include fantasy-header-text;
+        font-size: var(--font-size-lg);
+        margin-bottom: var(--space-md);
+    }
 }
 
 .itemsWrapper {
-    margin-top: 1rem;
+    margin-top: var(--space-md);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--border-ornate-dark);
 
-    p {
-        font-size: 16px;
-    }
+    b { color: var(--text-main); }
+    p { font-size: var(--font-size-sm); color: var(--text-secondary); }
 }
 
 .partyWrapper {
-    margin-top: 1rem;
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
-    gap: 1rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-md);
 }
 
 .characterItem {
-    width: 16rem;
+    @include fantasy-panel-solid;
     display: flex;
-    gap: 1rem;
-
-    .characterLevel {
-        width: 100%;
-
-        p {
-            width: 90%;
-            margin: 0.5rem auto;
-            text-align: left;
-        }
-    }
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    min-width: 14rem;
 
     img {
-        width: 5rem;
+        width: 3rem;
+        height: auto;
         object-fit: contain;
+        border-radius: var(--radius-md);
+    }
+
+    .characterLevel {
+        flex: 1;
+
+        p {
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            margin-bottom: var(--space-sm);
+        }
     }
 }
 
 .closeBtn {
-    margin-top: 2rem;
-    font-size: 24px;
-    color: $color-light;
-
-    &:hover {
-        cursor: pointer;
-        text-decoration: underline;
-    }
-}
-
-@keyframes fadeInAnimation {
-    from {
-        opacity: 0;
-        transform: translateX(-2rem);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
+    @include fantasy-button-gold;
+    margin-top: var(--space-xl);
+    padding: var(--space-md) var(--space-xl);
+    font-family: var(--font-header);
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }

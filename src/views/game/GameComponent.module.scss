@@ -1,87 +1,135 @@
-@use 'sass:color';
-@import '../../common/styles/variables.scss';
-@import '../../common/styles/mixins.scss';
+@use '../../common/styles/variables.scss' as *;
+@use '../../common/styles/mixins.scss' as *;
 
-:root {
-    height: 100vh;
-    background: linear-gradient(
-            90deg,
-            rgba(36, 22, 18, 0.8) 0%,
-            rgba(43, 43, 54, 0.9) 27%,
-            rgba(4, 7, 8, 0.8) 84%
-        ),
-        url('/images/brand/brand-bg.png');
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-}
-
-.contentWrapper {
-    @include insetShadow();
-
+.gameContainer {
     position: relative;
-    max-width: 1450px;
-    width: 90%;
-    height: 750px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    margin: 5rem auto 1rem auto;
-    padding: 1rem;
-    color: $color-dark;
-    background: linear-gradient(
-            90deg,
-            rgba($color-light, 0.3) 30%,
-            rgba($color-light, 0.4) 60%,
-            rgba($color-light, 0.3) 90%
-        ),
-        url('/images/ui/paper-bg.png');
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    overflow-y: scroll;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    background: #050505; // Deep black
+}
 
-    canvas {
-        margin: -1rem;
+.canvasLayer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: var(--z-game);
+}
+
+.darkOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: calc(var(--z-game) + 1);
+    pointer-events: none;
+}
+
+.viewLayer {
+    position: relative;
+    z-index: var(--z-ui-layer);
+    pointer-events: none;
+
+    > * {
+        pointer-events: auto;
     }
 }
 
-.navWrapper {
-    max-width: 1100px;
-    width: 90%;
-    margin: 0 auto;
+.hudBar {
+    @include fantasy-panel-solid;
+
+    position: fixed;
+    bottom: var(--space-md);
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
-    gap: 1rem;
+    gap: 2px;
+    padding: var(--space-sm);
+    z-index: var(--z-ui-layer);
+}
+
+.hudButton {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
+    gap: 4px;
+    padding: var(--space-sm) var(--space-md);
+    min-width: 72px;
+    background: transparent;
+    border: 2px solid transparent;
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    position: relative;
 
-    .navItem {
-        width: 10rem;
-        padding: 0.7rem;
-        font-size: 20px;
-        color: $color-light;
-        background: $color-dark;
-        border-bottom: 2px solid $color-primary;
-        border-radius: 0.7rem;
-
-        &:hover {
-            cursor: pointer;
-            color: color.adjust($color-primary, $lightness: 10%);
-            background: color.adjust($color-dark, $lightness: -10%);
-            border-bottom: 2px solid color.adjust($color-primary, $lightness: 10%);
-        }
+    &:hover {
+        color: var(--text-header);
+        background: rgba(0, 0, 0, 0.3);
+        border-color: var(--border-ornate-dark);
     }
+
+    &.active {
+        color: var(--accent-gold);
+        background: rgba(0, 0, 0, 0.4);
+        border-color: var(--accent-gold);
+        box-shadow: var(--shadow-inset-sm);
+    }
+}
+
+.hudIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+
+    svg {
+        width: 28px;
+        height: 28px;
+        stroke-width: 1.8;
+        color: inherit;
+        transition: filter var(--transition-fast);
+    }
+
+    .active & svg {
+        filter: drop-shadow(0 0 6px var(--accent-gold));
+    }
+}
+
+.hudLabel {
+    font-family: var(--font-header);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-shadow: var(--shadow-text);
 }
 
 .asidePanel {
     display: flex;
     flex-direction: column;
-    gap: 5px;
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
+    gap: var(--space-sm);
+    position: fixed;
+    top: var(--space-md);
+    left: var(--space-md);
+    z-index: var(--z-ui-layer);
 }
 
-.asideSignout {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
+.devBtn {
+    @include fantasy-button;
+
+    padding: var(--space-sm) var(--space-md);
+    font-size: var(--font-size-sm);
+    background: linear-gradient(180deg, #4a2a2a 0%, #2d1818 100%);
+    border-color: rgba(150, 80, 80, 0.5);
+    color: #FC8181;
+
+    &:hover {
+        background: linear-gradient(180deg, #5a3535 0%, #3d2020 100%);
+        border-color: rgba(150, 80, 80, 0.7);
+    }
 }

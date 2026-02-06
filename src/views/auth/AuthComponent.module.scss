@@ -1,31 +1,38 @@
 @use 'sass:math';
-@import '../../common/styles/variables.scss';
-@import '../../common/styles/mixins.scss';
+@use '../../common/styles/variables.scss' as *;
+@use '../../common/styles/mixins.scss' as *;
 
 :root {
     overflow: hidden;
 }
 
 .formWrapper {
-    @include boxShadow;
-
+    @include fantasy-panel;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    z-index: 100;
+    z-index: var(--z-ui-layer);
     width: 90%;
-    max-width: 40rem;
-    padding: 2rem 1rem;
-    background: $color-dark;
+    max-width: 28rem;
+    padding: var(--space-xl) var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .roadmapIcon {
     position: absolute;
-    top: 1rem;
-    right: 1rem;
+    top: var(--space-md);
+    right: var(--space-md);
     cursor: pointer;
-    z-index: 100;
+    z-index: 1;
+    color: var(--text-secondary);
+    transition: color var(--transition-fast);
+
+    &:hover {
+        color: var(--accent-gold);
+    }
 }
 
 .logoWrapper {
@@ -35,38 +42,36 @@
 
     img {
         width: 9rem;
-        animation: logoShine 5s;
-        animation-iteration-count: infinite;
-        animation-direction: alternate;
+        animation: logoShine 5s infinite alternate;
         z-index: 10;
-        opacity: 0.7;
+        opacity: 0.8;
     }
 
     h2 {
+        @include fantasy-header-text;
         position: absolute;
         margin-top: -6rem;
         z-index: 20;
-        text-shadow: 0 0 1rem rgba($color-light, 1);
+        text-shadow: 0 0 1rem rgba(255, 255, 255, 0.5);
     }
 }
 
 .viewBtn {
+    @include fantasy-button;
     width: calc(100% - 2rem);
-    margin: 0rem 1rem;
+    margin: 0 var(--space-md);
+    padding: var(--space-sm) var(--space-md);
+    color: var(--text-main);
 }
 
 @keyframes logoShine {
-    0% {
-        filter: hue-rotate(0deg) grayscale(10%) brightness(60%) blur(2px);
-    }
-    100% {
-        filter: hue-rotate(360deg) grayscale(30%) brightness(40%) blur(2px);
-    }
+    0% { filter: hue-rotate(0deg) grayscale(10%) brightness(60%) blur(2px); }
+    100% { filter: hue-rotate(360deg) grayscale(30%) brightness(40%) blur(2px); }
 }
 
+// Particle background effect
 .particleWrapper {
     $particleNum: 125;
-    $particleColor: $color-primary;
 
     position: absolute;
     animation-iteration-count: infinite;
@@ -78,62 +83,42 @@
         height: 100%;
         border-radius: 50%;
         mix-blend-mode: screen;
-        background-image: radial-gradient($color-light, $color-primary);
+        background-image: radial-gradient(var(--text-main), var(--border-ornate));
         z-index: 0;
-
         animation: particleOpacity 500ms infinite, particleScale 3s infinite;
 
         @keyframes particleOpacity {
-            0% {
-                opacity: 0.7;
-            }
-            50% {
-                opacity: 0.4;
-            }
-            100% {
-                opacity: 0.7;
-            }
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 0.4; }
         }
 
         @keyframes particleScale {
-            0% {
-                transform: scale3d(0.4, 0.4, 1);
-            }
-            50% {
-                transform: scale3d(2.2, 2.2, 1);
-            }
-            100% {
-                transform: scale3d(0.4, 0.4, 1);
-            }
+            0%, 100% { transform: scale3d(0.4, 0.4, 1); }
+            50% { transform: scale3d(2.2, 2.2, 1); }
         }
     }
 
     @for $i from 1 through $particleNum {
         &:nth-child(#{$i}) {
-            $particleSize: random(5);
+            $particleSize: math.random(5);
             width: $particleSize + px;
             height: $particleSize + px;
 
-            $startPositionY: random(10) + 100;
+            $startPositionY: math.random(10) + 100;
             $framesName: 'particle-' + $i;
-            $moveDuration: 8000 + random(4000) + ms;
+            $moveDuration: 8000 + math.random(4000) + ms;
 
             animation-name: #{$framesName};
             animation-duration: $moveDuration;
-            animation-delay: random(11000) + ms;
+            animation-delay: math.random(11000) + ms;
 
             @keyframes #{$framesName} {
-                from {
-                    transform: translate3d(#{random(100) + vw}, #{$startPositionY + vh}, 0);
-                }
-
-                to {
-                    transform: translate3d(#{random(100) + vw}, #{- $startPositionY - random(60) + vh}, 0);
-                }
+                from { transform: translate3d(#{math.random(100) + vw}, #{$startPositionY + vh}, 0); }
+                to { transform: translate3d(#{math.random(100) + vw}, #{- $startPositionY - math.random(60) + vh}, 0); }
             }
 
             .particleItem {
-                animation-delay: random(4000) + ms;
+                animation-delay: math.random(4000) + ms;
             }
         }
     }

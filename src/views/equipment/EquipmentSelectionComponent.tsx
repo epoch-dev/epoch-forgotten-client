@@ -3,9 +3,10 @@ import { CharacterEquipItemDtoTargetEnum, ItemDto, ItemType } from '../../common
 import { charactersClient, itemsClient } from '../../common/api/client';
 import { useGameStore } from '../game/GameStore';
 import { useEffect, useState } from 'react';
-import { ItemComponent } from './ItemComponent';
+import { ItemComponent, ItemTooltip } from './ItemComponent';
 import { SoundService } from '../../common/services/SoundService';
 import { throttle } from '../../common/utils';
+import { ModalOverlay, GameButton, GameSlot } from '../../common/ui';
 
 export type EquipmentSelectionComponentProps = {
     currentItem?: ItemDto;
@@ -67,35 +68,46 @@ export const EquipmentSelectionComponent = ({
         onClose();
     };
 
+    const getRarityName = (rarity: string) => {
+        return rarity.toLowerCase() as 'common' | 'uncommon' | 'rare' | 'unique' | 'epic' | 'mythical';
+    };
+
     return (
-        <div className="modalBackdrop">
-            <div className="modalWrapper">
-                <p className="subtitle dark" style={{ marginBottom: '2rem' }}>
-                    Select new <b>{itemLabel}</b> to equip
-                </p>
-                <div className={style.itemsWrapper}>
-                    {items.map((item) => (
-                        <div
-                            onClick={throttle(() => equipItem(item))}
-                            key={item.id}
-                            className={`${style.itemItem} ${item.characterId ? style.itemDisabled : ''}`}>
-                            <ItemComponent item={item} itemStyle={{ width: '3rem', height: '3rem' }} />
-                            <p>{item.label}</p>
-                        </div>
-                    ))}
-                </div>
-                {currentItem && (
-                    <button
-                        onClick={throttle(unEquipItem)}
-                        className="modalCloseBtn"
-                        style={{ marginTop: '2rem' }}>
-                        Unequip
-                    </button>
+        <ModalOverlay title={`Select ${itemLabel}`} onClose={onClose}>
+            <p className={style.subtitle}>
+                Choose a new <b>{itemLabel}</b> to equip
+            </p>
+
+            <div className={style.itemsGrid}>
+                {items.map((item) => (
+                    <div
+                        key={item.id}
+                        className={`${style.itemWrapper} ${item.characterId ? style.disabled : ''}`}
+                        onClick={throttle(() => equipItem(item))}>
+                        <GameSlot
+                            rarity={getRarityName(item.rarity)}
+                            tooltipContent={<ItemTooltip item={item} />}>
+                            <ItemComponent item={item} itemStyle={{ width: '100%', height: '100%' }} />
+                        </GameSlot>
+                        <span className={style.itemLabel}>{item.label}</span>
+                    </div>
+                ))}
+
+                {items.length === 0 && (
+                    <p className={style.emptyMessage}>No items available</p>
                 )}
-                <button onClick={onClose} className="modalCloseBtn" style={{ marginTop: '1rem' }}>
-                    Cancel
-                </button>
             </div>
-        </div>
+
+            <div className={style.actions}>
+                {currentItem && (
+                    <GameButton variant="danger" onClick={throttle(unEquipItem)}>
+                        Unequip
+                    </GameButton>
+                )}
+                <GameButton variant="secondary" onClick={onClose}>
+                    Cancel
+                </GameButton>
+            </div>
+        </ModalOverlay>
     );
 };

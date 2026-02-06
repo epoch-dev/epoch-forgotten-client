@@ -1,0 +1,51 @@
+@use '../styles/variables.scss' as *;
+
+.statBar {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.track {
+    flex: 1;
+    height: 6px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 3px;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+.fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.25s ease;
+
+    &.health {
+        background: linear-gradient(90deg, #b33030 0%, #e04040 50%, #d03535 100%);
+    }
+
+    &.mana {
+        background: linear-gradient(90deg, #2060a0 0%, #3080d0 50%, #2870c0 100%);
+    }
+
+    &.exp {
+        background: linear-gradient(90deg, #a07020 0%, #d0a030 50%, #c09028 100%);
+    }
+}
+
+.label {
+    min-width: 3.5rem;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-align: right;
+    text-shadow: var(--shadow-text);
+}
+
+// Battle-specific larger bars
+.battleBar {
+    .track {
+        height: 8px;
+    }
+}

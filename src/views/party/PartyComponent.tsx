@@ -1,14 +1,18 @@
-import style from './PartyComponent.module.scss';
 import { useEffect, useState } from 'react';
 import { CharacterDto, PartySlot } from '../../common/api/.generated';
 import { charactersClient } from '../../common/api/client';
-import { CharacterComponent } from './CharacterComponent';
 import { SoundService } from '../../common/services/SoundService';
+import { GameWindow } from '../../common/ui';
 import { throttle } from '../../common/utils';
+import { useGameStore } from '../game/GameStore';
+import { GameView } from '../game/types';
+import { CharacterComponent } from './CharacterComponent';
+import style from './PartyComponent.module.scss';
 
 const soundService = SoundService.getInstance();
 
 export const PartyComponent = () => {
+    const { setView } = useGameStore();
     const [party, setParty] = useState<CharacterDto[]>([]);
     const [roster, setRoster] = useState<CharacterDto[]>([]);
 
@@ -60,35 +64,40 @@ export const PartyComponent = () => {
     };
 
     return (
-        <section>
-            <h2 className="subtitle dark">Active</h2>
-            <div className={style.partyWrapper}>
-                {[main, first, second, third].map((character, index) =>
-                    character ? (
-                        <div
-                            onClick={throttle(() => removeFromParty(character.id))}
-                            key={character.id}
-                            className={style.characterItem}>
-                            <CharacterComponent character={character} />
-                        </div>
-                    ) : (
-                        <div key={index} className={style.characterItem}>
-                            <b>·{Array.from({ length: index }).map(() => 'I')}·</b>
-                        </div>
-                    ),
-                )}
-            </div>
-            <h2 className="subtitle dark">Standby</h2>
-            <div className={style.partyWrapper}>
-                {roster.map((character) => (
-                    <div
-                        onClick={throttle(() => addToParty(character.id))}
-                        key={character.id}
-                        className={style.characterItem}>
-                        <CharacterComponent character={character} />
+        <GameWindow title="Party" onClose={() => setView(GameView.World)} size="lg">
+            <section className={style.partySection}>
+                <h3 className={style.sectionTitle}>Active Party</h3>
+                <div className={style.partyGrid}>
+                    {[main, first, second, third].map((character, index) =>
+                        character ? (
+                            <div
+                                onClick={throttle(() => removeFromParty(character.id))}
+                                key={character.id}>
+                                <CharacterComponent character={character} />
+                            </div>
+                        ) : (
+                            <div key={index} className={style.emptySlot}>
+                                <span className={style.slotNumber}>{['I', 'II', 'III', 'IV'][index]}</span>
+                            </div>
+                        ),
+                    )}
+                </div>
+            </section>
+
+            {roster.length > 0 && (
+                <section className={style.partySection}>
+                    <h3 className={style.sectionTitle}>Standby</h3>
+                    <div className={style.partyGrid}>
+                        {roster.map((character) => (
+                            <div
+                                onClick={throttle(() => addToParty(character.id))}
+                                key={character.id}>
+                                <CharacterComponent character={character} />
+                            </div>
+                        ))}
                     </div>
-                ))}
-            </div>
-        </section>
+                </section>
+            )}
+        </GameWindow>
     );
 };

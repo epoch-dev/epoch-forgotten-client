@@ -1,15 +1,15 @@
-@import 'react-toastify/dist/ReactToastify.css';
-@import './variables.scss';
-@import './forms.scss';
-@import './modals.scss';
-@import './utils.scss';
-@import './scrollbar.scss';
+@use 'react-toastify/dist/ReactToastify.css';
+@use './variables.scss' as *;
+@use './forms.scss';
+@use './modals.scss';
+@use './utils.scss';
+@use './scrollbar.scss';
 
 :root {
-    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    font-family: var(--font-body), Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
     line-height: 1.5;
     font-weight: 400;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
     font-synthesis: none;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
@@ -20,6 +20,18 @@ html,
 body {
     padding: 0;
     margin: 0;
+    width: 100%;
+    height: 100%;
+    color: var(--text-main);
+}
+
+body {
+    background: #050505;
+}
+
+#root {
+    width: 100%;
+    height: 100%;
 }
 
 * {
@@ -27,9 +39,8 @@ body {
 }
 
 *::selection {
-    color: $color-light;
-    background: $color-primary;
-    outline: $color-dark;
+    color: var(--text-inverse);
+    background: var(--accent-gold);
 }
 
 *:focus {
@@ -37,15 +48,28 @@ body {
 }
 
 button {
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
     border: none;
-    transition: 0.5s all linear;
+    transition: all 0.15s ease;
 }
 
 input {
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
 }
 
 img {
     pointer-events: none;
 }
+
+h1, h2, h3 {
+    font-family: var(--font-header);
+    font-weight: 600;
+    color: var(--text-header);
+    text-shadow: var(--shadow-text);
+    letter-spacing: 0.5px;
+    margin: 0;
+}
+
+h1 { font-size: var(--font-size-xl); }
+h2 { font-size: var(--font-size-lg); }
+h3 { font-size: var(--font-size-base); }

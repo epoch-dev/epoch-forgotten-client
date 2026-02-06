@@ -1,0 +1,52 @@
+@use '../styles/variables.scss' as *;
+@use '../styles/mixins.scss' as *;
+
+.gameGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(var(--slot-size), 1fr));
+    gap: 6px;
+    width: 100%;
+}
+
+.gameSlot {
+    @include fantasy-slot;
+
+    aspect-ratio: 1;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: border-color var(--transition-fast);
+
+    img {
+        width: 80%;
+        height: 80%;
+        object-fit: contain;
+    }
+
+    &.clickable {
+        cursor: pointer;
+
+        &:hover {
+            background: rgba(0, 0, 0, 0.3);
+            border-color: var(--border-ornate);
+        }
+    }
+
+    &.empty {
+        background: rgba(0, 0, 0, 0.25);
+        border: 1px dashed rgba(255, 255, 255, 0.08);
+    }
+
+    // Rarity borders
+    &.common { border-color: $rarity-common; }
+    &.uncommon { border-color: $rarity-uncommon; }
+    &.rare { border-color: $rarity-rare; }
+    &.unique { border-color: $rarity-unique; }
+    &.epic { border-color: $rarity-epic; }
+    &.mythical { 
+        border-color: $rarity-mythical;
+        box-shadow: var(--shadow-inset-sm), 0 0 8px rgba(245, 101, 101, 0.4);
+    }
+}

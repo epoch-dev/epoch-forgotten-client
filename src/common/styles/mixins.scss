@@ -1,31 +1,104 @@
-@import './variables.scss';
+@use './variables.scss' as *;
 
-@mixin boxShadow($color: $color-dark) {
-    box-shadow: 2px 2px 10px 0px $color;
+@mixin fantasy-panel {
+    background: var(--panel-bg);
+    border: 2px solid var(--border-ornate-dark);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-panel);
 }
 
-@mixin boxShadowSm($color: $color-dark) {
-    box-shadow: 1px 1px 5px 0px $color;
+@mixin fantasy-panel-solid {
+    background: var(--panel-bg-solid);
+    border: 2px solid var(--border-ornate-dark);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-panel-sm);
 }
 
-@mixin insetShadow($color: $color-primary, $size: 10px) {
-    box-shadow: inset 2px 2px $size 0px $color;
+@mixin fantasy-header {
+    background: var(--panel-bg-header);
+    border-bottom: 1px solid var(--border-ornate-dark);
 }
 
-@mixin textShadow($color: $color-dark) {
-    text-shadow: $color 2px 2px 4px;
+@mixin fantasy-slot {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-inset-sm);
 }
 
-@mixin fadeInAnimation($time: 0.5s, $length: 1.25rem) {
-    animation: fadeIn $time ease-out;
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY($length);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+@mixin fantasy-button {
+    background: linear-gradient(180deg, #3a4052 0%, #252a36 100%);
+    border: 2px solid var(--border-ornate-dark);
+    border-radius: var(--radius-md);
+    color: var(--text-main);
+    box-shadow: var(--shadow-panel-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+
+    &:hover:not(:disabled) {
+        background: linear-gradient(180deg, #454b5e 0%, #2d3340 100%);
+        border-color: var(--border-ornate);
+        transform: translateY(-1px);
     }
+
+    &:active:not(:disabled) {
+        transform: translateY(0);
+    }
+
+    &:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+}
+
+@mixin fantasy-button-gold {
+    background: linear-gradient(180deg, #5a4a2a 0%, #3d3018 100%);
+    border: 2px solid var(--accent-gold);
+    color: var(--accent-gold-light);
+    box-shadow: var(--shadow-panel-sm);
+
+    &:hover:not(:disabled) {
+        background: linear-gradient(180deg, #6b5a35 0%, #4a3a20 100%);
+        box-shadow: var(--shadow-panel-sm), var(--shadow-glow-gold);
+    }
+}
+
+@mixin fantasy-header-text {
+    font-family: var(--font-header);
+    font-weight: 600;
+    color: var(--text-header);
+    text-shadow: var(--shadow-text);
+    letter-spacing: 0.5px;
+}
+
+@mixin panelFadeIn($duration: 0.2s) {
+    animation: panelFadeIn $duration ease-out forwards;
+}
+
+@keyframes panelFadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@mixin centeredPanelFadeIn($duration: 0.2s) {
+    animation: centeredPanelFadeIn $duration ease-out forwards;
+}
+
+@keyframes centeredPanelFadeIn {
+    from { opacity: 0; transform: translate(-50%, -50%) translateY(8px); }
+    to { opacity: 1; transform: translate(-50%, -50%) translateY(0); }
+}
+
+@mixin slideInRight($duration: 0.25s) {
+    animation: slideInRight $duration ease-out forwards;
+}
+
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(100%); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideOutRight {
+    from { opacity: 1; transform: translateX(0); }
+    to { opacity: 0; transform: translateX(100%); }
 }

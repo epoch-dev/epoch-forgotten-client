@@ -7,21 +7,19 @@ import {
 import { useGameStore } from '../game/GameStore';
 import { GameView } from '../game/types';
 import { AssetsService } from '../../common/services/AssetsService';
-import { ProgressBarComponent } from '../../common/components/ProgressBarComponent';
 import { useEffect, useState } from 'react';
 import { wait } from '../../common/utils';
-import { CSS_COLOR } from '../../common/styles';
 import { ScenesService } from '../scenes/ScenesService';
 import { EffectsService } from '../../common/services/EffectsService';
 import { getLevelExperience } from '../../common/api/definitions/levelUtil';
+import { StatBar } from '../../common/ui';
 
-export const BattleResultComponent = ({
-    victoryResults,
-    defeatResults,
-}: {
+type BattleResultProps = {
     victoryResults: BattleVictoryRewards | undefined;
     defeatResults: BattleDefeatResults | undefined;
-}) => {
+};
+
+export const BattleResultComponent = ({ victoryResults, defeatResults }: BattleResultProps) => {
     const { scene, setView } = useGameStore();
 
     useEffect(() => {
@@ -37,27 +35,30 @@ export const BattleResultComponent = ({
         await scene?.loadScene();
     };
 
+    const handleClose = () => setView(GameView.World);
+
     if (!victoryResults) {
         return (
             <section className={`${style.battleResultsWrapper} ${style.defeat}`}>
-                <h1 className="title light">Defeat</h1>
-                <p>
-                    Darkness surrounds you as gentle hands lift you from the battlefield, guiding you to
-                    safety...
-                </p>
-                <br />
+                <h1>Defeat</h1>
                 <hr />
-                <div onClick={() => setView(GameView.World)} className={style.closeBtn}>
-                    Close
-                </div>
+                <p>
+                    Darkness surrounds you as gentle hands lift you from the battlefield,
+                    <br />
+                    guiding you to safety...
+                </p>
+                <button onClick={handleClose} className={style.closeBtn}>
+                    Continue
+                </button>
             </section>
         );
     }
 
     return (
         <section className={`${style.battleResultsWrapper} ${style.victory}`}>
-            <h1 className="title light">Victory</h1>
+            <h1>Victory</h1>
             <hr />
+
             <div className={style.resultsWrapper}>
                 <div className={style.partyWrapper}>
                     {victoryResults.levels.map((levelInfo) => (
@@ -68,11 +69,10 @@ export const BattleResultComponent = ({
                         />
                     ))}
                 </div>
+
                 <div className={style.lootsWrapper}>
-                    <p className="subtitle" style={{ marginTop: '1rem' }}>
-                        Obtained:
-                    </p>
-                    <p style={{ marginTop: '0.5rem' }}>
+                    <p className="subtitle">Rewards</p>
+                    <p>
                         <b className="epic">{victoryResults.gold}</b> Gold
                     </p>
                     <p>
@@ -80,35 +80,33 @@ export const BattleResultComponent = ({
                     </p>
                     {victoryResults.items.length > 0 && (
                         <div className={style.itemsWrapper}>
-                            <b>Loots:</b>
-                            {victoryResults?.items.map((item, itemIndex) => (
-                                <p key={`${itemIndex}-${item.id}`}>{item.label}</p>
+                            <b>Loot:</b>
+                            {victoryResults.items.map((item, idx) => (
+                                <p key={`${idx}-${item.id}`}>{item.label}</p>
                             ))}
                         </div>
                     )}
                 </div>
             </div>
 
-            <div onClick={() => setView(GameView.World)} className={style.closeBtn}>
-                Close
-            </div>
+            <button onClick={handleClose} className={style.closeBtn}>
+                Continue
+            </button>
         </section>
     );
 };
 
-const CharacterLevelComponent = ({
-    levelInfo,
-    expGain,
-}: {
+type CharacterLevelProps = {
     levelInfo: BattleVictoryRewardsLevel;
     expGain: number;
-}) => {
+};
+
+const CharacterLevelComponent = ({ levelInfo, expGain }: CharacterLevelProps) => {
     const [level, setLevel] = useState(levelInfo.oldLevel);
     const [exp, setExp] = useState(levelInfo.oldExp - getLevelExperience(levelInfo.oldLevel));
     const [nextLevelExp, setNextLevelExp] = useState(
         getLevelExperience(levelInfo.oldLevel + 1) - getLevelExperience(levelInfo.oldLevel),
     );
-    const [transitionTime, setTransitionTime] = useState(0.75);
 
     useEffect(() => {
         void animateLevels();
@@ -119,13 +117,10 @@ const CharacterLevelComponent = ({
         let animatedLevels = 0;
 
         await wait(500);
-        setTransitionTime(0.5);
         while (animatedLevels < levelInfo.gainedLevels) {
             await wait(250);
-            setTransitionTime(0.75);
             setExp(getLevelExperience(currentLevel + 1));
             await wait(750);
-            setTransitionTime(0);
             currentLevel++;
             setExp(0);
             setLevel(currentLevel);
@@ -134,7 +129,6 @@ const CharacterLevelComponent = ({
         }
 
         await wait(250);
-        setTransitionTime(0.75);
         setExp(levelInfo.oldExp + expGain - getLevelExperience(currentLevel));
         setNextLevelExp(getLevelExperience(currentLevel + 1) - getLevelExperience(currentLevel));
     };
@@ -147,14 +141,9 @@ const CharacterLevelComponent = ({
             />
             <div className={style.characterLevel}>
                 <p>
-                    {levelInfo.characterName} | {level}
+                    {levelInfo.characterName} • Lv.{level}
                 </p>
-                <ProgressBarComponent
-                    current={exp}
-                    max={nextLevelExp}
-                    fillColor={CSS_COLOR.EPIC}
-                    style={{ transitionTime }}
-                />
+                <StatBar current={exp} max={nextLevelExp} type="exp" />
             </div>
         </div>
     );

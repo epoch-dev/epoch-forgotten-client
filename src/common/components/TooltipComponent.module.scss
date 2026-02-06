@@ -1,19 +1,39 @@
-@import '../styles/variables.scss';
+@use '../styles/variables.scss' as *;
+@use '../styles/mixins.scss' as *;
 
 .tooltipContainer {
-    width: 100%;
-    height: fit-content;
+    position: relative;
+    display: inline-block;
 }
 
 .tooltipWrapper {
-    width: 100%;
-    position: fixed;
-    padding: 0.5rem;
-    border-radius: 0.5rem;
-    font-size: 14px;
-    background-color: $color-dark;
-    color: $color-light;
-    border: 2px solid $color-light;
-    opacity: 0.9;
-    z-index: 100;
+    @include fantasy-panel-solid;
+
+    position: fixed; // Fixed positioning for mouse-follow behavior
+    z-index: var(--z-tooltip-layer);
+    padding: var(--space-sm) var(--space-md);
+    max-width: 280px;
+    font-size: var(--font-size-sm);
+    color: var(--text-main);
+    pointer-events: none;
+
+    p {
+        margin: 3px 0;
+    }
+
+    .subtitle {
+        @include fantasy-header-text;
+        font-size: var(--font-size-base);
+        margin-bottom: var(--space-xs);
+    }
+
+    hr {
+        border: none;
+        border-top: 1px solid var(--border-ornate-dark);
+        margin: var(--space-xs) 0;
+    }
+
+    b {
+        color: var(--text-header);
+    }
 }

@@ -1,48 +1,70 @@
-@use 'sass:color';
-@import './variables.scss';
-@import './mixins.scss';
+@use './variables.scss' as *;
+@use './mixins.scss' as *;
 
 .modalBackdrop {
-    width: 100%;
-    height: 100%;
     position: fixed;
     top: 0;
     left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: var(--z-modal-layer);
     display: flex;
-    padding: 1rem;
-    z-index: 50;
-    overflow-x: hidden;
-    background: rgba(color.adjust($color-dark, $lightness: -10%), 0.05);
+    align-items: center;
+    justify-content: center;
 }
 
 .modalWrapper {
-    @include boxShadow;
+    @include fantasy-panel-solid;
 
-    width: 100%;
-    max-width: 44rem;
-    margin: auto;
-    padding: 1rem;
-    background: $color-light;
-    color: $color-dark;
-    border-radius: 1rem;
+    max-width: 90%;
+    max-height: 85vh;
+    overflow-y: auto;
+    color: var(--text-main);
+
+    &::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: var(--border-ornate-dark);
+        border-radius: 2px;
+    }
+}
+
+.modalHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-sm) var(--space-md);
+    border-bottom: 1px solid var(--border-ornate-dark);
+
+    h2, h3 {
+        @include fantasy-header-text;
+        margin: 0;
+        font-size: var(--font-size-lg);
+    }
+}
+
+.modalContent {
+    padding: var(--space-md);
+}
+
+.modalFooter {
+    display: flex;
+    gap: var(--space-sm);
+    justify-content: flex-end;
+    padding: var(--space-sm) var(--space-md);
+    border-top: 1px solid var(--border-ornate-dark);
 }
 
 .modalCloseBtn {
-    width: 80%;
-    margin: auto 10%;
-    padding: 0.5rem;
-    font-size: 16px;
-    font-weight: 500;
-    color: $color-light;
-    background: $color-dark;
-    border-bottom: 2px solid $color-primary;
-    border-radius: 0.7rem;
-
-    &:hover {
-        @include boxShadowSm();
-        cursor: pointer;
-        color: color.adjust($color-primary, $lightness: 10%);
-        background: color.adjust($color-dark, $lightness: -10%);
-        border-bottom: 2px solid color.adjust($color-primary, $lightness: 10%);
-    }
+    @include fantasy-button;
+    padding: var(--space-xs);
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
 }

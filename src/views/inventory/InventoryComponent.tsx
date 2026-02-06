@@ -2,10 +2,15 @@ import style from './InventoryComponent.module.scss';
 import { useEffect, useMemo, useState } from 'react';
 import { itemsClient, usersClient } from '../../common/api/client';
 import { ItemDto } from '../../common/api/.generated';
-import { ItemComponent } from '../equipment/ItemComponent';
-import { ConfirmDialog } from '../../common/components/ConfirmDialog';
+import { ItemComponent, ItemTooltip } from '../equipment/ItemComponent';
+import { GameWindow, GameGrid, GameSlot, ConfirmModal } from '../../common/ui';
+import { useGameStore } from '../game/GameStore';
+import { GameView } from '../game/types';
+
+const GRID_SIZE = 98;
 
 export const InventoryComponent = () => {
+    const { setView } = useGameStore();
     const [gold, setGold] = useState(0);
     const [items, setItems] = useState<ItemDto[]>([]);
     const [itemToDelete, setItemToDelete] = useState<ItemDto | undefined>();
@@ -34,40 +39,55 @@ export const InventoryComponent = () => {
         setItemToDelete(undefined);
     };
 
-    const emptyItems = useMemo(() => {
-        const totalItems = items.length;
-        const gridSize = 98;
-        const emptyItemsCount = Math.max(0, gridSize - totalItems);
-        return Array.from({ length: emptyItemsCount });
+    const emptySlots = useMemo(() => {
+        const emptyCount = Math.max(0, GRID_SIZE - items.length);
+        return Array.from({ length: emptyCount });
     }, [items]);
 
+    const getRarityName = (rarity: string) => {
+        return rarity.toLowerCase() as 'common' | 'uncommon' | 'rare' | 'unique' | 'epic' | 'mythical';
+    };
+
     return (
-        <section>
-            <div className={style.goldLabel}>
-                <b>{gold}</b> Gold
+        <GameWindow title="Inventory" onClose={() => setView(GameView.World)} size="lg">
+            <div className={style.goldDisplay}>
+                <span className={style.goldAmount}>{gold.toLocaleString()}</span>
+                <span className={style.goldLabel}>Gold</span>
             </div>
-            <div className={style.itemsWrapper}>
+
+            <GameGrid slotSize="56px" gap="4px">
                 {items.map((item) => (
-                    <div key={item.id} className={style.item}>
-                        <ItemComponent item={item} />
-                        {item.stackable && <div className={style.quantityLabel}>{item.quantity}</div>}
-                        {item.type !== 'Quest' && <div onClick={() => setItemToDelete(item)} className={style.deleteLabel}>
-                            X
-                        </div>}
-                    </div>
+                    <GameSlot
+                        key={item.id}
+                        rarity={getRarityName(item.rarity)}
+                        onClick={item.type !== 'Quest' ? () => setItemToDelete(item) : undefined}
+                        tooltipContent={<ItemTooltip item={item} />}>
+                        <div className={style.itemSlot}>
+                            <ItemComponent item={item} itemStyle={{ width: '100%', height: '100%' }} />
+                            {item.stackable && item.quantity > 1 && (
+                                <span className={style.quantity}>{item.quantity}</span>
+                            )}
+                        </div>
+                    </GameSlot>
                 ))}
-                {emptyItems.map((_, index) => (
-                    <div key={index} className={style.item}>
-                        {' '}
-                    </div>
+                {emptySlots.map((_, index) => (
+                    <GameSlot key={`empty-${index}`} isEmpty />
                 ))}
-            </div>
+            </GameGrid>
+
             {itemToDelete && (
-                <ConfirmDialog onConfirm={() => deleteItem()} onCancel={() => setItemToDelete(undefined)}>
-                    Are you sure you want to discard <b>{itemToDelete.label}</b>
-                    {itemToDelete.quantity > 1 ? ` (${itemToDelete.quantity})` : ''}?
-                </ConfirmDialog>
+                <ConfirmModal
+                    title="Discard Item"
+                    onConfirm={deleteItem}
+                    onCancel={() => setItemToDelete(undefined)}
+                    confirmText="Discard"
+                    cancelText="Keep">
+                    <p>
+                        Are you sure you want to discard <b>{itemToDelete.label}</b>
+                        {itemToDelete.quantity > 1 ? ` (${itemToDelete.quantity})` : ''}?
+                    </p>
+                </ConfirmModal>
             )}
-        </section>
+        </GameWindow>
     );
 };
