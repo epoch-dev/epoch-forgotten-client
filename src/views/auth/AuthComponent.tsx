@@ -1,10 +1,10 @@
 import { useState } from 'react';
+import { Roadmap } from '../../common/components/Roadmap';
+import { AssetsService } from '../../common/services/AssetsService';
 import { MusicService } from '../../common/services/MusicService';
 import style from './AuthComponent.module.scss';
 import SigninFormComponent from './SigninFormComponent';
 import SignupFormComponent from './SignupFormComponent';
-import { AssetsService } from '../../common/services/AssetsService';
-import { Roadmap } from '../../common/components/Roadmap';
 
 const musicService = MusicService.getInstance();
 const particlesCount = Array.from({ length: 125 }, (_, index) => index + 1);
@@ -29,7 +29,7 @@ export const AuthComponent = () => {
     };
 
     return (
-        <>
+        <div className={style.authLayout}>
             <main className={style.formWrapper}>
                 <div onClick={() => setShowRoadmap((prev) => !prev)} className={style.roadmapIcon}>
                     <img src={AssetsService.getIcon('ROADMAP')} alt="roadmap" width={32} height={32} />
@@ -55,7 +55,7 @@ export const AuthComponent = () => {
                 ))}
             </div>
             {showRoadmap && <Roadmap onClose={() => setShowRoadmap(false)} />}
-        </>
+        </div>
     );
 };
 

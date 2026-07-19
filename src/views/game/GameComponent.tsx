@@ -89,7 +89,7 @@ export const GameComponent = () => {
     };
 
     return (
-        <>
+        <div className={style.gameLayout}>
             <main className={style.contentWrapper} style={{ ...overflowHidden }}>
                 <ScenesComponent />
                 {view === GameView._Dev && <DevComponent />}
@@ -129,6 +129,6 @@ export const GameComponent = () => {
                     </button>
                 )}
             </aside>
-        </>
+        </div>
     );
 };

@@ -66,7 +66,7 @@ export class SceneRenderer extends Scene {
             this.tileRenderer.clearTiles();
 
             this.sceneImageRef = this.add.image(width / 2, height / 2, `scene-${sceneData.name}`);
-            this.add.image(width / 2, height / 2, `scene-${sceneData.name}`);
+            this.sceneImageRef.setDisplaySize(width, height);
             this.tileRenderer.drawTiles({ tiles: sceneData.tiles });
 
             this.user?.destroy();
