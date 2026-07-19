@@ -1,22 +1,16 @@
+import type { QuestJournalGoalDto } from '../../../common/api/.generated';
 import style from '../JournalComponent.module.scss';
-import type { QuestGoal } from '../../../common/api/.generated';
 
-const StageGoals = ({ goals, progresses }: { goals: QuestGoal[]; progresses: number[] | undefined }) => {
-    const StageProgress = ({ index, goal }: { index: number; goal: QuestGoal }) => {
-        const progress = progresses ? progresses[index] : 0;
-        return (
-            <li key={index} className={style.goalItem}>
-                {goal.type}: {goal.label ?? goal.name} (Progress: {progress}/{goal.target})
-            </li>
-        );
-    };
-
+const StageGoals = ({ goals }: { goals: readonly QuestJournalGoalDto[] }) => {
     return (
         <div className={style.goals}>
             <p className={style.goalsHeader}>Goals:</p>
             <ul className={style.goalsList}>
-                {goals.map((goal, index) => (
-                    <StageProgress key={index} index={index} goal={goal} />
+                {goals.map((goal) => (
+                    <li key={goal.id} className={style.goalItem}>
+                        {goal.kind}: {goal.label} (Progress: {goal.progress}/{goal.target})
+                        {goal.complete ? ' [complete]' : ''}
+                    </li>
                 ))}
             </ul>
         </div>

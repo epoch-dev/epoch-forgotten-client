@@ -10,10 +10,13 @@
         "build:stage": "tsc && vite build --mode stage",
         "build:production": "tsc && vite build",
         "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
-        "preview": "vite preview"
+        "preview": "vite preview",
+        "test": "vitest run",
+        "content:sync-preview": "cd ../epoch-forgotten && yarn content:sync-preview",
+        "gen-client:sync": "cd ../epoch-forgotten && yarn gen-client:sync"
     },
     "dependencies": {
-        "axios": "^1.7.7",
+        "axios": "^1.18.1",
         "howler": "^2.2.4",
         "phaser": "^3.85.2",
         "react": "^18.3.1",
@@ -37,6 +40,11 @@
         "sass": "^1.79.3",
         "typescript": "^5.6.2",
         "typescript-eslint": "^8.16.0",
-        "vite": "^6.0.3"
+        "vite": "^6.0.3",
+        "vitest": "4.1.10",
+        "jsdom": "29.1.1"
+    },
+    "resolutions": {
+        "vitest/vite": "6.4.3"
     }
 }

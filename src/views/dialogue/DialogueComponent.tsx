@@ -1,65 +1,137 @@
-import style from './DialogueComponent.module.scss';
-import { useEffect, useState, KeyboardEvent, useRef } from 'react';
-import { DialogueService } from './DialogueService';
+import { KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { npcsClient } from '../../common/api/client';
-import type { DialogueNode, NpcDialogue } from '../../common/api/.generated';
-import { useGameStore } from '../game/GameStore';
-import { GameView } from '../game/types';
 import LoadingOverlay from '../../common/components/LoadingOverlay';
 import { AssetsService } from '../../common/services/AssetsService';
+import { ToastService } from '../../common/services/ToastService';
 import { throttle } from '../../common/utils';
+import { useGameStore } from '../game/GameStore';
+import { GameView } from '../game/types';
+import {
+    completeDialogueRun,
+    createDialogueRun,
+    type ActiveDialogueRun,
+} from './dialogueCompletion';
+import style from './DialogueComponent.module.scss';
+import type { DialogueGraphNode } from './dialogueGraph';
+import { getLineImageUrl, getSpeakerImageUri, getSpeakerLabel, toDialogueGraph } from './dialoguePresentation';
 
 const DialogueComponent = () => {
     const { npcName, setView } = useGameStore();
-    const [service, setService] = useState<DialogueService>();
-    const [dialogue, setDialogue] = useState<NpcDialogue>();
-    const [currentNode, setCurrentNode] = useState<DialogueNode>();
+    const [dialogueRun, setDialogueRun] = useState<ActiveDialogueRun>();
+    const [currentNode, setCurrentNode] = useState<DialogueGraphNode>();
     const [isLoading, setIsLoading] = useState(true);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [showOkButton, setShowOkButton] = useState(false);
     const [npcTitle, setNpcTitle] = useState<string>();
     const [displayShop, setDisplayShop] = useState(false);
+    const [loadError, setLoadError] = useState<string>();
+    const [loadAttempt, setLoadAttempt] = useState(0);
     const ref = useRef<HTMLDivElement>(null);
+    const interactionInFlightRef = useRef(false);
 
     useEffect(() => {
         ref.current?.focus();
     }, [isLoading]);
 
     useEffect(() => {
-        void fetchAndStartDialogue();
-
-        return () => setDialogue(undefined);
-    }, []);
-
-    const fetchAndStartDialogue = async () => {
+        let cancelled = false;
+        interactionInFlightRef.current = false;
         setIsLoading(true);
+        setLoadError(undefined);
+
+        const fetchAndStartDialogue = async () => {
+            try {
+                if (!npcName) {
+                    throw new Error('No NPC selected');
+                }
+                const npcData = (await npcsClient.getNpc(npcName)).data;
+                if (cancelled) {
+                    return;
+                }
+                const run = createDialogueRun(toDialogueGraph(npcData.dialogue));
+
+                setNpcTitle(npcData.title);
+                setDisplayShop(npcData.shop !== undefined);
+                setDialogueRun(run);
+                setCurrentNode(run.walker.getCurrentNode());
+                setShowOkButton(run.walker.getCurrentNode()?.kind === 'line');
+            } catch {
+                if (!cancelled) {
+                    const message = 'Unable to load dialogue.';
+                    setLoadError(message);
+                    ToastService.error({ message });
+                }
+            } finally {
+                if (!cancelled) {
+                    setIsLoading(false);
+                }
+            }
+        };
+
+        void fetchAndStartDialogue();
+        return () => {
+            cancelled = true;
+        };
+    }, [npcName, loadAttempt]);
+
+    const finishDialogue = async (activeRun: ActiveDialogueRun) => {
         if (!npcName) {
             return;
         }
-        const npcData = (await npcsClient.getNpc(npcName)).data;
-
-        setNpcTitle(npcData.title);
-        setDisplayShop(npcData.shop !== undefined);
-
-        const newService = new DialogueService(npcName, dialogue ?? npcData.dialogue, {
-            onNodeChange: (node) => {
-                setCurrentNode(node);
-                setShowOkButton(!(node && node.options));
-            },
-            onComplete: () => setView(GameView.World),
-        });
-        void newService.start();
-
-        setService(newService);
-        setIsLoading(false);
+        setIsSubmitting(true);
+        try {
+            const result = await completeDialogueRun(npcName, activeRun);
+            if (result.status === 'stale') {
+                setDialogueRun(undefined);
+                setCurrentNode(undefined);
+                setLoadAttempt((attempt) => attempt + 1);
+            }
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
-    const handleOptionClick = async (optionIndex: number) => {
-        await service?.handleUserInput(optionIndex);
+    const handleOptionClick = async (optionId: string) => {
+        if (!dialogueRun || interactionInFlightRef.current) {
+            return;
+        }
+        interactionInFlightRef.current = true;
+        try {
+            if (!dialogueRun.walker.getCurrentNode()) {
+                await finishDialogue(dialogueRun);
+                return;
+            }
+            const nextNode = dialogueRun.walker.choose(optionId);
+            if (nextNode) {
+                setCurrentNode(nextNode);
+                setShowOkButton(nextNode.kind === 'line');
+                return;
+            }
+            await finishDialogue(dialogueRun);
+        } finally {
+            interactionInFlightRef.current = false;
+        }
     };
 
     const handleOkClick = async () => {
-        if (!currentNode?.options) {
-            await service?.proceedToNextNode();
+        if (!dialogueRun || interactionInFlightRef.current || currentNode?.kind !== 'line') {
+            return;
+        }
+        interactionInFlightRef.current = true;
+        try {
+            if (!dialogueRun.walker.getCurrentNode()) {
+                await finishDialogue(dialogueRun);
+                return;
+            }
+            const nextNode = dialogueRun.walker.advance();
+            if (nextNode) {
+                setCurrentNode(nextNode);
+                setShowOkButton(nextNode.kind === 'line');
+                return;
+            }
+            await finishDialogue(dialogueRun);
+        } finally {
+            interactionInFlightRef.current = false;
         }
     };
 
@@ -68,11 +140,21 @@ const DialogueComponent = () => {
         const pressedKey = event.key;
         if (pressedKey === ' ' || pressedKey === 'Spacebar') {
             void handleOkClick();
-        } else if (currentNode?.options && /^[1-9]$/.test(pressedKey)) {
+        } else if (currentNode?.kind === 'choice' && /^[1-9]$/.test(pressedKey)) {
             const keyIndex = parseInt(pressedKey, 10) - 1;
-            void handleOptionClick(keyIndex);
+            const option = currentNode.choices[keyIndex];
+            if (option) {
+                void handleOptionClick(option.id);
+            }
         }
     };
+
+    const speakerLabel = currentNode ? getSpeakerLabel(currentNode.speaker) : '';
+    const speakerImageUri = currentNode ? getSpeakerImageUri(currentNode.speaker) : undefined;
+    const lineImageUri =
+        currentNode?.kind === 'line' && currentNode.imageUri
+            ? getLineImageUrl(currentNode.imageUri)
+            : undefined;
 
     return (
         <div
@@ -82,45 +164,67 @@ const DialogueComponent = () => {
             ref={ref}>
             {isLoading ? (
                 <LoadingOverlay />
+            ) : loadError ? (
+                <div className={`${style.dialogueItem} ${style.errorState}`}>
+                    <p>{loadError}</p>
+                    <button
+                        type="button"
+                        className={style.dialogueBtn}
+                        onClick={() => setLoadAttempt((attempt) => attempt + 1)}>
+                        Try again
+                    </button>
+                </div>
             ) : (
                 currentNode && (
                     <div className={style.dialogueItem}>
                         {npcTitle && <div className={style.dialogueLabel}>{npcTitle}</div>}
                         <div className={style.dialogueContent}>
-                            {currentNode.imageUri ? (
+                            {speakerImageUri ? (
                                 <img
-                                    src={AssetsService.getCharacterUri(currentNode.imageUri)}
-                                    alt={currentNode.author}
+                                    src={AssetsService.getCharacterUri(speakerImageUri)}
+                                    alt={speakerLabel}
                                     className={style.dialogueImage}
                                 />
                             ) : (
                                 <div className={style.dialogueImage} />
                             )}
                             <p>
-                                {currentNode.author ? (
+                                {speakerLabel ? (
                                     <span>
-                                        <b>{currentNode.author}</b>: {currentNode.text}
+                                        <b>{speakerLabel}</b>: {currentNode.text}
                                     </span>
                                 ) : (
                                     <i>{currentNode.text}</i>
                                 )}
                             </p>
-                            <div className={style.dialogueImage} />
+                            {lineImageUri ? (
+                                <img
+                                    src={lineImageUri}
+                                    alt=""
+                                    className={style.dialogueImage}
+                                />
+                            ) : (
+                                <div className={style.dialogueImage} />
+                            )}
                         </div>
-                        {currentNode.options && (
+                        {currentNode.kind === 'choice' && (
                             <>
-                                {currentNode.options.map((option, index) => (
+                                {currentNode.choices.map((option, index) => (
                                     <button
                                         key={option.id}
-                                        onClick={throttle(() => handleOptionClick(index), 100)}
-                                        className={style.dialogueBtn}>
+                                        onClick={throttle(() => handleOptionClick(option.id), 100)}
+                                        className={style.dialogueBtn}
+                                        disabled={isSubmitting}>
                                         {index + 1}: {option.text}
                                     </button>
                                 ))}
                             </>
                         )}
                         {showOkButton && (
-                            <button onClick={throttle(handleOkClick, 100)} className={style.dialogueBtn}>
+                            <button
+                                onClick={throttle(handleOkClick, 100)}
+                                className={style.dialogueBtn}
+                                disabled={isSubmitting}>
                                 OK
                             </button>
                         )}

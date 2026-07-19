@@ -49,9 +49,12 @@ axios.interceptors.response.use(
                 });
                 err.config.headers['Authorization'] = `Bearer ${tokenData.data}`;
                 return axios(err.config);
-            } catch {
+            } catch (refreshError) {
                 signout();
+                return Promise.reject(refreshError);
             }
+        } else if (err.status === 409) {
+            return Promise.reject(err);
         } else {
             ToastService.error({ message: err.response?.data.message ?? 'errors.unknownError' });
             return Promise.reject(err);
