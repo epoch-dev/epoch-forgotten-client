@@ -6,13 +6,13 @@ import {
 } from '../../common/api/.generated';
 import { getLevelExperience } from '../../common/api/definitions/levelUtil';
 import { ProgressBarComponent } from '../../common/components/ProgressBarComponent';
+import { runExclusive } from '../../common/runExclusive';
 import { AssetsService } from '../../common/services/AssetsService';
-import { GameEventHandler } from '../../common/services/GameEventHandler';
+import { applyGameOutcome } from '../../common/services/gameOutcome';
+import { ToastService } from '../../common/services/ToastService';
 import { CSS_COLOR } from '../../common/styles';
 import { wait } from '../../common/utils';
 import { useGameStore } from '../game/GameStore';
-import { GameView } from '../game/types';
-import { ScenesService } from '../scenes/ScenesService';
 import style from './BattleResultComponent.module.scss';
 
 export const BattleResultComponent = ({
@@ -22,37 +22,24 @@ export const BattleResultComponent = ({
     victoryResults: BattleVictoryRewards | undefined;
     defeatResults: BattleDefeatResults | undefined;
 }) => {
-    const { scene, setView } = useGameStore();
+    const { scene } = useGameStore();
     const isClosingRef = useRef(false);
     const [isClosing, setIsClosing] = useState(false);
 
     const handleClose = async () => {
-        if (isClosingRef.current) {
-            return;
-        }
-        isClosingRef.current = true;
-        setIsClosing(true);
+        await runExclusive(isClosingRef, async () => {
+            setIsClosing(true);
 
-        setView(GameView.World);
-        const events = [...(victoryResults?.events ?? []), ...(defeatResults?.events ?? [])];
-        try {
-            await GameEventHandler.present(events);
-            const eventNavigation = useGameStore.getState();
-            await ScenesService.initialize();
-            await scene?.loadScene();
-            if (eventNavigation.view !== GameView.World) {
-                useGameStore.setState((current) => ({
-                    ...current,
-                    view: eventNavigation.view,
-                    npcName: eventNavigation.npcName,
-                    encounter: eventNavigation.encounter,
-                    encounterName: eventNavigation.encounterName,
-                }));
+            const events = [...(victoryResults?.events ?? []), ...(defeatResults?.events ?? [])];
+            try {
+                await applyGameOutcome(events);
+                await scene?.loadScene();
+            } catch (error) {
+                console.error('Unable to apply battle outcome', error);
+                ToastService.error({ message: 'Unable to apply battle outcome. Try again.' });
+                setIsClosing(false);
             }
-        } catch {
-            isClosingRef.current = false;
-            setIsClosing(false);
-        }
+        });
     };
 
     if (!victoryResults) {

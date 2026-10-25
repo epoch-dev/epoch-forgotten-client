@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { SceneRenderer } from './SceneRenderer';
 import { ScenesService } from './ScenesService';
 import { useGameStore } from '../game/GameStore';
@@ -11,6 +11,8 @@ import {
 } from '../../common/api/definitions/sceneTypes';
 import { createSceneSocket } from './sceneSocket';
 import type { Socket } from 'socket.io-client';
+import { refreshAccessToken } from '../../common/api/mutator';
+import style from './ScenesComponent.module.scss';
 
 const isSceneMoveResult = (data: unknown): data is SceneMoveResultDto => {
     try {
@@ -24,15 +26,27 @@ const isSceneMoveResult = (data: unknown): data is SceneMoveResultDto => {
 
 export const ScenesComponent = () => {
     const { scene, view, setScene, setView, setEncounter, setNpcName: setNpc } = useGameStore();
+    const [connectionError, setConnectionError] = useState<string>();
 
     useEffect(() => {
         let disposed = false;
         let game: Phaser.Game | undefined;
         let wsClient: Socket | undefined;
         let pendingDirection: SceneMoveDirection | undefined;
+        let connectionErrorReported = false;
+        let authorizationRetried = false;
+        let removeReconnectFailedListener: (() => void) | undefined;
+
+        const reportConnectionError = (message: string) => {
+            if (disposed || connectionErrorReported) {
+                return;
+            }
+            connectionErrorReported = true;
+            setConnectionError(message);
+        };
 
         if (!StorageService.get('user')) {
-            ToastService.error({ message: 'Unable to connect to the world.' });
+            reportConnectionError('Unable to connect to the world.');
             return;
         }
 
@@ -63,9 +77,13 @@ export const ScenesComponent = () => {
         });
 
         const connect = (authToken: string) => {
+            removeReconnectFailedListener?.();
             const socket = createSceneSocket(authToken);
             wsClient = socket;
             socket.on('connect', () => {
+                connectionErrorReported = false;
+                authorizationRetried = false;
+                setConnectionError(undefined);
                 if (pendingDirection === undefined) {
                     return;
                 }
@@ -93,33 +111,44 @@ export const ScenesComponent = () => {
                     npc: moveResult.npcData,
                 });
             });
+            const handleReconnectFailed = () => {
+                reportConnectionError('Unable to reconnect to the world.');
+            };
+            socket.io.on('reconnect_failed', handleReconnectFailed);
+            removeReconnectFailedListener = () => {
+                socket.io.off('reconnect_failed', handleReconnectFailed);
+            };
             socket.on('connect_error', (error: Error) => {
-                if (error.message !== 'Unauthorized') {
-                    ToastService.error({
-                        message: error.message || 'Unable to connect to the world.',
-                    });
+                if (disposed) {
                     return;
                 }
-                void ScenesService.initialize()
-                    .then(() => {
+                if (error.message !== 'Unauthorized') {
+                    if (!socket.active) {
+                        reportConnectionError(error.message || 'Unable to connect to the world.');
+                    }
+                    return;
+                }
+                if (authorizationRetried) {
+                    reportConnectionError('Unable to connect to the world.');
+                    return;
+                }
+                authorizationRetried = true;
+                void refreshAccessToken()
+                    .then((refreshedToken) => {
                         if (disposed) {
                             return;
                         }
-                        const refreshedToken = StorageService.get('user')?.accessToken;
-                        if (!refreshedToken) {
-                            throw new Error('Unable to connect to the world.');
-                        }
+                        removeReconnectFailedListener?.();
                         socket.removeAllListeners();
                         socket.disconnect();
                         connect(refreshedToken);
                     })
                     .catch((refreshError: unknown) => {
-                        ToastService.error({
-                            message:
-                                refreshError instanceof Error
-                                    ? refreshError.message
-                                    : 'Unable to connect to the world.',
-                        });
+                        reportConnectionError(
+                            refreshError instanceof Error
+                                ? refreshError.message
+                                : 'Unable to connect to the world.',
+                        );
                     });
             });
         };
@@ -129,6 +158,7 @@ export const ScenesComponent = () => {
                 if (disposed) {
                     return;
                 }
+                ScenesService.openPendingDialogue();
                 const authToken = StorageService.get('user')?.accessToken;
                 if (!authToken) {
                     throw new Error('Unable to connect to the world.');
@@ -162,6 +192,7 @@ export const ScenesComponent = () => {
         return () => {
             disposed = true;
             game?.destroy(true);
+            removeReconnectFailedListener?.();
             wsClient?.removeAllListeners();
             wsClient?.disconnect();
         };
@@ -191,5 +222,13 @@ export const ScenesComponent = () => {
         }
     };
 
-    return <section id="sceneWrapper" className={getSceneClass()}></section>;
+    return (
+        <section id="sceneWrapper" className={getSceneClass()}>
+            {connectionError ? (
+                <p className={style.connectionError} role="status">
+                    {connectionError}
+                </p>
+            ) : null}
+        </section>
+    );
 };

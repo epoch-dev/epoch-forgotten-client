@@ -66,6 +66,7 @@ function mapNode(node: DialoguePresentationNodeDto): DialogueGraphNode {
                 speaker: mapSpeaker(node.speaker),
                 text: node.text,
                 imageUri: node.imageUri,
+                imageAlt: node.imageAlt,
                 next: mapEdge(node.next),
             };
         case 'choice':

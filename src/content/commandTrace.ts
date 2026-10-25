@@ -2,6 +2,7 @@ import type { JsonObject, JsonPrimitive } from './types';
 
 export type PreviewContentCommand =
     | Readonly<{ kind: 'grant-item'; itemId: string; quantity: number }>
+    | Readonly<{ kind: 'consume-item'; itemId: string; quantity: number }>
     | Readonly<{
           kind: 'recruit-character';
           characterId: string;
@@ -24,6 +25,7 @@ export type PreviewContentCommand =
           kind: 'apply-quest-transition';
           questId: string;
           transitionId: string;
+          ifApplied?: 'skip';
       }>;
 
 export type CommandEventTrace = Readonly<{
@@ -47,6 +49,7 @@ export const isPreviewContentCommand = (value: unknown): value is PreviewContent
     }
     switch (value.kind) {
         case 'grant-item':
+        case 'consume-item':
             return typeof value.itemId === 'string' && typeof value.quantity === 'number';
         case 'recruit-character':
             return (
@@ -75,7 +78,11 @@ export const isPreviewContentCommand = (value: unknown): value is PreviewContent
         case 'discover-quest':
             return typeof value.questId === 'string';
         case 'apply-quest-transition':
-            return typeof value.questId === 'string' && typeof value.transitionId === 'string';
+            return (
+                typeof value.questId === 'string' &&
+                typeof value.transitionId === 'string' &&
+                (value.ifApplied === undefined || value.ifApplied === 'skip')
+            );
         default:
             return false;
     }
@@ -92,6 +99,12 @@ export const traceCommand = (command: PreviewContentCommand): CommandEventTrace 
             return {
                 commandSummary: `grant-item ${command.itemId} x${command.quantity}`,
                 expectedEvents: [`item-granted (${command.itemId})`],
+                note: 'Preview metadata only. Runtime may emit extra inventory events.',
+            };
+        case 'consume-item':
+            return {
+                commandSummary: `consume-item ${command.itemId} x${command.quantity}`,
+                expectedEvents: [`item-consumed (${command.itemId})`],
                 note: 'Preview metadata only. Runtime may emit extra inventory events.',
             };
         case 'recruit-character':
@@ -150,7 +163,11 @@ export const traceCommand = (command: PreviewContentCommand): CommandEventTrace 
             };
         case 'apply-quest-transition': {
             return {
-                commandSummary: `apply-quest-transition ${command.questId}#${command.transitionId}`,
+                commandSummary: `apply-quest-transition ${command.questId}#${command.transitionId}${
+                    command.ifApplied === 'skip'
+                        ? ' if-applied=skip'
+                        : ''
+                }`,
                 expectedEvents: [
                     `quest-started | quest-advanced | quest-held | quest-resumed | quest-completed | quest-failed (${command.questId}#${command.transitionId})`,
                 ],

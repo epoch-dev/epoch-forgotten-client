@@ -48,11 +48,23 @@
         border-radius: 0.35rem;
         padding: 0.45rem 0.6rem;
         cursor: pointer;
+
+        &:hover {
+            background: #334155;
+        }
+
+        &:focus-visible {
+            outline: 2px solid #7dd3fc;
+            outline-offset: 2px;
+        }
     }
 }
 
 .navActive {
     border-color: #38bdf8 !important;
+    background: #0c4a6e !important;
+    color: #f0f9ff !important;
+    font-weight: 700;
 }
 
 .panel {

@@ -8,7 +8,10 @@ vi.mock('socket.io-client', () => ({
     io: mocks.io,
 }));
 
-import { createSceneSocket } from '../../../src/views/scenes/sceneSocket';
+import {
+    createSceneSocket,
+    SCENE_SOCKET_RECONNECTION_ATTEMPTS,
+} from '../../../src/views/scenes/sceneSocket';
 
 describe('createSceneSocket', () => {
     it('creates an authenticated Socket.IO client', () => {
@@ -20,6 +23,7 @@ describe('createSceneSocket', () => {
             extraHeaders: {
                 authorization: 'Bearer access-token',
             },
+            reconnectionAttempts: SCENE_SOCKET_RECONNECTION_ATTEMPTS,
         });
     });
 });

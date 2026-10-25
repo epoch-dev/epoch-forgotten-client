@@ -1,0 +1,87 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      server_ref:
+        description: Exact epoch-forgotten commit SHA
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false
+    runs-on: ubuntu-latest
+    env:
+      SERVER_REF: ${{ inputs.server_ref || vars.EPOCH_FORGOTTEN_SERVER_REF }}
+    steps:
+      - name: Checkout client
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22.18.0
+          cache: yarn
+
+      - name: Validate server ref
+        shell: bash
+        run: |
+          if [[ ! "$SERVER_REF" =~ ^[0-9a-fA-F]{40}$ ]]; then
+            echo "EPOCH_FORGOTTEN_SERVER_REF must be an exact 40-character commit SHA." >&2
+            exit 1
+          fi
+
+      - name: Checkout server for OpenAPI client
+        uses: actions/checkout@v7
+        with:
+          repository: epoch-dev/epoch-forgotten
+          path: server
+          ref: ${{ env.SERVER_REF }}
+          token: ${{ secrets.PAT_TOKEN }}
+          persist-credentials: false
+
+      - name: Verify server checkout
+        working-directory: server
+        shell: bash
+        run: |
+          if [[ "$(git rev-parse HEAD)" != "${SERVER_REF,,}" ]]; then
+            echo "Checked-out server revision does not match SERVER_REF." >&2
+            exit 1
+          fi
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Install server dependencies
+        run: yarn install --frozen-lockfile
+        working-directory: server
+
+      - name: Generate server OpenAPI spec
+        run: yarn gen-api
+        working-directory: server
+
+      - name: Generate OpenAPI client
+        run: EPOCH_FORGOTTEN_OPENAPI_PATH="$GITHUB_WORKSPACE/server/src/common/api/swagger.json" yarn gen-client
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Test
+        run: yarn test
+
+      - name: Build
+        run: yarn build

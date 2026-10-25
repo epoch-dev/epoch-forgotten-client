@@ -16,6 +16,7 @@ const mocks = vi.hoisted(() => ({
     currentView: 2 as GameView,
     initialize: vi.fn(),
     loadScene: vi.fn(),
+    openPendingDialogue: vi.fn(),
     present: vi.fn(),
     setView: vi.fn(),
 }));
@@ -29,6 +30,7 @@ vi.mock('../../../src/views/game/GameStore', () => ({
         {
             getState: () => ({
                 view: mocks.currentView,
+                setView: mocks.setView,
                 npcName: undefined,
                 encounter: undefined,
                 encounterName: undefined,
@@ -47,15 +49,16 @@ vi.mock('../../../src/views/game/GameStore', () => ({
     ),
 }));
 
-vi.mock('../../../src/views/scenes/ScenesService', () => ({
-    ScenesService: {
-        initialize: mocks.initialize,
-    },
-}));
-
 vi.mock('../../../src/common/services/GameEventHandler', () => ({
     GameEventHandler: {
         present: mocks.present,
+    },
+}));
+
+vi.mock('../../../src/views/scenes/ScenesService', () => ({
+    ScenesService: {
+        initialize: mocks.initialize,
+        openPendingDialogue: mocks.openPendingDialogue,
     },
 }));
 
@@ -116,9 +119,8 @@ describe('BattleResultComponent', () => {
     beforeEach(() => {
         mocks.callOrder.length = 0;
         mocks.currentView = GameView.Party;
-        mocks.initialize.mockReset().mockImplementation(async () => {
-            mocks.callOrder.push('initialize');
-        });
+        mocks.initialize.mockReset().mockResolvedValue(undefined);
+        mocks.openPendingDialogue.mockReset();
         mocks.loadScene.mockReset().mockImplementation(async () => {
             mocks.callOrder.push('loadScene');
         });
@@ -138,11 +140,10 @@ describe('BattleResultComponent', () => {
         container?.remove();
     });
 
-    it('waits for Close before presenting empty events and refreshes in order', async () => {
+    it('waits for Close before presenting empty events and refreshes the scene', async () => {
         await renderResult({ victoryResults: victoryResults() });
 
         expect(mocks.present).not.toHaveBeenCalled();
-        expect(mocks.initialize).not.toHaveBeenCalled();
 
         await closeResult();
 
@@ -150,15 +151,15 @@ describe('BattleResultComponent', () => {
         expect(mocks.callOrder).toEqual([
             `view:${GameView.World}`,
             'present',
-            'initialize',
             'loadScene',
         ]);
     });
 
-    it('keeps chained dialogue navigation after scene refresh', async () => {
+    it('keeps chained dialogue navigation after presenting events', async () => {
         const dialogueEvent = {
             kind: 'dialogue-opened',
             npcId: 'prologue:npc/martha',
+            label: 'Martha',
             dialogueId: 'prologue:dialogue/martha',
             startNodeId: 'opening',
         } satisfies GameEventDto;
@@ -166,24 +167,19 @@ describe('BattleResultComponent', () => {
             mocks.callOrder.push('present');
             mocks.currentView = GameView.Dialogue;
         });
-        mocks.initialize.mockImplementation(async () => {
-            mocks.callOrder.push('initialize');
-            mocks.currentView = GameView.World;
-        });
-
         await renderResult({ victoryResults: victoryResults([dialogueEvent]) });
         await closeResult();
 
         expect(mocks.present).toHaveBeenCalledWith([dialogueEvent]);
         expect(mocks.currentView).toBe(GameView.Dialogue);
-        expect(mocks.initialize).toHaveBeenCalledAfter(mocks.present);
-        expect(mocks.loadScene).toHaveBeenCalledAfter(mocks.initialize);
+        expect(mocks.loadScene).toHaveBeenCalledAfter(mocks.present);
     });
 
     it('presents defeat events only after Close', async () => {
         const defeatEvent = {
             kind: 'dialogue-opened',
             npcId: 'prologue:npc/vargoth',
+            label: 'Vargoth',
             dialogueId: 'prologue:dialogue/vargoth-defeat',
             startNodeId: 'opening',
         } satisfies GameEventDto;
@@ -212,7 +208,6 @@ describe('BattleResultComponent', () => {
         });
 
         expect(mocks.present).toHaveBeenCalledTimes(1);
-        expect(mocks.initialize).toHaveBeenCalledTimes(1);
         expect(mocks.loadScene).toHaveBeenCalledTimes(1);
     });
 });

@@ -7,10 +7,8 @@ const mocks = vi.hoisted(() => ({
     setState: vi.fn(),
 }));
 
-vi.mock('../../../src/common/api/client', () => ({
-    scenesClient: {
-        currentScene: mocks.currentScene,
-    },
+vi.mock('../../../src/common/api/.generated', () => ({
+    currentScene: mocks.currentScene,
 }));
 
 vi.mock('../../../src/views/game/GameStore', () => ({
@@ -46,11 +44,13 @@ describe('ScenesService', () => {
         ).sceneData = undefined;
     });
 
-    it('opens dialogue only when pendingDialogueNpcId is present', async () => {
-        mocks.currentScene.mockResolvedValue({ data: sceneData('prologue:npc/martha') });
+    it('opens a pending dialogue only when explicitly requested', async () => {
+        mocks.currentScene.mockResolvedValue(sceneData('prologue:npc/martha'));
 
         await ScenesService.initialize();
 
+        expect(mocks.setState).not.toHaveBeenCalled();
+        ScenesService.openPendingDialogue();
         expect(mocks.setState).toHaveBeenCalledWith(expect.any(Function));
         const updater = mocks.setState.mock.calls[0]?.[0] as (prev: { view: GameView }) => {
             view: GameView;
@@ -63,15 +63,16 @@ describe('ScenesService', () => {
     });
 
     it('does not open dialogue when pendingDialogueNpcId is absent', async () => {
-        mocks.currentScene.mockResolvedValue({ data: sceneData() });
+        mocks.currentScene.mockResolvedValue(sceneData());
 
         await ScenesService.initialize();
+        ScenesService.openPendingDialogue();
 
         expect(mocks.setState).not.toHaveBeenCalled();
     });
 
     it('uses authored grid metadata for scene pixel size', async () => {
-        mocks.currentScene.mockResolvedValue({ data: sceneData() });
+        mocks.currentScene.mockResolvedValue(sceneData());
 
         await expect(ScenesService.getSceneSize()).resolves.toEqual({
             width: 1100,

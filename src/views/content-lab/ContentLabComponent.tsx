@@ -79,51 +79,75 @@ const sectionLabel = (section: ContentLabSection): string => {
     }
 };
 
+const selectCatalogDefault = (
+    selectedId: string | undefined,
+    availableIds: readonly string[],
+): string => (selectedId && availableIds.includes(selectedId) ? selectedId : (availableIds[0] ?? ''));
+
 export const ContentLabComponent = () => {
     const [loadResult, setLoadResult] = useState<PreviewBundleLoadResult | null>(null);
     const [section, setSection] = useState<ContentLabSection>('overview');
-    const [selectedSceneId, setSelectedSceneId] = useState('');
-    const [selectedDialogueId, setSelectedDialogueId] = useState('');
-    const [selectedQuestId, setSelectedQuestId] = useState('');
+    const [selectedSceneOverride, setSelectedSceneOverride] = useState<string>();
+    const [selectedDialogueOverride, setSelectedDialogueOverride] = useState<string>();
+    const [selectedQuestOverride, setSelectedQuestOverride] = useState<string>();
     const [assetStatuses, setAssetStatuses] = useState<readonly AssetAvailability[]>([]);
     const [assetsLoading, setAssetsLoading] = useState(false);
 
     useEffect(() => {
-        void loadPreviewBundle().then(setLoadResult);
+        let cancelled = false;
+
+        void loadPreviewBundle().then((result) => {
+            if (!cancelled) {
+                setLoadResult(result);
+            }
+        });
+
+        return () => {
+            cancelled = true;
+        };
     }, []);
 
     const bundle = loadResult?.kind === 'loaded' ? loadResult.bundle : null;
-
-    useEffect(() => {
-        if (!bundle) {
-            return;
-        }
-        const sceneIds = listCatalogIds(bundle.catalog, 'scene');
-        const dialogueIds = listCatalogIds(bundle.catalog, 'dialogue');
-        const questIds = listCatalogIds(bundle.catalog, 'quest');
-        if (!selectedSceneId && sceneIds[0]) {
-            setSelectedSceneId(sceneIds[0]);
-        }
-        if (!selectedDialogueId && dialogueIds[0]) {
-            setSelectedDialogueId(dialogueIds[0]);
-        }
-        if (!selectedQuestId && questIds[0]) {
-            setSelectedQuestId(questIds[0]);
-        }
-    }, [bundle, selectedDialogueId, selectedQuestId, selectedSceneId]);
+    const preview = useMemo(
+        () =>
+            bundle
+                ? {
+                    summary: projectBundleSummary(bundle),
+                    sceneIds: listCatalogIds(bundle.catalog, 'scene'),
+                    dialogueIds: listCatalogIds(bundle.catalog, 'dialogue'),
+                    questIds: listCatalogIds(bundle.catalog, 'quest'),
+                    npcDialogues: projectNpcDialogues(bundle.catalog),
+                }
+                : null,
+        [bundle],
+    );
+    const selectedSceneId = selectCatalogDefault(selectedSceneOverride, preview?.sceneIds ?? []);
+    const selectedDialogueId = selectCatalogDefault(selectedDialogueOverride, preview?.dialogueIds ?? []);
+    const selectedQuestId = selectCatalogDefault(selectedQuestOverride, preview?.questIds ?? []);
 
     useEffect(() => {
         if (!bundle || section !== 'assets') {
             return;
         }
+        let cancelled = false;
         setAssetsLoading(true);
-        void checkAssetInventory(bundle.report.assets.references)
-            .then(setAssetStatuses)
-            .finally(() => setAssetsLoading(false));
-    }, [bundle, section]);
 
-    const summary = useMemo(() => (bundle ? projectBundleSummary(bundle) : null), [bundle]);
-    const npcDialogues = useMemo(() => (bundle ? projectNpcDialogues(bundle.catalog) : []), [bundle]);
+        void checkAssetInventory(bundle.report.assets.references)
+            .then((statuses) => {
+                if (!cancelled) {
+                    setAssetStatuses(statuses);
+                }
+            })
+            .finally(() => {
+                if (!cancelled) {
+                    setAssetsLoading(false);
+                }
+            });
+
+        return () => {
+            cancelled = true;
+        };
+    }, [bundle, section]);
 
     if (!loadResult) {
         return <p className={style.status}>Loading preview bundle...</p>;
@@ -148,35 +172,49 @@ export const ContentLabComponent = () => {
                 <p>Local preview only. No saves, no uploads.</p>
             </header>
             <div className={style.layout}>
-                <nav className={style.nav}>
+                <nav className={style.nav} aria-label="Content Lab sections">
                     {SECTIONS.map((entry) => (
                         <button
                             key={entry}
                             type="button"
                             className={entry === section ? style.navActive : ''}
+                            aria-current={entry === section ? 'page' : undefined}
                             onClick={() => setSection(entry)}>
                             {sectionLabel(entry)}
                         </button>
                     ))}
                 </nav>
                 <main className={style.panel}>
-                    {section === 'overview' && summary && (
-                        <OverviewPanel bundle={loadedBundle} summary={summary} />
+                    {section === 'overview' && preview && (
+                        <OverviewPanel bundle={loadedBundle} summary={preview.summary} />
                     )}
                     {section === 'scenes' && (
-                        <ScenePanel bundle={loadedBundle} selectedSceneId={selectedSceneId} onSelectScene={setSelectedSceneId} />
+                        <ScenePanel
+                            bundle={loadedBundle}
+                            sceneIds={preview?.sceneIds ?? []}
+                            selectedSceneId={selectedSceneId}
+                            onSelectScene={setSelectedSceneOverride}
+                        />
                     )}
                     {section === 'dialogues' && (
                         <DialoguePanel
                             bundle={loadedBundle}
+                            dialogueIds={preview?.dialogueIds ?? []}
                             selectedDialogueId={selectedDialogueId}
-                            onSelectDialogue={setSelectedDialogueId}
+                            onSelectDialogue={setSelectedDialogueOverride}
                         />
                     )}
                     {section === 'quests' && (
-                        <QuestPanel bundle={loadedBundle} selectedQuestId={selectedQuestId} onSelectQuest={setSelectedQuestId} />
+                        <QuestPanel
+                            bundle={loadedBundle}
+                            questIds={preview?.questIds ?? []}
+                            selectedQuestId={selectedQuestId}
+                            onSelectQuest={setSelectedQuestOverride}
+                        />
                     )}
-                    {section === 'npc-dialogues' && <NpcDialoguePanel projections={npcDialogues} />}
+                    {section === 'npc-dialogues' && (
+                        <NpcDialoguePanel projections={preview?.npcDialogues ?? []} />
+                    )}
                     {section === 'characters' && <CardGridPanel bundle={loadedBundle} kind="character" Card={PreviewCharacterCard} />}
                     {section === 'enemies' && <CardGridPanel bundle={loadedBundle} kind="enemy" Card={PreviewEnemyCard} />}
                     {section === 'items' && <CardGridPanel bundle={loadedBundle} kind="item" Card={PreviewItemCard} />}
@@ -216,9 +254,9 @@ const OverviewPanel = ({
                 </li>
             ))}
         </ul>
-        <h3>Balance issues</h3>
+        <h3>Server report issues</h3>
         {bundle.report.issues.length === 0 ? (
-            <p>No balance warnings.</p>
+            <p>No reported issues.</p>
         ) : (
             <ul>
                 {bundle.report.issues.map((issue) => (
@@ -233,53 +271,67 @@ const OverviewPanel = ({
 
 const ScenePanel = ({
     bundle,
+    sceneIds,
     selectedSceneId,
     onSelectScene,
 }: {
     bundle: PreviewBundle;
+    sceneIds: readonly string[];
     selectedSceneId: string;
     onSelectScene: (sceneId: string) => void;
 }) => {
-    const sceneIds = listCatalogIds(bundle.catalog, 'scene');
     const scene = selectedSceneId ? bundle.catalog.scene[selectedSceneId] : undefined;
-    const projection = scene ? projectScene(selectedSceneId, scene, bundle.catalog) : null;
+    const projection = useMemo(
+        () => (scene ? projectScene(selectedSceneId, scene, bundle.catalog) : null),
+        [bundle.catalog, scene, selectedSceneId],
+    );
     return (
         <section>
             <h2>Scenes</h2>
-            <select value={selectedSceneId} onChange={(event) => onSelectScene(event.target.value)}>
-                {sceneIds.map((sceneId) => (
-                    <option key={sceneId} value={sceneId}>
-                        {sceneId}
-                    </option>
-                ))}
-            </select>
-            {projection ? <SceneMapPreview scene={projection} /> : null}
+            <label>
+                Scene
+                <select value={selectedSceneId} onChange={(event) => onSelectScene(event.target.value)}>
+                    {sceneIds.map((sceneId) => (
+                        <option key={sceneId} value={sceneId}>
+                            {sceneId}
+                        </option>
+                    ))}
+                </select>
+            </label>
+            {projection ? <SceneMapPreview key={selectedSceneId} scene={projection} /> : null}
         </section>
     );
 };
 
 const DialoguePanel = ({
     bundle,
+    dialogueIds,
     selectedDialogueId,
     onSelectDialogue,
 }: {
     bundle: PreviewBundle;
+    dialogueIds: readonly string[];
     selectedDialogueId: string;
     onSelectDialogue: (dialogueId: string) => void;
 }) => {
-    const dialogueIds = listCatalogIds(bundle.catalog, 'dialogue');
     const dialogue = selectedDialogueId ? bundle.catalog.dialogue[selectedDialogueId] : undefined;
-    const graph = dialogue ? projectDialogueGraph(dialogue, bundle.catalog) : null;
+    const graph = useMemo(
+        () => (dialogue ? projectDialogueGraph(dialogue, bundle.catalog) : null),
+        [bundle.catalog, dialogue],
+    );
     return (
         <section>
             <h2>Dialogues</h2>
-            <select value={selectedDialogueId} onChange={(event) => onSelectDialogue(event.target.value)}>
-                {dialogueIds.map((dialogueId) => (
-                    <option key={dialogueId} value={dialogueId}>
-                        {dialogueId}
-                    </option>
-                ))}
-            </select>
+            <label>
+                Dialogue
+                <select value={selectedDialogueId} onChange={(event) => onSelectDialogue(event.target.value)}>
+                    {dialogueIds.map((dialogueId) => (
+                        <option key={dialogueId} value={dialogueId}>
+                            {dialogueId}
+                        </option>
+                    ))}
+                </select>
+            </label>
             {graph ? (
                 <>
                     <p>
@@ -298,7 +350,7 @@ const DialoguePanel = ({
                     )}
                     {graph.completionCommandTraces.length > 0 ? (
                         <>
-                            <h4>Completion commands</h4>
+                            <h3>Completion commands</h3>
                             <CommandTraceList traces={graph.completionCommandTraces} />
                         </>
                     ) : null}
@@ -341,26 +393,30 @@ const DialoguePanel = ({
 
 const QuestPanel = ({
     bundle,
+    questIds,
     selectedQuestId,
     onSelectQuest,
 }: {
     bundle: PreviewBundle;
+    questIds: readonly string[];
     selectedQuestId: string;
     onSelectQuest: (questId: string) => void;
 }) => {
-    const questIds = listCatalogIds(bundle.catalog, 'quest');
     const quest = selectedQuestId ? bundle.catalog.quest[selectedQuestId] : undefined;
-    const projection = quest ? projectQuest(quest) : null;
+    const projection = useMemo(() => (quest ? projectQuest(quest) : null), [quest]);
     return (
         <section>
             <h2>Quests</h2>
-            <select value={selectedQuestId} onChange={(event) => onSelectQuest(event.target.value)}>
-                {questIds.map((questId) => (
-                    <option key={questId} value={questId}>
-                        {questId}
-                    </option>
-                ))}
-            </select>
+            <label>
+                Quest
+                <select value={selectedQuestId} onChange={(event) => onSelectQuest(event.target.value)}>
+                    {questIds.map((questId) => (
+                        <option key={questId} value={questId}>
+                            {questId}
+                        </option>
+                    ))}
+                </select>
+            </label>
             {projection ? (
                 <>
                     <h3>{projection.label}</h3>
@@ -372,7 +428,7 @@ const QuestPanel = ({
                         {projection.main ? ' (main quest)' : ''}
                     </p>
                     <p>Lifecycle: {projection.lifecycleStates.join(' -> ')}</p>
-                    <h4>Stages</h4>
+                    <h3>Stages</h3>
                     <ul>
                         {projection.stages.map((stage) => (
                             <li key={stage.stageId}>
@@ -396,7 +452,7 @@ const QuestPanel = ({
                             </li>
                         ))}
                     </ul>
-                    <h4>Transitions</h4>
+                    <h3>Transitions</h3>
                     <ul>
                         {projection.transitions.map((transition) => (
                             <li key={transition.transitionId}>
@@ -493,8 +549,8 @@ const CommandTraceList = ({
     }>;
 }) => (
     <ul className={style.traceList}>
-        {traces.map((trace) => (
-            <li key={trace.commandSummary}>
+        {traces.map((trace, index) => (
+            <li key={`${index}-${trace.commandSummary}`}>
                 <code>{trace.commandSummary}</code> {'->'} {trace.expectedEvents.join(', ')}
                 <span className={style.traceNote}> ({trace.note})</span>
             </li>
@@ -527,7 +583,7 @@ const AssetsPanel = ({
             ).map((entry) => (
                 <li key={entry.reference}>
                     <span>{entry.available ? 'ok' : 'missing'}</span> {entry.reference}
-                    {'url' in entry ? <code>{entry.url}</code> : null}
+                    <code>{entry.url}</code>
                 </li>
             ))}
         </ul>

@@ -1,9 +1,9 @@
 import { KeyboardEvent, useEffect, useRef, useState } from 'react';
-import { npcsClient } from '../../common/api/client';
+import { getNpc } from '../../common/api/.generated';
 import LoadingOverlay from '../../common/components/LoadingOverlay';
+import { runExclusive } from '../../common/runExclusive';
 import { AssetsService } from '../../common/services/AssetsService';
-import { ToastService } from '../../common/services/ToastService';
-import { throttle } from '../../common/utils';
+import { applyGameOutcome } from '../../common/services/gameOutcome';
 import { useGameStore } from '../game/GameStore';
 import { GameView } from '../game/types';
 import {
@@ -21,30 +21,38 @@ const DialogueComponent = () => {
     const [currentNode, setCurrentNode] = useState<DialogueGraphNode>();
     const [isLoading, setIsLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [showOkButton, setShowOkButton] = useState(false);
     const [npcTitle, setNpcTitle] = useState<string>();
     const [displayShop, setDisplayShop] = useState(false);
     const [loadError, setLoadError] = useState<string>();
+    const [completionError, setCompletionError] = useState<string>();
     const [loadAttempt, setLoadAttempt] = useState(0);
-    const ref = useRef<HTMLDivElement>(null);
+    const wrapperRef = useRef<HTMLDivElement>(null);
+    const retryButtonRef = useRef<HTMLButtonElement>(null);
     const interactionInFlightRef = useRef(false);
 
     useEffect(() => {
-        ref.current?.focus();
+        wrapperRef.current?.focus();
     }, [isLoading]);
+
+    useEffect(() => {
+        if (loadError || completionError) {
+            retryButtonRef.current?.focus();
+        }
+    }, [completionError, loadError]);
 
     useEffect(() => {
         let cancelled = false;
         interactionInFlightRef.current = false;
         setIsLoading(true);
         setLoadError(undefined);
+        setCompletionError(undefined);
 
         const fetchAndStartDialogue = async () => {
             try {
                 if (!npcName) {
                     throw new Error('No NPC selected');
                 }
-                const npcData = (await npcsClient.getNpc(npcName)).data;
+                const npcData = await getNpc(npcName);
                 if (cancelled) {
                     return;
                 }
@@ -54,12 +62,9 @@ const DialogueComponent = () => {
                 setDisplayShop(npcData.shop !== undefined);
                 setDialogueRun(run);
                 setCurrentNode(run.walker.getCurrentNode());
-                setShowOkButton(run.walker.getCurrentNode()?.kind === 'line');
             } catch {
                 if (!cancelled) {
-                    const message = 'Unable to load dialogue.';
-                    setLoadError(message);
-                    ToastService.error({ message });
+                    setLoadError('Unable to load dialogue.');
                 }
             } finally {
                 if (!cancelled) {
@@ -85,18 +90,24 @@ const DialogueComponent = () => {
                 setDialogueRun(undefined);
                 setCurrentNode(undefined);
                 setLoadAttempt((attempt) => attempt + 1);
+                return;
             }
+            await applyGameOutcome(result.events);
+            setDialogueRun(undefined);
+            setCurrentNode(undefined);
+            setLoadAttempt((attempt) => attempt + 1);
+        } catch {
+            setCompletionError('Unable to complete dialogue. Try again.');
         } finally {
             setIsSubmitting(false);
         }
     };
 
     const handleOptionClick = async (optionId: string) => {
-        if (!dialogueRun || interactionInFlightRef.current) {
-            return;
-        }
-        interactionInFlightRef.current = true;
-        try {
+        await runExclusive(interactionInFlightRef, async () => {
+            if (!dialogueRun) {
+                return;
+            }
             if (!dialogueRun.walker.getCurrentNode()) {
                 await finishDialogue(dialogueRun);
                 return;
@@ -104,21 +115,17 @@ const DialogueComponent = () => {
             const nextNode = dialogueRun.walker.choose(optionId);
             if (nextNode) {
                 setCurrentNode(nextNode);
-                setShowOkButton(nextNode.kind === 'line');
                 return;
             }
             await finishDialogue(dialogueRun);
-        } finally {
-            interactionInFlightRef.current = false;
-        }
+        });
     };
 
     const handleOkClick = async () => {
-        if (!dialogueRun || interactionInFlightRef.current || currentNode?.kind !== 'line') {
-            return;
-        }
-        interactionInFlightRef.current = true;
-        try {
+        await runExclusive(interactionInFlightRef, async () => {
+            if (!dialogueRun || currentNode?.kind !== 'line') {
+                return;
+            }
             if (!dialogueRun.walker.getCurrentNode()) {
                 await finishDialogue(dialogueRun);
                 return;
@@ -126,24 +133,29 @@ const DialogueComponent = () => {
             const nextNode = dialogueRun.walker.advance();
             if (nextNode) {
                 setCurrentNode(nextNode);
-                setShowOkButton(nextNode.kind === 'line');
                 return;
             }
             await finishDialogue(dialogueRun);
-        } finally {
-            interactionInFlightRef.current = false;
-        }
+        });
     };
 
-    const handleKeyPress = (event: KeyboardEvent) => {
-        event.preventDefault();
+    const handleKeyPress = (event: KeyboardEvent<HTMLDivElement>) => {
+        if (
+            completionError ||
+            event.repeat ||
+            event.target instanceof HTMLButtonElement
+        ) {
+            return;
+        }
         const pressedKey = event.key;
-        if (pressedKey === ' ' || pressedKey === 'Spacebar') {
+        if (pressedKey === ' ' || pressedKey === 'Spacebar' || pressedKey === 'Enter') {
+            event.preventDefault();
             void handleOkClick();
         } else if (currentNode?.kind === 'choice' && /^[1-9]$/.test(pressedKey)) {
             const keyIndex = parseInt(pressedKey, 10) - 1;
             const option = currentNode.choices[keyIndex];
             if (option) {
+                event.preventDefault();
                 void handleOptionClick(option.id);
             }
         }
@@ -159,15 +171,16 @@ const DialogueComponent = () => {
     return (
         <div
             className={style.dialogueWrapper}
-            onKeyDown={throttle(handleKeyPress, 100)}
+            onKeyDown={handleKeyPress}
             tabIndex={-1}
-            ref={ref}>
+            ref={wrapperRef}>
             {isLoading ? (
                 <LoadingOverlay />
             ) : loadError ? (
                 <div className={`${style.dialogueItem} ${style.errorState}`}>
-                    <p>{loadError}</p>
+                    <p role="status">{loadError}</p>
                     <button
+                        ref={retryButtonRef}
                         type="button"
                         className={style.dialogueBtn}
                         onClick={() => setLoadAttempt((attempt) => attempt + 1)}>
@@ -200,19 +213,24 @@ const DialogueComponent = () => {
                             {lineImageUri ? (
                                 <img
                                     src={lineImageUri}
-                                    alt=""
+                                    alt={
+                                        currentNode.kind === 'line'
+                                            ? currentNode.imageAlt ?? ''
+                                            : ''
+                                    }
                                     className={style.dialogueImage}
                                 />
                             ) : (
                                 <div className={style.dialogueImage} />
                             )}
                         </div>
-                        {currentNode.kind === 'choice' && (
+                        {currentNode.kind === 'choice' && !completionError && (
                             <>
                                 {currentNode.choices.map((option, index) => (
                                     <button
                                         key={option.id}
-                                        onClick={throttle(() => handleOptionClick(option.id), 100)}
+                                        type="button"
+                                        onClick={() => void handleOptionClick(option.id)}
                                         className={style.dialogueBtn}
                                         disabled={isSubmitting}>
                                         {index + 1}: {option.text}
@@ -220,17 +238,39 @@ const DialogueComponent = () => {
                                 ))}
                             </>
                         )}
-                        {showOkButton && (
+                        {currentNode.kind === 'line' && !completionError && (
                             <button
-                                onClick={throttle(handleOkClick, 100)}
+                                type="button"
+                                onClick={() => void handleOkClick()}
                                 className={style.dialogueBtn}
                                 disabled={isSubmitting}>
                                 OK
                             </button>
                         )}
+                        {completionError && dialogueRun && (
+                            <>
+                                <p role="status">{completionError}</p>
+                                <button
+                                    ref={retryButtonRef}
+                                    type="button"
+                                    onClick={() =>
+                                        void runExclusive(interactionInFlightRef, () =>
+                                            finishDialogue(dialogueRun),
+                                        )
+                                    }
+                                    className={style.dialogueBtn}
+                                    disabled={isSubmitting}>
+                                    Retry
+                                </button>
+                            </>
+                        )}
                         {displayShop && (
-                            <button className={style.shopButton} onClick={() => setView(GameView.ShopBuy)}>
-                                <img src={AssetsService.getIcon('SHOP')} alt="shop" />
+                            <button
+                                type="button"
+                                className={style.shopButton}
+                                aria-label="Open shop"
+                                onClick={() => setView(GameView.ShopBuy)}>
+                                <img src={AssetsService.getIcon('SHOP')} alt="" />
                             </button>
                         )}
                     </div>

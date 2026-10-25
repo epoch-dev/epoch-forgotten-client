@@ -11,7 +11,7 @@ Browser client for Epoch Forgotten. React 18, Vite 6, Phaser scenes, hash router
 | `yarn test` | Vitest unit tests |
 | `yarn lint` | ESLint, zero warnings |
 | `yarn content:sync-preview` | Pull preview bundle v3 from sibling `epoch-forgotten` repo |
-| `yarn gen-client:sync` | Regenerate and copy API client from sibling backend repo |
+| `yarn gen-client:sync` | Regenerate the sibling backend spec and this client’s Orval output |
 
 ## Content preview (dev only)
 
@@ -42,7 +42,7 @@ Preview skill: `.cursor/skills/content-preview`.
 
 ## API and game events
 
-OpenAPI-generated client lives in `src/common/api/.generated/`. Regenerate from backend with `yarn gen-client:sync` (JDK 21+ or Docker on backend).
+OpenAPI-generated client lives in `src/common/api/.generated/`. Regenerate with `yarn gen-client:sync`; it first regenerates the sibling backend's TSOA spec and then runs this repository's Orval config (Node >=22.18).
 
 | API | Client use |
 |-----|------------|

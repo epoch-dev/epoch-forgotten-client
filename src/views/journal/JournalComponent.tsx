@@ -1,18 +1,20 @@
 import { useEffect, useMemo, useState } from 'react';
-import type { QuestJournalEntryDto } from '../../common/api/.generated';
-import { QuestJournalEntryDtoStatusEnum } from '../../common/api/.generated';
-import { questsClient } from '../../common/api/client';
+import {
+    getJournal,
+    type QuestJournalEntryDto,
+    QuestJournalEntryDtoStatus,
+} from '../../common/api/.generated';
 import LoadingOverlay from '../../common/components/LoadingOverlay';
 import { ToastService } from '../../common/services/ToastService';
 import QuestItem from './components/QuestItem';
 import style from './JournalComponent.module.scss';
 
-const tabs: { status: QuestJournalEntryDtoStatusEnum; label: string }[] = [
-    { status: QuestJournalEntryDtoStatusEnum.Active, label: 'In Progress' },
-    { status: QuestJournalEntryDtoStatusEnum.OnHold, label: 'On Hold' },
-    { status: QuestJournalEntryDtoStatusEnum.Discovered, label: 'Discovered' },
-    { status: QuestJournalEntryDtoStatusEnum.Completed, label: 'Completed' },
-    { status: QuestJournalEntryDtoStatusEnum.Failed, label: 'Failed' },
+const tabs: { status: QuestJournalEntryDtoStatus; label: string }[] = [
+    { status: QuestJournalEntryDtoStatus.active, label: 'In Progress' },
+    { status: QuestJournalEntryDtoStatus['on-hold'], label: 'On Hold' },
+    { status: QuestJournalEntryDtoStatus.discovered, label: 'Discovered' },
+    { status: QuestJournalEntryDtoStatus.completed, label: 'Completed' },
+    { status: QuestJournalEntryDtoStatus.failed, label: 'Failed' },
 ];
 
 const JournalComponent = () => {
@@ -20,8 +22,8 @@ const JournalComponent = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [loadError, setLoadError] = useState<string>();
     const [loadAttempt, setLoadAttempt] = useState(0);
-    const [activeTab, setActiveTab] = useState<QuestJournalEntryDtoStatusEnum>(
-        QuestJournalEntryDtoStatusEnum.Active,
+    const [activeTab, setActiveTab] = useState<QuestJournalEntryDtoStatus>(
+        QuestJournalEntryDtoStatus.active,
     );
 
     useEffect(() => {
@@ -31,9 +33,9 @@ const JournalComponent = () => {
 
         const setupQuests = async () => {
             try {
-                const questsResponse = await questsClient.getJournal();
+                const questsResponse = await getJournal();
                 if (!cancelled) {
-                    setQuests(questsResponse.data);
+                    setQuests(questsResponse);
                 }
             } catch {
                 if (!cancelled) {
@@ -60,7 +62,7 @@ const JournalComponent = () => {
                 counts[quest.status] = (counts[quest.status] || 0) + 1;
                 return counts;
             },
-            {} as Record<QuestJournalEntryDtoStatusEnum, number>,
+            {} as Record<QuestJournalEntryDtoStatus, number>,
         );
     }, [quests]);
 

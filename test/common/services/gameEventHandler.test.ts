@@ -56,13 +56,14 @@ describe('GameEventHandler', () => {
         const event = {
             kind: 'item-granted',
             itemId: 'core:item/potion',
+            label: 'Health Potion',
             quantity: 2,
         } satisfies GameEventDto;
 
         await GameEventHandler.present([event]);
 
         expect(mocks.toastSuccess).toHaveBeenCalledWith({
-            message: 'Received potion (2)',
+            message: 'Received Health Potion (2)',
         });
         expect(mocks.setState).not.toHaveBeenCalled();
     });
@@ -71,13 +72,14 @@ describe('GameEventHandler', () => {
         const event = {
             kind: 'item-consumed',
             itemId: 'core:item/potion',
+            label: 'Health Potion',
             quantity: 1,
         } satisfies GameEventDto;
 
         await GameEventHandler.present([event]);
 
         expect(mocks.toastSuccess).toHaveBeenCalledWith({
-            message: 'Used potion (1)',
+            message: 'Used Health Potion (1)',
         });
     });
 
@@ -85,12 +87,13 @@ describe('GameEventHandler', () => {
         const event = {
             kind: 'character-recruited',
             characterId: 'prologue:character/rin',
+            label: 'Rin',
         } satisfies GameEventDto;
 
         await GameEventHandler.present([event]);
 
         expect(mocks.toastSuccess).toHaveBeenCalledWith({
-            message: 'rin joined your party!',
+            message: 'Rin joined your party!',
         });
     });
 
@@ -98,6 +101,7 @@ describe('GameEventHandler', () => {
         const event = {
             kind: 'affinity-changed',
             characterId: 'prologue:character/rin',
+            label: 'Rin',
             amount: 1,
         } satisfies GameEventDto;
 
@@ -130,6 +134,7 @@ describe('GameEventHandler', () => {
         const event = {
             kind: 'dialogue-opened',
             npcId: 'prologue:npc/amol',
+            label: 'Amol',
             dialogueId: 'prologue:dialogue/amol',
             startNodeId: 'opening',
         } satisfies GameEventDto;
@@ -177,6 +182,7 @@ describe('GameEventHandler', () => {
                 questId: 'prologue:quest/main',
                 stageId: 'stage-1',
                 goalId: 'goal-1',
+                label: 'Wolves',
                 progress: 1,
                 target: 3,
             } satisfies GameEventDto,
@@ -188,16 +194,22 @@ describe('GameEventHandler', () => {
 
     it('handles quest lifecycle events in order', async () => {
         const events = [
-            { kind: 'quest-discovered', questId: 'prologue:quest/main' },
+            {
+                kind: 'quest-discovered',
+                questId: 'prologue:quest/main',
+                label: 'Main Quest',
+            },
             {
                 kind: 'quest-started',
                 questId: 'prologue:quest/main',
+                label: 'Main Quest',
                 stageId: 'stage-1',
                 transitionId: 'start',
             },
             {
                 kind: 'quest-advanced',
                 questId: 'prologue:quest/main',
+                label: 'Main Quest',
                 fromStageId: 'stage-1',
                 toStageId: 'stage-2',
                 transitionId: 'advance',
@@ -205,24 +217,28 @@ describe('GameEventHandler', () => {
             {
                 kind: 'quest-held',
                 questId: 'prologue:quest/main',
+                label: 'Main Quest',
                 stageId: 'stage-2',
                 transitionId: 'hold',
             },
             {
                 kind: 'quest-resumed',
                 questId: 'prologue:quest/main',
+                label: 'Main Quest',
                 stageId: 'stage-2',
                 transitionId: 'resume',
             },
             {
                 kind: 'quest-completed',
                 questId: 'prologue:quest/main',
+                label: 'Main Quest',
                 stageId: 'stage-3',
                 transitionId: 'complete',
             },
             {
                 kind: 'quest-failed',
                 questId: 'prologue:quest/side',
+                label: 'Side Quest',
                 stageId: 'stage-2',
                 transitionId: 'fail',
             },
@@ -233,7 +249,7 @@ describe('GameEventHandler', () => {
         expect(mocks.newQuest).toHaveBeenCalledOnce();
         expect(mocks.toastSuccess).toHaveBeenCalledTimes(6);
         expect(mocks.toastError).toHaveBeenCalledWith({
-            message: 'side failed!',
+            message: 'Side Quest failed!',
         });
     });
 });

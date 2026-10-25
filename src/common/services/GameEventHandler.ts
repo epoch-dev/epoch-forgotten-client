@@ -7,12 +7,6 @@ import { ToastService } from './ToastService';
 
 const soundService = SoundService.getInstance();
 
-function formatContentId(id: string): string {
-    const slash = id.lastIndexOf('/');
-    const segment = slash >= 0 ? id.slice(slash + 1) : id;
-    return segment.replace(/-/g, ' ');
-}
-
 export class GameEventHandler {
     public static async present(events: readonly GameEventDto[]): Promise<void> {
         for (const event of events) {
@@ -24,17 +18,17 @@ export class GameEventHandler {
         switch (event.kind) {
             case 'item-granted':
                 ToastService.success({
-                    message: `Received ${formatContentId(event.itemId)} (${event.quantity})`,
+                    message: `Received ${event.label} (${event.quantity})`,
                 });
                 return;
             case 'item-consumed':
                 ToastService.success({
-                    message: `Used ${formatContentId(event.itemId)} (${event.quantity})`,
+                    message: `Used ${event.label} (${event.quantity})`,
                 });
                 return;
             case 'character-recruited':
                 ToastService.success({
-                    message: `${formatContentId(event.characterId)} joined your party!`,
+                    message: `${event.label} joined your party!`,
                 });
                 return;
             case 'affinity-changed':
@@ -67,45 +61,46 @@ export class GameEventHandler {
                 return;
             case 'quest-discovered':
                 ToastService.success({
-                    message: `Quest discovered: ${formatContentId(event.questId)}`,
+                    message: `Quest discovered: ${event.label}`,
                 });
                 return;
             case 'quest-started':
                 soundService.newQuest();
                 ToastService.success({
-                    message: `Quest started: ${formatContentId(event.questId)}`,
+                    message: `Quest started: ${event.label}`,
                 });
                 return;
             case 'quest-advanced':
                 ToastService.success({
-                    message: `Quest advanced: ${formatContentId(event.questId)}`,
+                    message: `Quest advanced: ${event.label}`,
                 });
                 return;
             case 'quest-held':
                 ToastService.success({
-                    message: `Quest on hold: ${formatContentId(event.questId)}`,
+                    message: `Quest on hold: ${event.label}`,
                 });
                 return;
             case 'quest-resumed':
                 ToastService.success({
-                    message: `Quest resumed: ${formatContentId(event.questId)}`,
+                    message: `Quest resumed: ${event.label}`,
                 });
                 return;
             case 'quest-completed':
                 ToastService.success({
-                    message: `${formatContentId(event.questId)} completed!`,
+                    message: `${event.label} completed!`,
                 });
                 return;
             case 'quest-failed':
                 ToastService.error({
-                    message: `${formatContentId(event.questId)} failed!`,
+                    message: `${event.label} failed!`,
                 });
                 return;
             case 'quest-goal-progressed':
                 return;
             default: {
-                const exhaustive: never = event;
-                throw new Error(`Unhandled game event: ${JSON.stringify(exhaustive)}`);
+                const unhandled: never = event;
+                console.warn('Unhandled game event', unhandled);
+                return;
             }
         }
     }

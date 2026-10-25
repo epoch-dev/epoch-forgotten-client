@@ -114,7 +114,7 @@ const isDialogueChoice = (value: JsonValue): boolean => {
         typeof value.id === 'string' &&
         typeof value.text === 'string' &&
         isDialogueEdge(value.next) &&
-        (value.condition === undefined || isRecord(value.condition)) &&
+        (value.condition === undefined || isPreviewCondition(value.condition)) &&
         (value.commands === undefined || isPreviewContentCommandArray(value.commands))
     );
 };
@@ -332,7 +332,7 @@ const isQuestTransition = (value: JsonValue): boolean => {
         return false;
     }
     if (
-        (value.condition !== undefined && !isRecord(value.condition)) ||
+        (value.condition !== undefined && !isPreviewCondition(value.condition)) ||
         (value.commands !== undefined && !isPreviewContentCommandArray(value.commands))
     ) {
         return false;

@@ -6,20 +6,13 @@ import {
     createDialogueRun,
 } from '../../../src/views/dialogue/dialogueCompletion';
 import type { DialogueGraph } from '../../../src/views/dialogue/dialogueGraph';
-import { useGameStore } from '../../../src/views/game/GameStore';
-import { GameView } from '../../../src/views/game/types';
 
 const mocks = vi.hoisted(() => ({
     completeDialogue: vi.fn(),
 }));
 
-vi.mock('../../../src/common/api/client', () => ({
-    npcsClient: {
-        completeDialogue: mocks.completeDialogue,
-    },
-    scenesClient: {
-        currentScene: vi.fn(),
-    },
+vi.mock('../../../src/common/api/.generated', () => ({
+    completeDialogue: mocks.completeDialogue,
 }));
 
 const graph = {
@@ -45,21 +38,14 @@ function createCompletedRun() {
 
 function mockCompletion(events: readonly GameEventDto[]): void {
     mocks.completeDialogue.mockResolvedValue({
-        data: {
-            dialogueId: graph.id,
-            events,
-        },
+        dialogueId: graph.id,
+        events,
     });
 }
 
 describe('dialogue completion', () => {
     beforeEach(() => {
         mocks.completeDialogue.mockReset();
-        useGameStore.setState({
-            view: GameView.Party,
-            npcName: undefined,
-            encounterName: undefined,
-        });
     });
 
     afterEach(() => {
@@ -114,42 +100,25 @@ describe('dialogue completion', () => {
         const result = await completeDialogueRun('prologue:npc/amol', run);
 
         expect(result).toEqual({ status: 'stale' });
-        expect(useGameStore.getState().view).toBe(GameView.Party);
     });
 
-    it.each([
-        {
-            name: 'defaults to World when no event navigates',
-            events: [] as GameEventDto[],
-            expectedView: GameView.World,
-        },
-        {
-            name: 'lets a chained dialogue override World',
-            events: [
-                {
-                    kind: 'dialogue-opened',
-                    npcId: 'prologue:npc/elias',
-                    dialogueId: 'prologue:dialogue/elias-follow-up',
-                    startNodeId: 'opening',
-                },
-            ] satisfies GameEventDto[],
-            expectedView: GameView.Dialogue,
-        },
-        {
-            name: 'lets an encounter override World',
-            events: [
-                {
-                    kind: 'encounter-started',
-                    encounterId: 'prologue:encounter/wolves',
-                },
-            ] satisfies GameEventDto[],
-            expectedView: GameView.Battle,
-        },
-    ])('$name', async ({ events, expectedView }) => {
+    it('returns accepted server events without applying a client outcome', async () => {
+        const events = [
+            {
+                kind: 'dialogue-opened',
+                npcId: 'prologue:npc/elias',
+                label: 'Elias',
+                dialogueId: 'prologue:dialogue/elias-follow-up',
+                startNodeId: 'opening',
+            },
+        ] satisfies GameEventDto[];
         mockCompletion(events);
 
-        await completeDialogueRun('prologue:npc/amol', createCompletedRun());
+        await expect(completeDialogueRun('prologue:npc/amol', createCompletedRun())).resolves.toEqual({
+            status: 'completed',
+            events,
+        });
 
-        expect(useGameStore.getState().view).toBe(expectedView);
+        expect(mocks.completeDialogue).toHaveBeenCalledOnce();
     });
 });

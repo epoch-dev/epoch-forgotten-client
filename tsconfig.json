@@ -20,6 +20,6 @@
         "noUnusedParameters": true,
         "noFallthroughCasesInSwitch": true
     },
-    "include": ["src", "test", "vitest.config.ts", "src/common/api/definitions/levelUtil.ts"],
+    "include": ["src", "test", "vitest.config.ts", "orval.config.ts", "src/common/api/definitions/levelUtil.ts"],
     "references": [{ "path": "./tsconfig.node.json" }]
 }

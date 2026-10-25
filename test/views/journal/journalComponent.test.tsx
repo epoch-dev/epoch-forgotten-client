@@ -10,10 +10,9 @@ const mocks = vi.hoisted(() => ({
     toastError: vi.fn(),
 }));
 
-vi.mock('../../../src/common/api/client', () => ({
-    questsClient: {
-        getJournal: mocks.getJournal,
-    },
+vi.mock('../../../src/common/api/.generated', async (importOriginal) => ({
+    ...(await importOriginal<typeof import('../../../src/common/api/.generated')>()),
+    getJournal: mocks.getJournal,
 }));
 
 vi.mock('../../../src/common/services/ToastService', () => ({
@@ -44,7 +43,7 @@ describe('JournalComponent loading', () => {
     it('shows a retryable error and recovers after a failed request', async () => {
         mocks.getJournal
             .mockRejectedValueOnce(new Error('offline'))
-            .mockResolvedValueOnce({ data: [] });
+            .mockResolvedValueOnce([]);
 
         await act(async () => {
             root.render(<JournalComponent />);

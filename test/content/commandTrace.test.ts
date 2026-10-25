@@ -22,7 +22,9 @@ describe('commandTrace', () => {
             kind: 'apply-quest-transition',
             questId: 'core:quest/tutorial',
             transitionId: 'begin-tutorial',
+            ifApplied: 'skip',
         });
+        expect(trace.commandSummary).toContain('if-applied=skip');
         expect(trace.expectedEvents[0]).toContain('quest-started');
         expect(trace.note).toContain('transition definition');
     });
@@ -76,6 +78,14 @@ describe('commandTrace', () => {
                 kind: 'set-flag',
                 flagId: 'core:flag/test',
                 value: { nested: true },
+            }),
+        ).toBe(false);
+        expect(
+            isPreviewContentCommand({
+                kind: 'apply-quest-transition',
+                questId: 'core:quest/tutorial',
+                transitionId: 'begin-tutorial',
+                ifApplied: 'repeat',
             }),
         ).toBe(false);
     });

@@ -1,7 +1,9 @@
 import { useState, ChangeEvent, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserAuthDto } from '../../common/api/.generated';
-import { usersClient } from '../../common/api/client';
+import {
+    signin,
+    UserAuthDto,
+} from '../../common/api/.generated';
 import { StorageService } from '../../common/services/StorageService';
 import { ToastService } from '../../common/services/ToastService';
 import { isEmpty, throttle } from '../../common/utils';
@@ -28,11 +30,11 @@ export const SigninFormComponent = () => {
         if (!validateForm()) {
             return;
         }
-        const res = await usersClient.signin({
+        const user = await signin({
             username: formData.username,
             password: formData.password,
         });
-        StorageService.set({ key: 'user', data: res.data });
+        StorageService.set({ key: 'user', data: user });
         ToastService.success({ message: 'Welcome back' });
         navigate('game');
     };

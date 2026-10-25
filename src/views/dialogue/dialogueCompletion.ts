@@ -1,8 +1,8 @@
 import { isAxiosError } from 'axios';
-import { npcsClient } from '../../common/api/client';
-import { GameEventHandler } from '../../common/services/GameEventHandler';
-import { useGameStore } from '../game/GameStore';
-import { GameView } from '../game/types';
+import {
+    completeDialogue,
+    type GameEventDto,
+} from '../../common/api/.generated';
 import type { DialogueGraph } from './dialogueGraph';
 import { DialogueGraphWalker } from './dialogueGraph';
 
@@ -12,7 +12,7 @@ export type ActiveDialogueRun = Readonly<{
 }>;
 
 export type DialogueCompletionResult =
-    | Readonly<{ status: 'completed' }>
+    | Readonly<{ status: 'completed'; events: readonly GameEventDto[] }>
     | Readonly<{ status: 'stale' }>;
 
 export function createDialogueRun(graph: DialogueGraph): ActiveDialogueRun {
@@ -28,7 +28,7 @@ export async function completeDialogueRun(
 ): Promise<DialogueCompletionResult> {
     const submission = run.walker.createCompletionSubmission(run.completionId);
     try {
-        const result = await npcsClient.completeDialogue({
+        const result = await completeDialogue({
             npcId,
             dialogueId: submission.dialogueId,
             revision: submission.revision,
@@ -36,9 +36,7 @@ export async function completeDialogueRun(
             choicePath: [...submission.choicePath],
         });
 
-        useGameStore.getState().setView(GameView.World);
-        await GameEventHandler.present(result.data.events);
-        return { status: 'completed' };
+        return { status: 'completed', events: result.events };
     } catch (error) {
         if (isAxiosError(error) && error.response?.status === 409) {
             return { status: 'stale' };

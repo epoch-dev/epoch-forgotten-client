@@ -1,15 +1,21 @@
 import type { QuestJournalEntryDto } from '../../../common/api/.generated';
-import { QuestJournalEntryDtoStatusEnum } from '../../../common/api/.generated';
+import { QuestJournalEntryDtoStatus } from '../../../common/api/.generated';
 import style from '../JournalComponent.module.scss';
-import StageItem from './StageItem';
+import StageGoals from './StageGoals';
 
 const QuestItem = ({ quest }: { quest: QuestJournalEntryDto }) => {
-    const isDiscovered = quest.status === QuestJournalEntryDtoStatusEnum.Discovered;
+    const isDiscovered = quest.status === QuestJournalEntryDtoStatus.discovered;
     const currentStage =
         quest.currentStageId !== undefined
             ? quest.stages.find((stage) => stage.id === quest.currentStageId)
             : undefined;
-    const historyStages = quest.stages;
+    const stages =
+        quest.status === QuestJournalEntryDtoStatus.active ||
+        quest.status === QuestJournalEntryDtoStatus['on-hold']
+            ? currentStage
+                ? [currentStage]
+                : []
+            : quest.stages;
 
     return (
         <details className={`${style.questItem} ${quest.main ? style.mainQuest : ''}`}>
@@ -18,14 +24,14 @@ const QuestItem = ({ quest }: { quest: QuestJournalEntryDto }) => {
                 <p className={style.description}>{quest.journalHint}</p>
             ) : (
                 <div className={style.stagesWrapper}>
-                    {(quest.status === QuestJournalEntryDtoStatusEnum.Active ||
-                    quest.status === QuestJournalEntryDtoStatusEnum.OnHold
-                        ? currentStage
-                            ? [currentStage]
-                            : []
-                        : historyStages
-                    ).map((stage) => (
-                        <StageItem key={stage.id} stage={stage} questStatus={quest.status} />
+                    {stages.map((stage) => (
+                        <div key={stage.id} className={style.stageItem}>
+                            <p className={style.objective}>{stage.objective}</p>
+                            <p className={style.description}>{stage.description}</p>
+                            {quest.status === QuestJournalEntryDtoStatus.active &&
+                                stage.goals.length > 0 && <StageGoals goals={stage.goals} />}
+                            <p className={`${style.state} ${style[stage.status]}`}>{stage.status}</p>
+                        </div>
                     ))}
                 </div>
             )}

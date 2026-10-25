@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import type { QuestJournalEntryDto } from '../../../src/common/api/.generated';
-import { QuestJournalEntryDtoStatusEnum } from '../../../src/common/api/.generated';
+import { QuestJournalEntryDtoStatus } from '../../../src/common/api/.generated';
 import QuestItem from '../../../src/views/journal/components/QuestItem';
 
 const baseEntry = {
@@ -42,7 +42,7 @@ describe('QuestItem', () => {
             <QuestItem
                 quest={{
                     ...baseEntry,
-                    status: QuestJournalEntryDtoStatusEnum.Discovered,
+                    status: QuestJournalEntryDtoStatus.discovered,
                 }}
             />,
         );
@@ -57,7 +57,7 @@ describe('QuestItem', () => {
             <QuestItem
                 quest={{
                     ...baseEntry,
-                    status: QuestJournalEntryDtoStatusEnum.Active,
+                    status: QuestJournalEntryDtoStatus.active,
                     currentStageId: 'stage-1',
                 }}
             />,
@@ -73,7 +73,7 @@ describe('QuestItem', () => {
             <QuestItem
                 quest={{
                     ...baseEntry,
-                    status: QuestJournalEntryDtoStatusEnum.Completed,
+                    status: QuestJournalEntryDtoStatus.completed,
                     finalStageId: 'stage-final',
                 }}
             />,

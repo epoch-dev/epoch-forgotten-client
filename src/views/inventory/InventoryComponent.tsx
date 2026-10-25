@@ -1,7 +1,11 @@
 import style from './InventoryComponent.module.scss';
 import { useEffect, useMemo, useState } from 'react';
-import { itemsClient, usersClient } from '../../common/api/client';
-import { ItemDto } from '../../common/api/.generated';
+import {
+    deleteItem as deleteInventoryItem,
+    getItems,
+    ItemDto,
+    whoami,
+} from '../../common/api/.generated';
 import { ItemComponent } from '../equipment/ItemComponent';
 import { ConfirmDialog } from '../../common/components/ConfirmDialog';
 
@@ -16,20 +20,20 @@ export const InventoryComponent = () => {
     }, []);
 
     const fetchGold = async () => {
-        const userData = await usersClient.whoami();
-        setGold(userData.data.gold);
+        const userData = await whoami();
+        setGold(userData.gold);
     };
 
     const fetchItems = async () => {
-        const itemsData = await itemsClient.getItems();
-        setItems(itemsData.data);
+        const itemsData = await getItems();
+        setItems(itemsData);
     };
 
     const deleteItem = async () => {
         if (!itemToDelete) {
             return;
         }
-        await itemsClient.deleteItem(itemToDelete.id);
+        await deleteInventoryItem(itemToDelete.id);
         setItems((prev) => prev.filter((p) => p.id !== itemToDelete.id));
         setItemToDelete(undefined);
     };

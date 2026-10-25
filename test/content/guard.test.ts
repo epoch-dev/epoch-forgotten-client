@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { describePreviewBundleErrors, isPreviewBundle } from '../../src/content/guard';
+import { isPreviewContentCommand } from '../../src/content/commandTrace';
 import { previewBundleFixture } from '../fixtures/previewBundle';
 
 const isRecord = (value: unknown): value is Readonly<Record<string, unknown>> =>
@@ -9,6 +10,16 @@ const asArray = (value: unknown): readonly unknown[] =>
     Array.isArray(value) ? value : [];
 
 describe('isPreviewBundle', () => {
+    it('accepts consume-item commands emitted by the server preview bundle', () => {
+        expect(
+            isPreviewContentCommand({
+                kind: 'consume-item',
+                itemId: 'prologue:item/wolf-fang',
+                quantity: 1,
+            }),
+        ).toBe(true);
+    });
+
     it('accepts a valid preview bundle fixture', () => {
         expect(isPreviewBundle(previewBundleFixture)).toBe(true);
         expect(describePreviewBundleErrors(previewBundleFixture)).toEqual([]);
@@ -287,6 +298,41 @@ describe('isPreviewBundle', () => {
         expect(isPreviewBundle(stale)).toBe(false);
     });
 
+    it('rejects malformed nested dialogue conditions', () => {
+        const dialogue = previewBundleFixture.catalog.dialogue['core:dialogue/branch'];
+        const stale = {
+            ...previewBundleFixture,
+            catalog: {
+                ...previewBundleFixture.catalog,
+                dialogue: {
+                    'core:dialogue/branch': {
+                        ...dialogue,
+                        nodes: asArray(dialogue.nodes).map((node) =>
+                            isRecord(node) && node.id === 'choose-path'
+                                ? {
+                                    ...node,
+                                    choices: [
+                                        {
+                                            id: 'left',
+                                            text: 'Left',
+                                            next: { kind: 'end' },
+                                            condition: {
+                                                kind: 'all',
+                                                conditions: [{ kind: 'flag', flagId: 'flag' }],
+                                            },
+                                        },
+                                    ],
+                                }
+                                : node,
+                        ),
+                    },
+                },
+            },
+        };
+
+        expect(isPreviewBundle(stale)).toBe(false);
+    });
+
     it('rejects malformed dialogue choice command arrays', () => {
         const dialogue = previewBundleFixture.catalog.dialogue['core:dialogue/branch'];
         const stale = {
@@ -366,6 +412,36 @@ describe('isPreviewBundle', () => {
                                 kind: 'start',
                                 toStageId: 'speak-with-innkeeper',
                                 condition: [],
+                            },
+                            ...asArray(quest.transitions).slice(1),
+                        ],
+                    },
+                },
+            },
+        };
+
+        expect(isPreviewBundle(stale)).toBe(false);
+    });
+
+    it('rejects a transition condition with an invalid discriminant payload', () => {
+        const quest = previewBundleFixture.catalog.quest['core:quest/tutorial'];
+        const stale = {
+            ...previewBundleFixture,
+            catalog: {
+                ...previewBundleFixture.catalog,
+                quest: {
+                    'core:quest/tutorial': {
+                        ...quest,
+                        transitions: [
+                            {
+                                id: 'begin-tutorial',
+                                kind: 'start',
+                                toStageId: 'speak-with-innkeeper',
+                                condition: {
+                                    kind: 'quest-status',
+                                    questId: 'core:quest/tutorial',
+                                    status: 'unknown',
+                                },
                             },
                             ...asArray(quest.transitions).slice(1),
                         ],

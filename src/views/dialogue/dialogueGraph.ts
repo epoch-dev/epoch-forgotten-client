@@ -25,6 +25,7 @@ export type DialogueGraphNode =
           speaker: DialogueGraphSpeaker;
           text: string;
           imageUri?: string;
+          imageAlt?: string;
           next: DialogueGraphEdge;
       }>
     | Readonly<{

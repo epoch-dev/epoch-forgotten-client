@@ -1,7 +1,7 @@
 import { AssetsService } from '../common/services/AssetsService';
 import type { PreviewAssetCategory, PreviewAssetReference } from './types';
 
-export type AssetCategory = PreviewAssetCategory | 'dialogue' | 'unknown';
+export type AssetCategory = PreviewAssetCategory | 'unknown';
 
 export type AssetReferenceStatus = Readonly<{
     reference: string;
@@ -40,22 +40,12 @@ export const classifyAssetReference = (reference: string): AssetCategory => {
     if (hasExtension(reference, SCENE_EXTENSIONS)) {
         return 'scene';
     }
-    if (reference.includes('/')) {
-        return 'unknown';
-    }
-    if (hasExtension(reference, AUDIO_EXTENSIONS)) {
-        return 'sound';
-    }
-    if (hasExtension(reference, SCENE_EXTENSIONS)) {
-        return 'scene';
-    }
     return 'unknown';
 };
 
 export const resolveAssetUrl = (reference: string, category: AssetCategory): string => {
     switch (category) {
         case 'character':
-        case 'dialogue':
             return AssetsService.getCharacterUri(reference);
         case 'enemy':
             return AssetsService.getEnemyUri(reference);

@@ -1,46 +1,40 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 type RejectionHandler = (error: {
-    status: number;
-    config: { headers: Record<string, string> };
+    response?: { data?: { message?: string }; status: number };
+    config?: { headers: Record<string, string>; retryAfterRefresh?: boolean };
 }) => Promise<unknown>;
 
 const mocks = vi.hoisted(() => {
-    const axiosRequest = vi.fn();
+    const apiRequest = vi.fn();
+    const refreshApi = {
+        defaults: { headers: { common: {} as Record<string, string> } },
+        post: vi.fn(),
+    };
     return {
-        axios: Object.assign(axiosRequest, {
+        api: Object.assign(apiRequest, {
             defaults: { headers: { common: {} as Record<string, string> } },
             interceptors: {
                 request: { use: vi.fn() },
                 response: { use: vi.fn() },
             },
         }),
-        refreshToken: vi.fn(),
+        refreshApi,
         rejectedHandler: undefined as RejectionHandler | undefined,
         signout: vi.fn(),
         storageSet: vi.fn(),
+        toastError: vi.fn(),
     };
 });
 
 vi.mock('axios', () => ({
-    default: mocks.axios,
+    default: Object.assign(vi.fn(), {
+        create: vi
+            .fn()
+            .mockReturnValueOnce(mocks.api)
+            .mockReturnValueOnce(mocks.refreshApi),
+    }),
 }));
-
-vi.mock('../../../src/common/api/.generated', () => {
-    class Api {
-        public refreshToken = mocks.refreshToken;
-    }
-    return {
-        BattleApi: Api,
-        CharactersApi: Api,
-        ItemsApi: Api,
-        NpcsApi: Api,
-        QuestsApi: Api,
-        ScenesApi: Api,
-        SkillsApi: Api,
-        UsersApi: Api,
-    };
-});
 
 vi.mock('../../../src/common/services/StorageService', () => ({
     StorageService: {
@@ -55,7 +49,7 @@ vi.mock('../../../src/common/services/StorageService', () => ({
 
 vi.mock('../../../src/common/services/ToastService', () => ({
     ToastService: {
-        error: vi.fn(),
+        error: mocks.toastError,
     },
 }));
 
@@ -63,38 +57,39 @@ vi.mock('../../../src/common/utils', () => ({
     signout: mocks.signout,
 }));
 
-await import('../../../src/common/api/client');
+const { refreshAccessToken } = await import('../../../src/common/api/mutator');
 
 describe('API refresh interceptor', () => {
     beforeEach(() => {
-        mocks.axios.mockReset();
-        mocks.refreshToken.mockReset();
+        mocks.api.mockReset();
+        mocks.refreshApi.post.mockReset();
         mocks.signout.mockReset();
         mocks.storageSet.mockReset();
-        const responseUseCall = mocks.axios.interceptors.response.use.mock.calls[0];
+        mocks.toastError.mockReset();
+        const responseUseCall = mocks.api.interceptors.response.use.mock.calls[0];
         mocks.rejectedHandler = responseUseCall?.[1] as RejectionHandler | undefined;
     });
 
-    it('signs out and rejects the original refresh failure', async () => {
+    it('signs out and rejects the refresh failure', async () => {
         const refreshError = new Error('refresh denied');
-        mocks.refreshToken.mockRejectedValue(refreshError);
+        mocks.refreshApi.post.mockRejectedValue(refreshError);
         const requestError = {
-            status: 401,
+            response: { status: 401 },
             config: { headers: { Authorization: 'Bearer expired-token' } },
         };
 
         await expect(mocks.rejectedHandler?.(requestError)).rejects.toBe(refreshError);
 
         expect(mocks.signout).toHaveBeenCalledOnce();
-        expect(mocks.axios).not.toHaveBeenCalled();
+        expect(mocks.api).not.toHaveBeenCalled();
     });
 
     it('stores the refreshed token and retries the original request', async () => {
-        mocks.refreshToken.mockResolvedValue({ data: 'new-token' });
-        mocks.axios.mockResolvedValue({ data: 'retried' });
+        mocks.refreshApi.post.mockResolvedValue({ data: 'new-token' });
+        mocks.api.mockResolvedValue({ data: 'retried' });
         const config = { headers: { Authorization: 'Bearer expired-token' } };
 
-        await expect(mocks.rejectedHandler?.({ status: 401, config })).resolves.toEqual({
+        await expect(mocks.rejectedHandler?.({ response: { status: 401 }, config })).resolves.toEqual({
             data: 'retried',
         });
 
@@ -107,7 +102,54 @@ describe('API refresh interceptor', () => {
                 username: 'player',
             },
         });
-        expect(mocks.axios).toHaveBeenCalledWith(config);
+        expect(mocks.refreshApi.post).toHaveBeenCalledWith('/users/refreshToken', {
+            refreshToken: 'refresh-token',
+        });
+        expect(mocks.api).toHaveBeenCalledWith(config);
+        expect(mocks.signout).not.toHaveBeenCalled();
+    });
+
+    it('shares one refresh request across concurrent callers', async () => {
+        let resolveRefresh: ((value: { data: string }) => void) | undefined;
+        mocks.refreshApi.post.mockReturnValue(
+            new Promise<{ data: string }>((resolve) => {
+                resolveRefresh = resolve;
+            }),
+        );
+
+        const first = refreshAccessToken();
+        const second = refreshAccessToken();
+
+        expect(second).toBe(first);
+        expect(mocks.refreshApi.post).toHaveBeenCalledOnce();
+        resolveRefresh?.({ data: 'shared-token' });
+        await expect(first).resolves.toBe('shared-token');
+    });
+
+    it('does not refresh a retried unauthorized request', async () => {
+        const error = {
+            response: { status: 401 },
+            config: {
+                headers: { Authorization: 'Bearer expired-token' },
+                retryAfterRefresh: true,
+            },
+        };
+
+        await expect(mocks.rejectedHandler?.(error)).rejects.toBe(error);
+
+        expect(mocks.refreshApi.post).not.toHaveBeenCalled();
+        expect(mocks.signout).toHaveBeenCalledOnce();
+    });
+
+    it('does not toast conflict responses', async () => {
+        const error = {
+            response: { status: 409, data: { message: 'conflict' } },
+            config: { headers: {} },
+        };
+
+        await expect(mocks.rejectedHandler?.(error)).rejects.toBe(error);
+
+        expect(mocks.toastError).not.toHaveBeenCalled();
         expect(mocks.signout).not.toHaveBeenCalled();
     });
 });

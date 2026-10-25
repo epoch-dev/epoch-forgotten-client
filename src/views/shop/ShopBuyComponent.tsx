@@ -1,5 +1,8 @@
 import style from './ShopComponent.module.scss';
-import type { Item } from '../../common/api/.generated';
+import {
+    getNpc,
+    type Item,
+} from '../../common/api/.generated';
 import { useGameStore } from '../game/GameStore';
 import { useEffect, useMemo, useState } from 'react';
 import { ToastService } from '../../common/services/ToastService';
@@ -7,7 +10,6 @@ import LoadingOverlay from '../../common/components/LoadingOverlay';
 import { ShopService } from './ShopService';
 import ShopItem from './ShopItem';
 import { SoundService } from '../../common/services/SoundService';
-import { npcsClient } from '../../common/api/client';
 import { GameView } from '../game/types';
 import { TooltipComponent } from '../../common/components/TooltipComponent';
 import { throttle } from '../../common/utils';
@@ -32,7 +34,7 @@ const ShopBuyComponent = () => {
             return setView(GameView.World);
         }
         setLoading(true);
-        const npcData = (await npcsClient.getNpc(npcName)).data;
+        const npcData = await getNpc(npcName);
         setShopItems(npcData.shop ?? []);
         setLoading(false);
     };

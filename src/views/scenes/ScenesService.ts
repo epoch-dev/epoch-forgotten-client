@@ -1,5 +1,8 @@
-import { SceneDataDto, ScenePoint } from '../../common/api/.generated';
-import { scenesClient } from '../../common/api/client';
+import {
+    currentScene,
+    SceneDataDto,
+    ScenePoint,
+} from '../../common/api/.generated';
 import { useGameStore } from '../../views/game/GameStore';
 import { GameView } from '../../views/game/types';
 import { getSceneGridPixelSize } from './sceneGridSize';
@@ -9,16 +12,21 @@ export class ScenesService {
     public static userPosition?: ScenePoint;
 
     public static async initialize() {
-        const data = (await scenesClient.currentScene()).data;
+        const data = await currentScene();
         this.sceneData = data;
         this.userPosition = data.userPosition;
-        if (data.pendingDialogueNpcId) {
-            useGameStore.setState((prev) => ({
-                ...prev,
-                view: GameView.Dialogue,
-                npcName: data.pendingDialogueNpcId,
-            }));
+    }
+
+    public static openPendingDialogue() {
+        const pendingDialogueNpcId = this.sceneData?.pendingDialogueNpcId;
+        if (!pendingDialogueNpcId) {
+            return;
         }
+        useGameStore.setState((prev) => ({
+            ...prev,
+            view: GameView.Dialogue,
+            npcName: pendingDialogueNpcId,
+        }));
     }
 
     public static async getSceneData() {

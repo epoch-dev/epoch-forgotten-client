@@ -17,7 +17,10 @@ const mocks = vi.hoisted(() => ({
     disconnect: vi.fn(),
     gameDestroy: vi.fn(),
     initialize: vi.fn(),
+    openPendingDialogue: vi.fn(),
+    refreshAccessToken: vi.fn(),
     handlers: new Map<string, (...args: unknown[]) => void>(),
+    managerHandlers: new Map<string, (...args: unknown[]) => void>(),
     moveUser: vi.fn(),
     removeAllListeners: vi.fn(),
     rendererOptions: undefined as SceneRendererOptions | undefined,
@@ -25,12 +28,18 @@ const mocks = vi.hoisted(() => ({
     setScene: vi.fn(),
     toastError: vi.fn(),
     socket: {
+        active: true,
         connected: false,
         connect: vi.fn(),
         on: vi.fn(),
         send: vi.fn(),
         removeAllListeners: vi.fn(),
         disconnect: vi.fn(),
+        io: {
+            on: vi.fn(),
+            off: vi.fn(),
+            removeAllListeners: vi.fn(),
+        },
     },
 }));
 
@@ -50,10 +59,15 @@ vi.mock('../../../src/common/services/ToastService', () => ({
     },
 }));
 
+vi.mock('../../../src/common/api/mutator', () => ({
+    refreshAccessToken: mocks.refreshAccessToken,
+}));
+
 vi.mock('../../../src/views/scenes/ScenesService', () => ({
     ScenesService: {
         initialize: mocks.initialize,
         getUserPosition: vi.fn(),
+        openPendingDialogue: mocks.openPendingDialogue,
     },
 }));
 
@@ -88,8 +102,10 @@ describe('ScenesComponent socket lifecycle', () => {
     beforeEach(() => {
         mocks.accessToken = 'access-token';
         mocks.handlers.clear();
+        mocks.managerHandlers.clear();
         mocks.rendererOptions = undefined;
         mocks.createSceneSocket.mockReset().mockReturnValue(mocks.socket);
+        mocks.socket.active = true;
         mocks.socket.connected = false;
         mocks.socket.connect.mockReset();
         mocks.socket.on.mockReset().mockImplementation(
@@ -101,8 +117,21 @@ describe('ScenesComponent socket lifecycle', () => {
         mocks.socket.send.mockReset();
         mocks.socket.removeAllListeners.mockReset();
         mocks.socket.disconnect.mockReset();
+        mocks.socket.io.on.mockReset().mockImplementation(
+            (event: string, handler: (...args: unknown[]) => void) => {
+                mocks.managerHandlers.set(event, handler);
+                return mocks.socket.io;
+            },
+        );
+        mocks.socket.io.off.mockReset().mockImplementation((event: string) => {
+            mocks.managerHandlers.delete(event);
+            return mocks.socket.io;
+        });
+        mocks.socket.io.removeAllListeners.mockReset();
         mocks.gameDestroy.mockReset();
         mocks.initialize.mockReset().mockResolvedValue(undefined);
+        mocks.openPendingDialogue.mockReset();
+        mocks.refreshAccessToken.mockReset().mockResolvedValue('refreshed-token');
         mocks.setScene.mockReset();
         mocks.toastError.mockReset();
 
@@ -148,9 +177,17 @@ describe('ScenesComponent socket lifecycle', () => {
         );
         expect(mocks.handlers.has('connect_error')).toBe(true);
         expect(mocks.handlers.has('connection_error')).toBe(false);
+        expect(mocks.managerHandlers.has('reconnect_failed')).toBe(true);
 
         mocks.handlers.get('connect_error')?.(new Error('offline'));
-        expect(mocks.toastError).toHaveBeenCalledWith({ message: 'offline' });
+        expect(mocks.toastError).not.toHaveBeenCalled();
+        expect(container.textContent).not.toContain('offline');
+        await act(async () => {
+            mocks.managerHandlers.get('reconnect_failed')?.();
+        });
+        expect(container.querySelector('[role="status"]')?.textContent).toBe(
+            'Unable to reconnect to the world.',
+        );
         expect(mocks.createSceneSocket).toHaveBeenCalledOnce();
 
         await act(async () => createdRoot.unmount());
@@ -160,7 +197,7 @@ describe('ScenesComponent socket lifecycle', () => {
         expect(mocks.gameDestroy).toHaveBeenCalledWith(true);
     });
 
-    it('recreates an authorization-denied socket with the refreshed HTTP token', async () => {
+    it('refreshes the socket again after a later token expiry', async () => {
         container = document.createElement('div');
         document.body.append(container);
         const createdRoot = createRoot(container);
@@ -173,13 +210,13 @@ describe('ScenesComponent socket lifecycle', () => {
         mocks.rendererOptions?.onMove(SceneMoveDirection.Down);
         expect(mocks.socket.connect).toHaveBeenCalledOnce();
 
-        mocks.accessToken = 'refreshed-token';
         await act(async () => {
             mocks.handlers.get('connect_error')?.(new Error('Unauthorized'));
             await Promise.resolve();
         });
 
-        expect(mocks.initialize).toHaveBeenCalledTimes(2);
+        expect(mocks.initialize).toHaveBeenCalledOnce();
+        expect(mocks.refreshAccessToken).toHaveBeenCalledOnce();
         expect(mocks.createSceneSocket).toHaveBeenNthCalledWith(2, 'refreshed-token');
         expect(mocks.socket.removeAllListeners).toHaveBeenCalledOnce();
         expect(mocks.socket.disconnect).toHaveBeenCalledOnce();
@@ -190,6 +227,20 @@ describe('ScenesComponent socket lifecycle', () => {
         expect(mocks.socket.send).toHaveBeenCalledWith({
             direction: SceneMoveDirection.Down,
         });
+
+        await act(async () => {
+            mocks.handlers.get('connect_error')?.(new Error('Unauthorized'));
+            await Promise.resolve();
+        });
+
+        expect(mocks.refreshAccessToken).toHaveBeenCalledTimes(2);
+        expect(mocks.createSceneSocket).toHaveBeenNthCalledWith(
+            3,
+            'refreshed-token',
+        );
+        expect(mocks.socket.removeAllListeners).toHaveBeenCalledTimes(2);
+        expect(mocks.socket.disconnect).toHaveBeenCalledTimes(2);
+        expect(mocks.toastError).not.toHaveBeenCalled();
     });
 
     it('reconnects and sends the pending movement once connected', async () => {

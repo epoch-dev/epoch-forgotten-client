@@ -1,6 +1,6 @@
 # Epoch: Forgotten - client
 
-[![Deploy Epoch Forgotten client to Pages](https://github.com/epoch-dev/epoch-forgotten-client/actions/workflows/deployment.yaml/badge.svg)](https://github.com/epoch-dev/epoch-forgotten-client/actions/workflows/deployment.yaml)
+[![CI](https://github.com/epoch-dev/epoch-forgotten-client/actions/workflows/ci.yaml/badge.svg)](https://github.com/epoch-dev/epoch-forgotten-client/actions/workflows/ci.yaml)
 
 Browser client for Epoch Forgotten. React 18, Vite 6, Phaser scenes, hash router.
 
@@ -30,7 +30,7 @@ git submodule update --init --recursive
 yarn gen-client:sync
 ```
 
-Generated API types live in `src/common/api/.generated/` (gitignored). Backend `gen-client` uses JDK 21+ or Docker when Java is unavailable.
+Generated API types live in `src/common/api/.generated/` (gitignored). Orval generation requires Node.js 22.18 or newer.
 
 4. Optional: sync content preview for Content Lab:
 
@@ -81,7 +81,7 @@ Production builds exclude Content Lab and the preview bundle chunk.
 | `yarn test` | Vitest unit tests |
 | `yarn lint` | ESLint |
 | `yarn content:sync-preview` | Pull preview bundle v3 from sibling backend repo |
-| `yarn gen-client:sync` | Regenerate and copy API client from sibling backend repo |
+| `yarn gen-client:sync` | Regenerate the sibling backend spec and this client’s Orval output |
 
 ## Runtime integration
 
@@ -115,7 +115,15 @@ Regenerate when backend OpenAPI changes:
 yarn gen-client:sync
 ```
 
-Backend `yarn gen-client` stages output in root `.generated/`; `gen-client:sync` copies into this repo's `src/common/api/.generated/`.
+`gen-client:sync` first runs backend `yarn gen-api`, then runs this repository's Orval configuration into `src/common/api/.generated/`.
+
+CI and deployment regenerate the ignored client from an immutable backend revision. Set the
+`EPOCH_FORGOTTEN_SERVER_REF` Actions repository variable to an exact 40-character
+`epoch-forgotten` commit SHA for push and pull-request CI. Manual CI and deployment runs require
+the same SHA as `server_ref`; branch names are rejected.
+
+Until the corresponding backend API changes are committed and pushed, no valid SHA exists. Do not
+update the repository variable or start a deployment before that commit is available remotely.
 
 ## Generated files
 
