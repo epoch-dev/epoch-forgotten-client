@@ -1,7 +1,9 @@
 import style from './SkillsComponent.module.scss';
 import { useEffect, useState } from 'react';
-import { skillsClient } from '../../common/api/client';
-import { SkillDto } from '../../common/api/.generated';
+import {
+    getSkillTree,
+    SkillDto,
+} from '../../common/api/.generated';
 import { useGameStore } from '../game/GameStore';
 import { GameView } from '../game/types';
 import { AssetsService } from '../../common/services/AssetsService';
@@ -26,9 +28,9 @@ export const SkillsComponent = () => {
     }
 
     const fetchSkills = async (characterId: string) => {
-        const skillRes = await skillsClient.getSkillTree(characterId);
-        setUniqueSkills(skillRes.data.uniqueSkills);
-        setClassSkills(skillRes.data.classSkills);
+        const skills = await getSkillTree({ characterId });
+        setUniqueSkills(skills.uniqueSkills);
+        setClassSkills(skills.classSkills);
     };
 
     return (

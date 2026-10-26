@@ -9,9 +9,11 @@ import {
     BattleSkill,
     BattleTurnResultDto,
     BattleVictoryRewards,
+    continueBattle,
+    escapeBattle,
+    loadBattle,
     SceneDataDto,
 } from '../../common/api/.generated';
-import { battleClient } from '../../common/api/client';
 import { GameView } from '../game/types';
 import { useGameStore } from '../game/GameStore';
 import { TooltipComponent } from '../../common/components/TooltipComponent';
@@ -59,7 +61,7 @@ export const BattleComponent = () => {
 
     useEffect(() => {
         void loadScene();
-        void loadBattle();
+        void loadBattleData();
     }, []);
 
     useEffect(() => {
@@ -76,16 +78,16 @@ export const BattleComponent = () => {
         setScene(sceneData);
     };
 
-    const loadBattle = async () => {
+    const loadBattleData = async () => {
         try {
-            const battleData = await battleClient.loadBattle();
-            if (battleData.data.finished) {
+            const battleData = await loadBattle();
+            if (battleData.finished) {
                 setView(GameView.World);
                 return;
             }
 
-            const party = battleData.data.state.characters.filter((c) => c.isControlled);
-            const enemies = battleData.data.state.characters.filter((c) => !c.isControlled);
+            const party = battleData.state.characters.filter((c) => c.isControlled);
+            const enemies = battleData.state.characters.filter((c) => !c.isControlled);
             const defaultTargetId = enemies.find((e) => e.isAlive)?.id;
             const commands: BattleCommand[] = party.map((character) => {
                 const skill = character.skills[1];
@@ -97,10 +99,10 @@ export const BattleComponent = () => {
                 return;
             }
 
-            setBattleAssets({ ...battleData.data });
+            setBattleAssets({ ...battleData });
             setParty(party);
             setEnemies(enemies);
-            setCanEscape(battleData.data.canEscape);
+            setCanEscape(battleData.canEscape);
             setDefaultTargetId(defaultTargetId);
             setCommands(commands);
         } catch {
@@ -175,16 +177,16 @@ export const BattleComponent = () => {
                 ...c,
                 targetId: c.targetId ?? defaultTargetId ?? '',
             }));
-            const turnResult = await battleClient.continueBattle({
+            const turnResult = await continueBattle({
                 commands: filledCommands,
             });
-            await animateTurn(turnResult.data);
-            if (turnResult.data.victory) {
-                setVictoryResults(turnResult.data.victory);
+            await animateTurn(turnResult);
+            if (turnResult.victory) {
+                setVictoryResults(turnResult.victory);
                 soundService.victory();
             }
-            if (turnResult.data.defeat) {
-                setDefeatResults(turnResult.data.defeat);
+            if (turnResult.defeat) {
+                setDefeatResults(turnResult.defeat);
                 soundService.defeat();
             }
         } catch {
@@ -197,17 +199,17 @@ export const BattleComponent = () => {
             return;
         }
 
-        const result = await battleClient.escapeBattle();
-        if (result.data.escaped) {
+        const result = await escapeBattle();
+        if (result.escaped) {
             ToastService.success({ message: 'Escaped successfully', duration: 1000 });
             return setView(GameView.World);
         }
 
         ToastService.error({ message: 'Failed to escape', duration: 1000 });
-        await animateTurn(result.data);
+        await animateTurn(result);
 
-        if (result.data.defeat) {
-            setDefeatResults(result.data.defeat);
+        if (result.defeat) {
+            setDefeatResults(result.defeat);
             soundService.defeat();
         }
     };

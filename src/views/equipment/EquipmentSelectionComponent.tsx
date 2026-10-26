@@ -1,6 +1,12 @@
 import style from './EquipmentSelectionComponent.module.scss';
-import { CharacterEquipItemDtoTargetEnum, ItemDto, ItemType } from '../../common/api/.generated';
-import { charactersClient, itemsClient } from '../../common/api/client';
+import {
+    CharacterEquipItemDtoTarget,
+    equipItem as equipCharacterItem,
+    getItems,
+    ItemDto,
+    ItemType,
+    unEquipItem as unEquipCharacterItem,
+} from '../../common/api/.generated';
 import { useGameStore } from '../game/GameStore';
 import { useEffect, useState } from 'react';
 import { ItemComponent } from './ItemComponent';
@@ -10,7 +16,7 @@ import { throttle } from '../../common/utils';
 export type EquipmentSelectionComponentProps = {
     currentItem?: ItemDto;
     types: ItemType[];
-    target: CharacterEquipItemDtoTargetEnum;
+    target: CharacterEquipItemDtoTarget;
     itemLabel: string;
     onClose: () => void;
 };
@@ -36,21 +42,21 @@ export const EquipmentSelectionComponent = ({
     }
 
     const fetchItems = async () => {
-        const itemsData = await itemsClient.getItems();
-        setItems(itemsData.data.filter((i) => types.includes(i.type)));
+        const itemsData = await getItems();
+        setItems(itemsData.filter((i) => types.includes(i.type)));
     };
 
     const equipItem = async (item: ItemDto) => {
         if (item.characterId) {
             return;
         }
-        const characterData = await charactersClient.equipItem({
+        const characterData = await equipCharacterItem({
             characterId: character.id,
             itemId: item.id,
             target,
         });
         soundService.equip(item.type);
-        setCharacter(characterData.data);
+        setCharacter(characterData);
         onClose();
     };
 
@@ -58,12 +64,12 @@ export const EquipmentSelectionComponent = ({
         if (!currentItem) {
             return;
         }
-        const characterData = await charactersClient.unEquipItem({
+        const characterData = await unEquipCharacterItem({
             characterId: character.id,
             itemId: currentItem.id,
         });
         soundService.unequip();
-        setCharacter(characterData.data);
+        setCharacter(characterData);
         onClose();
     };
 
