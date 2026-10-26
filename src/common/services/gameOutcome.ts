@@ -3,30 +3,19 @@ import { useGameStore } from '../../views/game/GameStore';
 import { GameView } from '../../views/game/types';
 import { ScenesService } from '../../views/scenes/ScenesService';
 import { GameEventHandler } from './GameEventHandler';
-import { ToastService } from './ToastService';
 
-export type GameOutcomeResult = Readonly<{
-    refreshed: boolean;
-}>;
-
-const refreshWorldState = async (): Promise<boolean> => {
-    try {
-        await ScenesService.initialize();
-        ScenesService.openPendingDialogue();
-        return true;
-    } catch {
-        ToastService.error({ message: 'Unable to refresh the world.' });
-        return false;
-    }
-};
-
-export const applyGameOutcome = async (
-    events: readonly GameEventDto[],
-): Promise<GameOutcomeResult> => {
+// The server already committed this outcome, so failures here are logged rather than offered for retry;
+// the API mutator has already shown the user any request error.
+export const applyGameOutcome = async (events: readonly GameEventDto[]): Promise<void> => {
     useGameStore.getState().setView(GameView.World);
-    await GameEventHandler.present(events);
-
-    return {
-        refreshed: await refreshWorldState(),
-    };
+    try {
+        await GameEventHandler.present(events);
+        await ScenesService.initialize();
+    } catch (error) {
+        console.error('Unable to apply the committed game outcome', error);
+        return;
+    }
+    if (useGameStore.getState().view === GameView.World) {
+        ScenesService.openPendingDialogue();
+    }
 };

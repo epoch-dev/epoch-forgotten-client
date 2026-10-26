@@ -1,18 +1,13 @@
-export type ExclusiveGuard = {
-    current: boolean;
-};
-
-export const runExclusive = async <T>(
-    guard: ExclusiveGuard,
-    operation: () => Promise<T>,
-): Promise<T | undefined> => {
+export const runExclusive = async (
+    guard: { current: boolean },
+    operation: () => Promise<void>,
+): Promise<void> => {
     if (guard.current) {
-        return undefined;
+        return;
     }
-
     guard.current = true;
     try {
-        return await operation();
+        await operation();
     } finally {
         guard.current = false;
     }

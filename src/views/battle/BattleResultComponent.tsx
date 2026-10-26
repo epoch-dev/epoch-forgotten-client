@@ -9,7 +9,6 @@ import { ProgressBarComponent } from '../../common/components/ProgressBarCompone
 import { runExclusive } from '../../common/runExclusive';
 import { AssetsService } from '../../common/services/AssetsService';
 import { applyGameOutcome } from '../../common/services/gameOutcome';
-import { ToastService } from '../../common/services/ToastService';
 import { CSS_COLOR } from '../../common/styles';
 import { wait } from '../../common/utils';
 import { useGameStore } from '../game/GameStore';
@@ -26,21 +25,14 @@ export const BattleResultComponent = ({
     const isClosingRef = useRef(false);
     const [isClosing, setIsClosing] = useState(false);
 
-    const handleClose = async () => {
-        await runExclusive(isClosingRef, async () => {
+    const handleClose = () =>
+        runExclusive(isClosingRef, async () => {
             setIsClosing(true);
-
-            const events = [...(victoryResults?.events ?? []), ...(defeatResults?.events ?? [])];
-            try {
-                await applyGameOutcome(events);
-                await scene?.loadScene();
-            } catch (error) {
-                console.error('Unable to apply battle outcome', error);
-                ToastService.error({ message: 'Unable to apply battle outcome. Try again.' });
-                setIsClosing(false);
-            }
+            await applyGameOutcome([...(victoryResults?.events ?? []), ...(defeatResults?.events ?? [])]);
+            await scene
+                ?.loadScene()
+                .catch((error: unknown) => console.error('Unable to reload the scene after battle', error));
         });
-    };
 
     if (!victoryResults) {
         return (

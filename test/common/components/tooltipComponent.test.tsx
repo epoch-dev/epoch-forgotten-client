@@ -1,6 +1,6 @@
 import { act } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { TooltipComponent } from '../../../src/common/components/TooltipComponent';
 
 (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT =
@@ -9,48 +9,78 @@ import { TooltipComponent } from '../../../src/common/components/TooltipComponen
 let container: HTMLDivElement;
 let root: Root;
 
-async function mount(): Promise<void> {
+async function mount(onParentKeyDown = vi.fn()): Promise<HTMLButtonElement> {
     container = document.createElement('div');
     document.body.append(container);
     root = createRoot(container);
     await act(async () => {
         root.render(
-            <TooltipComponent hint="More information">
-                <span>Details</span>
-            </TooltipComponent>,
+            <section onKeyDown={onParentKeyDown}>
+                <TooltipComponent hint="Deals fire damage">
+                    <button>Fireball</button>
+                </TooltipComponent>
+            </section>,
         );
     });
+    return container.querySelector('button')!;
 }
+
+const getTooltip = () => container.querySelector('[role="tooltip"]');
+
+const pressEscape = (target: HTMLElement) =>
+    act(async () => {
+        target.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' }));
+    });
 
 describe('TooltipComponent', () => {
     afterEach(async () => {
-        if (root) {
-            await act(async () => root.unmount());
-        }
-        container?.remove();
+        await act(async () => root.unmount());
+        container.remove();
     });
 
-    it('provides a keyboard trigger, descriptive tooltip, and Escape dismissal', async () => {
-        await mount();
-        const trigger = container.firstElementChild;
-        if (!(trigger instanceof HTMLDivElement)) {
-            throw new Error('Tooltip trigger was not rendered');
-        }
+    it('shows on focus, describes the focused control, and hides on blur', async () => {
+        const button = await mount();
 
-        await act(async () => {
-            trigger.focus();
-        });
+        await act(async () => button.focus());
 
-        const tooltip = container.querySelector('[role="tooltip"]');
-        if (!(tooltip instanceof HTMLDivElement)) {
-            throw new Error('Tooltip was not shown on focus');
-        }
-        expect(trigger.getAttribute('aria-describedby')).toBe(tooltip.id);
+        const tooltip = getTooltip();
+        expect(tooltip?.textContent).toBe('Deals fire damage');
+        expect(button.getAttribute('aria-describedby')).toBe(tooltip?.id);
+        expect((tooltip as HTMLElement).style.top).toMatch(/px$/);
 
-        await act(async () => {
-            trigger.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' }));
-        });
+        await act(async () => button.blur());
 
-        expect(container.querySelector('[role="tooltip"]')).toBeNull();
+        expect(getTooltip()).toBeNull();
+        expect(button.hasAttribute('aria-describedby')).toBe(false);
+    });
+
+    it('dismisses a visible tooltip on Escape without letting it reach parents', async () => {
+        const onParentKeyDown = vi.fn();
+        const button = await mount(onParentKeyDown);
+        await act(async () => button.focus());
+
+        await pressEscape(button);
+
+        expect(getTooltip()).toBeNull();
+        expect(document.activeElement).toBe(button);
+        expect(onParentKeyDown).not.toHaveBeenCalled();
+    });
+
+    it('lets Escape reach parent handlers when the tooltip is hidden', async () => {
+        const onParentKeyDown = vi.fn();
+        const button = await mount(onParentKeyDown);
+        await act(async () => button.focus());
+        await pressEscape(button);
+
+        await pressEscape(button);
+
+        expect(onParentKeyDown).toHaveBeenCalledTimes(1);
+    });
+
+    it('adds no tab stops of its own', async () => {
+        const button = await mount();
+        await act(async () => button.focus());
+
+        expect(container.querySelectorAll('[tabindex]')).toHaveLength(0);
     });
 });

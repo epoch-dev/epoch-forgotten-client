@@ -11,7 +11,7 @@ import {
 import { previewBundleFixture } from '../fixtures/previewBundle';
 
 describe('content projections', () => {
-    it('projects explicit dialogue graph edges and unreachable diagnostics', () => {
+    it('projects explicit dialogue graph edges', () => {
         const graph = projectDialogueGraph(
             previewBundleFixture.catalog.dialogue['core:dialogue/branch'],
             previewBundleFixture.catalog,
@@ -19,9 +19,6 @@ describe('content projections', () => {
         expect(graph.startNodeId).toBe('opening');
         expect(graph.nodes.find((node) => node.id === 'choose-path')?.choices).toHaveLength(2);
         expect(graph.nodes.find((node) => node.id === 'rejoin')?.next?.target).toBe('end');
-        expect(graph.diagnostics.some((entry) => entry.code === 'unreachable' && entry.nodeId === 'orphan')).toBe(
-            true,
-        );
     });
 
     it('projects typed speakers and semantic choice targets', () => {

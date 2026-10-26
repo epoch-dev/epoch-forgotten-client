@@ -243,6 +243,31 @@ describe('ScenesComponent socket lifecycle', () => {
         expect(mocks.toastError).not.toHaveBeenCalled();
     });
 
+    it('stops reconnecting on movement after authorization is refused twice', async () => {
+        container = document.createElement('div');
+        document.body.append(container);
+        const createdRoot = createRoot(container);
+        root = createdRoot;
+        await act(async () => {
+            createdRoot.render(<ScenesComponent />);
+        });
+
+        await act(async () => {
+            mocks.handlers.get('connect_error')?.(new Error('Unauthorized'));
+            await Promise.resolve();
+        });
+        await act(async () => {
+            mocks.handlers.get('connect_error')?.(new Error('Unauthorized'));
+        });
+        mocks.rendererOptions?.onMove(SceneMoveDirection.Up);
+
+        expect(mocks.refreshAccessToken).toHaveBeenCalledOnce();
+        expect(mocks.socket.connect).not.toHaveBeenCalled();
+        expect(container.querySelector('[role="status"]')?.textContent).toBe(
+            'Unable to connect to the world.',
+        );
+    });
+
     it('reconnects and sends the pending movement once connected', async () => {
         container = document.createElement('div');
         document.body.append(container);

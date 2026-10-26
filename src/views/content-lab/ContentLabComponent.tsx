@@ -337,17 +337,6 @@ const DialoguePanel = ({
                     <p>
                         Entry: <code>{graph.startNodeId}</code>
                     </p>
-                    {graph.diagnostics.length > 0 ? (
-                        <ul>
-                            {graph.diagnostics.map((diagnostic) => (
-                                <li key={`${diagnostic.code}-${diagnostic.nodeId}`}>
-                                    [{diagnostic.code}] {diagnostic.message}
-                                </li>
-                            ))}
-                        </ul>
-                    ) : (
-                        <p>Graph reaches explicit end from every reachable node.</p>
-                    )}
                     {graph.completionCommandTraces.length > 0 ? (
                         <>
                             <h3>Completion commands</h3>

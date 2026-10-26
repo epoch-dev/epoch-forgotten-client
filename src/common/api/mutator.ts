@@ -1,5 +1,5 @@
 import axios, { type AxiosError, type AxiosRequestConfig } from 'axios';
-import { appConfig, AppProfiles } from '../config';
+import { appConfig } from '../config';
 import { ToastService } from '../services/ToastService';
 import { StorageService } from '../services/StorageService';
 import { signout } from '../utils';
@@ -22,11 +22,6 @@ const api = axios.create({
 const refreshApi = axios.create({
     baseURL: appConfig.apiUrl,
 });
-
-if (appConfig.profile === AppProfiles.Stage) {
-    api.defaults.headers.common['ngrok-skip-browser-warning'] = true;
-    refreshApi.defaults.headers.common['ngrok-skip-browser-warning'] = true;
-}
 
 api.interceptors.request.use((config) => {
     const authToken = StorageService.get('user')?.accessToken;
@@ -74,15 +69,10 @@ api.interceptors.response.use(
 
         if (error.response?.status === 401 && config && !config.retryAfterRefresh) {
             config.retryAfterRefresh = true;
-
-            try {
-                const accessToken = await refreshAccessToken();
-                config.headers ??= {};
-                config.headers.Authorization = `Bearer ${accessToken}`;
-                return api(config);
-            } catch (refreshError) {
-                return Promise.reject(refreshError);
-            }
+            const accessToken = await refreshAccessToken();
+            config.headers ??= {};
+            config.headers.Authorization = `Bearer ${accessToken}`;
+            return api(config);
         }
 
         if (error.response?.status === 409) {

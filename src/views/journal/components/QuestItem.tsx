@@ -5,17 +5,12 @@ import StageGoals from './StageGoals';
 
 const QuestItem = ({ quest }: { quest: QuestJournalEntryDto }) => {
     const isDiscovered = quest.status === QuestJournalEntryDtoStatus.discovered;
-    const currentStage =
-        quest.currentStageId !== undefined
-            ? quest.stages.find((stage) => stage.id === quest.currentStageId)
-            : undefined;
-    const stages =
+    const showsCurrentStageOnly =
         quest.status === QuestJournalEntryDtoStatus.active ||
-        quest.status === QuestJournalEntryDtoStatus['on-hold']
-            ? currentStage
-                ? [currentStage]
-                : []
-            : quest.stages;
+        quest.status === QuestJournalEntryDtoStatus['on-hold'];
+    const stages = showsCurrentStageOnly
+        ? quest.stages.filter((stage) => stage.id === quest.currentStageId)
+        : quest.stages;
 
     return (
         <details className={`${style.questItem} ${quest.main ? style.mainQuest : ''}`}>

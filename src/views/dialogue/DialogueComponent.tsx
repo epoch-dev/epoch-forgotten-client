@@ -1,4 +1,4 @@
-import { KeyboardEvent, useEffect, useRef, useState } from 'react';
+import { KeyboardEvent, useEffect, useId, useRef, useState } from 'react';
 import { getNpc } from '../../common/api/.generated';
 import LoadingOverlay from '../../common/components/LoadingOverlay';
 import { runExclusive } from '../../common/runExclusive';
@@ -12,7 +12,7 @@ import {
     type ActiveDialogueRun,
 } from './dialogueCompletion';
 import style from './DialogueComponent.module.scss';
-import type { DialogueGraphNode } from './dialogueGraph';
+import type { DialogueGraphNode, DialogueGraphWalker } from './dialogueGraph';
 import { getLineImageUrl, getSpeakerImageUri, getSpeakerLabel, toDialogueGraph } from './dialoguePresentation';
 
 const DialogueComponent = () => {
@@ -29,6 +29,7 @@ const DialogueComponent = () => {
     const wrapperRef = useRef<HTMLDivElement>(null);
     const retryButtonRef = useRef<HTMLButtonElement>(null);
     const interactionInFlightRef = useRef(false);
+    const statusId = useId();
 
     useEffect(() => {
         wrapperRef.current?.focus();
@@ -84,81 +85,58 @@ const DialogueComponent = () => {
             return;
         }
         setIsSubmitting(true);
-        try {
-            const result = await completeDialogueRun(npcName, activeRun);
-            if (result.status === 'stale') {
-                setDialogueRun(undefined);
-                setCurrentNode(undefined);
-                setLoadAttempt((attempt) => attempt + 1);
-                return;
-            }
-            await applyGameOutcome(result.events);
-            setDialogueRun(undefined);
-            setCurrentNode(undefined);
-            setLoadAttempt((attempt) => attempt + 1);
-        } catch {
+        const result = await completeDialogueRun(npcName, activeRun).catch((error: unknown) => {
+            console.error('Unable to complete dialogue', error);
             setCompletionError('Unable to complete dialogue. Try again.');
-        } finally {
-            setIsSubmitting(false);
+        });
+        setIsSubmitting(false);
+        if (!result) {
+            return;
         }
+        if (result.status === 'completed') {
+            await applyGameOutcome(result.events);
+        }
+        setDialogueRun(undefined);
+        setCurrentNode(undefined);
+        setLoadAttempt((attempt) => attempt + 1);
     };
 
-    const handleOptionClick = async (optionId: string) => {
-        await runExclusive(interactionInFlightRef, async () => {
+    const step = (move: (walker: DialogueGraphWalker) => DialogueGraphNode | undefined) =>
+        runExclusive(interactionInFlightRef, async () => {
             if (!dialogueRun) {
                 return;
             }
-            if (!dialogueRun.walker.getCurrentNode()) {
-                await finishDialogue(dialogueRun);
-                return;
-            }
-            const nextNode = dialogueRun.walker.choose(optionId);
+            const nextNode = dialogueRun.walker.getCurrentNode() && move(dialogueRun.walker);
             if (nextNode) {
                 setCurrentNode(nextNode);
                 return;
             }
             await finishDialogue(dialogueRun);
         });
-    };
 
-    const handleOkClick = async () => {
-        await runExclusive(interactionInFlightRef, async () => {
-            if (!dialogueRun || currentNode?.kind !== 'line') {
-                return;
-            }
-            if (!dialogueRun.walker.getCurrentNode()) {
-                await finishDialogue(dialogueRun);
-                return;
-            }
-            const nextNode = dialogueRun.walker.advance();
-            if (nextNode) {
-                setCurrentNode(nextNode);
-                return;
-            }
-            await finishDialogue(dialogueRun);
-        });
-    };
-
-    const handleKeyPress = (event: KeyboardEvent<HTMLDivElement>) => {
+    const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+        if (completionError || event.repeat) {
+            return;
+        }
+        const option =
+            currentNode?.kind === 'choice' && /^[1-9]$/.test(event.key)
+                ? currentNode.choices[Number(event.key) - 1]
+                : undefined;
+        if (option) {
+            event.preventDefault();
+            void step((walker) => walker.choose(option.id));
+            return;
+        }
+        // A focused button already activates itself on Space and Enter.
         if (
-            completionError ||
-            event.repeat ||
-            event.target instanceof HTMLButtonElement
+            currentNode?.kind !== 'line' ||
+            event.target instanceof HTMLButtonElement ||
+            (event.key !== ' ' && event.key !== 'Enter')
         ) {
             return;
         }
-        const pressedKey = event.key;
-        if (pressedKey === ' ' || pressedKey === 'Spacebar' || pressedKey === 'Enter') {
-            event.preventDefault();
-            void handleOkClick();
-        } else if (currentNode?.kind === 'choice' && /^[1-9]$/.test(pressedKey)) {
-            const keyIndex = parseInt(pressedKey, 10) - 1;
-            const option = currentNode.choices[keyIndex];
-            if (option) {
-                event.preventDefault();
-                void handleOptionClick(option.id);
-            }
-        }
+        event.preventDefault();
+        void step((walker) => walker.advance());
     };
 
     const speakerLabel = currentNode ? getSpeakerLabel(currentNode.speaker) : '';
@@ -171,17 +149,20 @@ const DialogueComponent = () => {
     return (
         <div
             className={style.dialogueWrapper}
-            onKeyDown={handleKeyPress}
+            onKeyDown={handleKeyDown}
             tabIndex={-1}
             ref={wrapperRef}>
             {isLoading ? (
                 <LoadingOverlay />
             ) : loadError ? (
                 <div className={`${style.dialogueItem} ${style.errorState}`}>
-                    <p role="status">{loadError}</p>
+                    <p id={statusId} role="status">
+                        {loadError}
+                    </p>
                     <button
                         ref={retryButtonRef}
                         type="button"
+                        aria-describedby={statusId}
                         className={style.dialogueBtn}
                         onClick={() => setLoadAttempt((attempt) => attempt + 1)}>
                         Try again
@@ -230,7 +211,7 @@ const DialogueComponent = () => {
                                     <button
                                         key={option.id}
                                         type="button"
-                                        onClick={() => void handleOptionClick(option.id)}
+                                        onClick={() => void step((walker) => walker.choose(option.id))}
                                         className={style.dialogueBtn}
                                         disabled={isSubmitting}>
                                         {index + 1}: {option.text}
@@ -241,7 +222,7 @@ const DialogueComponent = () => {
                         {currentNode.kind === 'line' && !completionError && (
                             <button
                                 type="button"
-                                onClick={() => void handleOkClick()}
+                                onClick={() => void step((walker) => walker.advance())}
                                 className={style.dialogueBtn}
                                 disabled={isSubmitting}>
                                 OK
@@ -249,17 +230,19 @@ const DialogueComponent = () => {
                         )}
                         {completionError && dialogueRun && (
                             <>
-                                <p role="status">{completionError}</p>
+                                <p id={statusId} role="status">
+                                    {completionError}
+                                </p>
                                 <button
                                     ref={retryButtonRef}
                                     type="button"
+                                    aria-describedby={statusId}
                                     onClick={() =>
                                         void runExclusive(interactionInFlightRef, () =>
                                             finishDialogue(dialogueRun),
                                         )
                                     }
-                                    className={style.dialogueBtn}
-                                    disabled={isSubmitting}>
+                                    className={style.dialogueBtn}>
                                     Retry
                                 </button>
                             </>

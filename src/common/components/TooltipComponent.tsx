@@ -1,18 +1,15 @@
 import style from './TooltipComponent.module.scss';
-import {
-    type FocusEvent,
-    type KeyboardEvent,
-    type ReactNode,
-    useLayoutEffect,
-    useRef,
-    useState,
-    useId,
-} from 'react';
+import { ReactNode, useState, useId, MouseEvent, FocusEvent, KeyboardEvent } from 'react';
 
 type TooltipConfig = {
     containerWidth?: string;
     width?: string;
+    top?: string;
+    left?: string;
+    transform?: string;
 };
+
+type TooltipPosition = Pick<TooltipConfig, 'top' | 'left' | 'transform'>;
 
 type TooltipComponentProps = {
     children: ReactNode;
@@ -23,93 +20,75 @@ type TooltipComponentProps = {
 const DEFAULT_CONFIG: TooltipConfig = {
     containerWidth: 'fit-content',
     width: '12rem',
+    top: '110%',
+    left: '50%',
+    transform: 'translateX(-50%)',
 };
 
 export const TooltipComponent = ({ children, hint, config }: TooltipComponentProps) => {
+    const [position, setPosition] = useState<TooltipPosition>();
     const [isVisible, setIsVisible] = useState(false);
-    const [position, setPosition] = useState({ left: 0, top: 0 });
-    const triggerRef = useRef<HTMLDivElement>(null);
-    const tooltipRef = useRef<HTMLDivElement>(null);
     const tooltipId = useId();
-    const cssConfig = { ...DEFAULT_CONFIG, ...config };
+    const cssConfig = { ...DEFAULT_CONFIG, ...config, ...position };
 
-    useLayoutEffect(() => {
-        if (!isVisible) {
-            return;
-        }
+    const positionAt = (x: number, y: number) => {
+        const translateX = x > window.innerWidth / 2 ? '-110%' : '10%';
+        const translateY = y > window.innerHeight / 2 ? '-110%' : '10%';
 
-        const updatePosition = () => {
-            const trigger = triggerRef.current?.getBoundingClientRect();
-            const tooltip = tooltipRef.current?.getBoundingClientRect();
-            if (!trigger || !tooltip) {
-                return;
-            }
+        setPosition({
+            top: `${y}px`,
+            left: `${x}px`,
+            transform: `translateX(${translateX}) translateY(${translateY})`,
+        });
+    };
 
-            const viewportWidth = window.innerWidth;
-            const viewportHeight = window.innerHeight;
-            const viewportPadding = 8;
-            const minLeft = tooltip.width / 2 + viewportPadding;
-            const maxLeft = viewportWidth - tooltip.width / 2 - viewportPadding;
-            const preferredLeft = trigger.left + trigger.width / 2;
-            const left = Math.max(minLeft, Math.min(preferredLeft, maxLeft));
-            const belowTop = trigger.bottom + viewportPadding;
-            const aboveTop = trigger.top - tooltip.height - viewportPadding;
-            const top =
-                belowTop + tooltip.height <= viewportHeight - viewportPadding
-                    ? belowTop
-                    : Math.max(viewportPadding, aboveTop);
+    const handleMouseEnter = () => {
+        setIsVisible(true);
+    };
 
-            setPosition({ left, top });
-        };
+    const handleMouseMove = ({ clientX, clientY }: MouseEvent) => {
+        positionAt(clientX, clientY);
+    };
 
-        updatePosition();
-        window.addEventListener('resize', updatePosition);
-        window.addEventListener('scroll', updatePosition, true);
+    const handleMouseLeave = () => {
+        setIsVisible(false);
+    };
 
-        return () => {
-            window.removeEventListener('resize', updatePosition);
-            window.removeEventListener('scroll', updatePosition, true);
-        };
-    }, [isVisible]);
+    const handleFocus = ({ target }: FocusEvent<HTMLDivElement>) => {
+        const { left, top, bottom, width, height } = target.getBoundingClientRect();
+        const isInUpperHalf = top + height / 2 < window.innerHeight / 2;
 
-    const handleBlur = (event: FocusEvent<HTMLDivElement>) => {
-        if (!event.currentTarget.contains(event.relatedTarget)) {
-            setIsVisible(false);
-        }
+        target.setAttribute('aria-describedby', tooltipId);
+        positionAt(left + width / 2, isInUpperHalf ? bottom : top);
+        setIsVisible(true);
+    };
+
+    const handleBlur = ({ target }: FocusEvent<HTMLDivElement>) => {
+        target.removeAttribute('aria-describedby');
+        setIsVisible(false);
     };
 
     const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-        if (event.key === 'Escape') {
-            event.preventDefault();
-            event.stopPropagation();
-            setIsVisible(false);
+        if (event.key !== 'Escape' || !isVisible) {
+            return;
         }
+        event.stopPropagation();
+        setIsVisible(false);
     };
 
     return (
         <div
-            ref={triggerRef}
-            onMouseEnter={() => setIsVisible(true)}
-            onMouseLeave={() => setIsVisible(false)}
-            onFocus={() => setIsVisible(true)}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            onMouseMove={handleMouseMove}
+            onFocus={handleFocus}
             onBlur={handleBlur}
             onKeyDown={handleKeyDown}
             className={style.tooltipContainer}
-            style={{ width: cssConfig.containerWidth }}
-            tabIndex={0}
-            aria-describedby={isVisible ? tooltipId : undefined}>
+            style={{ width: cssConfig.containerWidth }}>
             {children}
             {isVisible && (
-                <div
-                    ref={tooltipRef}
-                    id={tooltipId}
-                    className={style.tooltipWrapper}
-                    role="tooltip"
-                    style={{
-                        width: cssConfig.width,
-                        left: `${position.left}px`,
-                        top: `${position.top}px`,
-                    }}>
+                <div id={tooltipId} role="tooltip" className={style.tooltipWrapper} style={cssConfig}>
                     {hint}
                 </div>
             )}

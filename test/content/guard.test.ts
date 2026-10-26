@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { describePreviewBundleErrors, isPreviewBundle } from '../../src/content/guard';
+import { describePreviewBundleErrors } from '../../src/content/guard';
 import { isPreviewContentCommand } from '../../src/content/commandTrace';
 import { previewBundleFixture } from '../fixtures/previewBundle';
 
@@ -9,7 +9,11 @@ const isRecord = (value: unknown): value is Readonly<Record<string, unknown>> =>
 const asArray = (value: unknown): readonly unknown[] =>
     Array.isArray(value) ? value : [];
 
-describe('isPreviewBundle', () => {
+const catalogEntryError = (kind: string, id: string) => [
+    expect.stringContaining(`Catalog ${kind} "${id}" must be a `),
+];
+
+describe('describePreviewBundleErrors', () => {
     it('accepts consume-item commands emitted by the server preview bundle', () => {
         expect(
             isPreviewContentCommand({
@@ -21,18 +25,17 @@ describe('isPreviewBundle', () => {
     });
 
     it('accepts a valid preview bundle fixture', () => {
-        expect(isPreviewBundle(previewBundleFixture)).toBe(true);
         expect(describePreviewBundleErrors(previewBundleFixture)).toEqual([]);
         expect(previewBundleFixture.version).toBe(3);
     });
 
     it('rejects bundles with mismatched source hashes', () => {
         expect(
-            isPreviewBundle({
+            describePreviewBundleErrors({
                 ...previewBundleFixture,
                 sourceHash: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
             }),
-        ).toBe(false);
+        ).toEqual(['sourceHash does not match report.sourceHash.']);
     });
 
     it('rejects an NPC without a canonical identity label', () => {
@@ -61,10 +64,7 @@ describe('isPreviewBundle', () => {
             },
         };
 
-        expect(describePreviewBundleErrors(stale)).toContain(
-            'NPC "core:npc/innkeeper" is missing its required identity label.',
-        );
-        expect(isPreviewBundle(stale)).toBe(false);
+        expect(describePreviewBundleErrors(stale)).toEqual(catalogEntryError('npc', 'core:npc/innkeeper'));
     });
 
     it('rejects legacy dialogues[] npc selection', () => {
@@ -86,7 +86,7 @@ describe('isPreviewBundle', () => {
             },
         };
 
-        expect(isPreviewBundle(stale)).toBe(false);
+        expect(describePreviewBundleErrors(stale)).toEqual(catalogEntryError('npc', 'core:npc/innkeeper'));
     });
 
     it('rejects malformed npc priority conditions', () => {
@@ -114,7 +114,7 @@ describe('isPreviewBundle', () => {
             },
         };
 
-        expect(isPreviewBundle(stale)).toBe(false);
+        expect(describePreviewBundleErrors(stale)).toEqual(catalogEntryError('npc', 'core:npc/innkeeper'));
     });
 
     it('rejects malformed npc fallback discriminants', () => {
@@ -137,7 +137,7 @@ describe('isPreviewBundle', () => {
             },
         };
 
-        expect(isPreviewBundle(stale)).toBe(false);
+        expect(describePreviewBundleErrors(stale)).toEqual(catalogEntryError('npc', 'core:npc/innkeeper'));
     });
 
     it('rejects empty random npc fallback pools', () => {
@@ -160,7 +160,7 @@ describe('isPreviewBundle', () => {
             },
         };
 
-        expect(isPreviewBundle(stale)).toBe(false);
+        expect(describePreviewBundleErrors(stale)).toEqual(catalogEntryError('npc', 'core:npc/innkeeper'));
     });
 
     it('rejects missing npc priority dialogue ids', () => {
@@ -188,7 +188,7 @@ describe('isPreviewBundle', () => {
             },
         };
 
-        expect(isPreviewBundle(stale)).toBe(false);
+        expect(describePreviewBundleErrors(stale)).toEqual(catalogEntryError('npc', 'core:npc/innkeeper'));
     });
 
     it('rejects unknown npc dialogue selection fields', () => {
@@ -212,7 +212,7 @@ describe('isPreviewBundle', () => {
             },
         };
 
-        expect(isPreviewBundle(stale)).toBe(false);
+        expect(describePreviewBundleErrors(stale)).toEqual(catalogEntryError('npc', 'core:npc/innkeeper'));
     });
 
     it('rejects legacy dialogue author fields with a precise diagnostic', () => {
@@ -228,9 +228,9 @@ describe('isPreviewBundle', () => {
                 },
             },
         };
-        const errors = describePreviewBundleErrors(stale);
-        expect(errors.some((entry) => entry.includes('startNodeId'))).toBe(true);
-        expect(isPreviewBundle(stale)).toBe(false);
+        expect(describePreviewBundleErrors(stale)).toEqual([
+            expect.stringContaining('Catalog dialogue "core:dialogue/stale" must be a semantic dialogue graph (startNodeId'),
+        ]);
     });
 
     it('rejects legacy quest transition maps', () => {
@@ -250,9 +250,9 @@ describe('isPreviewBundle', () => {
                 },
             },
         };
-        const errors = describePreviewBundleErrors(stale);
-        expect(errors.some((entry) => entry.includes('transitions array'))).toBe(true);
-        expect(isPreviewBundle(stale)).toBe(false);
+        expect(describePreviewBundleErrors(stale)).toEqual([
+            expect.stringContaining('Catalog quest "core:quest/stale" must be a quest definition'),
+        ]);
     });
 
     it('rejects malformed dialogue choice conditions', () => {
@@ -295,7 +295,7 @@ describe('isPreviewBundle', () => {
             },
         };
 
-        expect(isPreviewBundle(stale)).toBe(false);
+        expect(describePreviewBundleErrors(stale)).toEqual(catalogEntryError('dialogue', 'core:dialogue/branch'));
     });
 
     it('rejects malformed nested dialogue conditions', () => {
@@ -330,7 +330,7 @@ describe('isPreviewBundle', () => {
             },
         };
 
-        expect(isPreviewBundle(stale)).toBe(false);
+        expect(describePreviewBundleErrors(stale)).toEqual(catalogEntryError('dialogue', 'core:dialogue/branch'));
     });
 
     it('rejects malformed dialogue choice command arrays', () => {
@@ -376,7 +376,7 @@ describe('isPreviewBundle', () => {
             },
         };
 
-        expect(isPreviewBundle(stale)).toBe(false);
+        expect(describePreviewBundleErrors(stale)).toEqual(catalogEntryError('dialogue', 'core:dialogue/branch'));
     });
 
     it('rejects malformed graph completion command arrays', () => {
@@ -394,7 +394,7 @@ describe('isPreviewBundle', () => {
             },
         };
 
-        expect(isPreviewBundle(stale)).toBe(false);
+        expect(describePreviewBundleErrors(stale)).toEqual(catalogEntryError('dialogue', 'core:dialogue/branch'));
     });
 
     it('rejects malformed quest transition conditions', () => {
@@ -420,7 +420,7 @@ describe('isPreviewBundle', () => {
             },
         };
 
-        expect(isPreviewBundle(stale)).toBe(false);
+        expect(describePreviewBundleErrors(stale)).toEqual(catalogEntryError('quest', 'core:quest/tutorial'));
     });
 
     it('rejects a transition condition with an invalid discriminant payload', () => {
@@ -450,7 +450,7 @@ describe('isPreviewBundle', () => {
             },
         };
 
-        expect(isPreviewBundle(stale)).toBe(false);
+        expect(describePreviewBundleErrors(stale)).toEqual(catalogEntryError('quest', 'core:quest/tutorial'));
     });
 
     it('rejects malformed quest transition commands', () => {
@@ -477,7 +477,7 @@ describe('isPreviewBundle', () => {
             },
         };
 
-        expect(isPreviewBundle(stale)).toBe(false);
+        expect(describePreviewBundleErrors(stale)).toEqual(catalogEntryError('quest', 'core:quest/tutorial'));
     });
 
     it('rejects unknown command kinds', () => {
@@ -495,12 +495,12 @@ describe('isPreviewBundle', () => {
             },
         };
 
-        expect(isPreviewBundle(stale)).toBe(false);
+        expect(describePreviewBundleErrors(stale)).toEqual(catalogEntryError('dialogue', 'core:dialogue/branch'));
     });
 
     it('rejects asset inventory entries without a valid category', () => {
         expect(
-            isPreviewBundle({
+            describePreviewBundleErrors({
                 ...previewBundleFixture,
                 report: {
                     ...previewBundleFixture.report,
@@ -509,6 +509,6 @@ describe('isPreviewBundle', () => {
                     },
                 },
             }),
-        ).toBe(false);
+        ).toEqual(['Invalid report block.']);
     });
 });

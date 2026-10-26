@@ -24,5 +24,3 @@ dist-ssr
 *.sw?
 
 .generated/
-src/content/.generated/
-src/common/api/.generated/

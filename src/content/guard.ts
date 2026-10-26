@@ -1,14 +1,10 @@
 import {
     CONTENT_KINDS,
     PREVIEW_BUNDLE_VERSION,
-    PREVIEW_SYNC_COMMAND,
-    type ContentKind,
     type JsonObject,
     type JsonValue,
     type PreviewAssetCategory,
     type PreviewAssetReference,
-    type PreviewBundle,
-    type PreviewCatalog,
     type PreviewIssue,
     type PreviewPack,
     type PreviewReport,
@@ -375,44 +371,31 @@ const isQuestDefinition = (value: JsonObject): boolean => {
     return false;
 };
 
-const isPreviewCatalog = (value: JsonValue): value is PreviewCatalog => {
+const CATALOG_ENTRY_RULES = [
+    ['dialogue', isDialogueGraph, 'semantic dialogue graph (startNodeId, typed speakers, explicit edges)'],
+    ['npc', isNpcDefinition, 'labeled NPC with priority conditions plus a fixed or random fallback'],
+    ['quest', isQuestDefinition, 'quest definition (journalHint, initialStageId, transitions array)'],
+] as const;
+
+const describeCatalogError = (value: JsonValue): string | undefined => {
     if (!isRecord(value) || value.version !== 1) {
-        return false;
+        return 'Catalog must be a version 1 object.';
     }
-    if (!Array.isArray(value.encounterOverlay) || !value.encounterOverlay.every((entry) => isRecord(entry))) {
-        return false;
+    if (!Array.isArray(value.encounterOverlay) || !value.encounterOverlay.every(isRecord)) {
+        return 'Catalog encounterOverlay must be an array of objects.';
     }
-    if (!CONTENT_KINDS.every((kind) => isCatalogKindMap(value[kind satisfies ContentKind]))) {
-        return false;
+    const invalidKind = CONTENT_KINDS.find((kind) => !isCatalogKindMap(value[kind]));
+    if (invalidKind) {
+        return `Catalog "${invalidKind}" must map IDs to objects.`;
     }
-    const dialogueBucket = value.dialogue;
-    if (!isCatalogKindMap(dialogueBucket)) {
-        return false;
-    }
-    for (const dialogue of Object.values(dialogueBucket)) {
-        if (!isDialogueGraph(dialogue)) {
-            return false;
+    for (const [kind, isValid, expected] of CATALOG_ENTRY_RULES) {
+        const entries = Object.entries(value[kind] as Readonly<Record<string, JsonObject>>);
+        const invalidId = entries.find(([, entry]) => !isValid(entry))?.[0];
+        if (invalidId) {
+            return `Catalog ${kind} "${invalidId}" must be a ${expected}.`;
         }
     }
-    const npcBucket = value.npc;
-    if (!isCatalogKindMap(npcBucket)) {
-        return false;
-    }
-    for (const npc of Object.values(npcBucket)) {
-        if (!isNpcDefinition(npc)) {
-            return false;
-        }
-    }
-    const questBucket = value.quest;
-    if (!isCatalogKindMap(questBucket)) {
-        return false;
-    }
-    for (const quest of Object.values(questBucket)) {
-        if (!isQuestDefinition(quest)) {
-            return false;
-        }
-    }
-    return true;
+    return undefined;
 };
 
 const isPreviewReport = (value: JsonValue): value is PreviewReport => {
@@ -453,116 +436,14 @@ export const describePreviewBundleErrors = (value: unknown): readonly string[] =
     if (!Array.isArray(bundle.packs) || !bundle.packs.every((pack) => isPreviewPack(pack))) {
         errors.push('Invalid packs array.');
     }
-    if (!isPreviewCatalog(bundle.catalog)) {
-        errors.push(
-            'Catalog must expose labeled NPCs with explicit dialogue selection (priority conditions plus fixed or random fallback), semantic dialogue graphs (startNodeId, typed speakers, explicit edges), and quest definitions (journalHint, initialStageId, transition array).',
-        );
-        if (isRecord(bundle.catalog)) {
-            const catalog = bundle.catalog;
-            const dialogues = isRecord(catalog.dialogue) ? catalog.dialogue : {};
-            for (const [dialogueId, dialogueValue] of Object.entries(dialogues)) {
-                if (!isRecord(dialogueValue)) {
-                    errors.push(`Dialogue "${dialogueId}" is not an object.`);
-                    continue;
-                }
-                for (const legacyField of LEGACY_DIALOGUE_FIELDS) {
-                    if (legacyField in dialogueValue) {
-                        errors.push(`Dialogue "${dialogueId}" still uses legacy field "${legacyField}".`);
-                    }
-                }
-                const nodes = Array.isArray(dialogueValue.nodes) ? dialogueValue.nodes : [];
-                for (const nodeValue of nodes) {
-                    if (isRecord(nodeValue)) {
-                        for (const legacyField of LEGACY_DIALOGUE_FIELDS) {
-                            if (legacyField in nodeValue) {
-                                errors.push(
-                                    `Dialogue "${dialogueId}" node "${String(nodeValue.id)}" still uses legacy field "${legacyField}".`,
-                                );
-                            }
-                        }
-                    }
-                }
-                if (typeof dialogueValue.startNodeId !== 'string') {
-                    errors.push(`Dialogue "${dialogueId}" is missing startNodeId.`);
-                }
-            }
-            const quests = isRecord(catalog.quest) ? catalog.quest : {};
-            const npcs = isRecord(catalog.npc) ? catalog.npc : {};
-            for (const [npcId, npcValue] of Object.entries(npcs)) {
-                if (!isRecord(npcValue)) {
-                    errors.push(`NPC "${npcId}" is not an object.`);
-                    continue;
-                }
-                if (typeof npcValue.label !== 'string' || npcValue.label.trim().length === 0) {
-                    errors.push(`NPC "${npcId}" is missing its required identity label.`);
-                }
-                if (Array.isArray(npcValue.dialogues)) {
-                    errors.push(
-                        `NPC "${npcId}" still uses legacy dialogues[] selection; sync preview bundle v3.`,
-                    );
-                    continue;
-                }
-                if (!isRecord(npcValue.dialogues)) {
-                    errors.push(`NPC "${npcId}" is missing explicit dialogue selection.`);
-                    continue;
-                }
-                const selection = npcValue.dialogues;
-                if (!hasOnlyKeys(selection, NPC_DIALOGUE_SELECTION_KEYS)) {
-                    errors.push(`NPC "${npcId}" dialogue selection has unknown fields.`);
-                }
-                if (!Array.isArray(selection.priority)) {
-                    errors.push(`NPC "${npcId}" dialogue selection is missing priority[].`);
-                } else {
-                    selection.priority.forEach((entryValue, index) => {
-                        if (!isRecord(entryValue)) {
-                            errors.push(`NPC "${npcId}" priority[${index}] is not an object.`);
-                            return;
-                        }
-                        if (!hasOnlyKeys(entryValue, NPC_DIALOGUE_PRIORITY_KEYS)) {
-                            errors.push(`NPC "${npcId}" priority[${index}] has unknown fields.`);
-                        }
-                        if (typeof entryValue.dialogueId !== 'string' || entryValue.dialogueId.length === 0) {
-                            errors.push(`NPC "${npcId}" priority[${index}] is missing dialogueId.`);
-                        }
-                        if (!isPreviewCondition(entryValue.condition)) {
-                            errors.push(`NPC "${npcId}" priority[${index}] has a malformed condition.`);
-                        }
-                    });
-                }
-                if (!isRecord(selection.fallback)) {
-                    errors.push(`NPC "${npcId}" dialogue selection is missing fallback.`);
-                } else if (!hasOnlyKeys(selection.fallback, NPC_DIALOGUE_FIXED_FALLBACK_KEYS) &&
-                    !hasOnlyKeys(selection.fallback, NPC_DIALOGUE_RANDOM_FALLBACK_KEYS)) {
-                    errors.push(`NPC "${npcId}" fallback has unknown fields.`);
-                } else if (!isNpcDialogueFallback(selection.fallback)) {
-                    if (selection.fallback.kind === 'random') {
-                        errors.push(`NPC "${npcId}" random fallback needs at least two dialogueIds.`);
-                    } else {
-                        errors.push(`NPC "${npcId}" fallback has a malformed discriminant or payload.`);
-                    }
-                }
-            }
-            for (const [questId, questValue] of Object.entries(quests)) {
-                if (!isRecord(questValue)) {
-                    errors.push(`Quest "${questId}" is not an object.`);
-                    continue;
-                }
-                if (typeof questValue.journalHint !== 'string') {
-                    errors.push(`Quest "${questId}" is missing journalHint.`);
-                }
-                if (!Array.isArray(questValue.transitions)) {
-                    errors.push(`Quest "${questId}" must use a transitions array, not a legacy map.`);
-                }
-            }
-        }
+    const catalogError = describeCatalogError(bundle.catalog);
+    if (catalogError) {
+        errors.push(catalogError);
     }
     if (!isPreviewReport(bundle.report)) {
         errors.push('Invalid report block.');
     } else if (bundle.sourceHash !== bundle.report.sourceHash) {
         errors.push('sourceHash does not match report.sourceHash.');
-    }
-    if (errors.length === 0) {
-        return [];
     }
     return errors;
 };
@@ -575,20 +456,3 @@ export const isStalePreviewBundle = (value: unknown): boolean => {
         candidate.version !== PREVIEW_BUNDLE_VERSION
     );
 };
-
-export const buildPreviewRecoveryMessage = (
-    syncCommand: string,
-    errors: readonly string[] = [],
-): string => {
-    const detail = errors.length > 0 ? ` ${errors[0]}` : '';
-    return `Preview bundle missing or stale.${detail} From epoch-forgotten run: ${syncCommand}`;
-};
-
-export const isPreviewBundle = (value: unknown): value is PreviewBundle => {
-    if (!isRecord(value as JsonValue)) {
-        return false;
-    }
-    return describePreviewBundleErrors(value).length === 0;
-};
-
-export { PREVIEW_SYNC_COMMAND };

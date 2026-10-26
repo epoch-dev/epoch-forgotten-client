@@ -33,16 +33,13 @@ export const ScenesComponent = () => {
         let game: Phaser.Game | undefined;
         let wsClient: Socket | undefined;
         let pendingDirection: SceneMoveDirection | undefined;
-        let connectionErrorReported = false;
         let authorizationRetried = false;
         let removeReconnectFailedListener: (() => void) | undefined;
 
         const reportConnectionError = (message: string) => {
-            if (disposed || connectionErrorReported) {
-                return;
+            if (!disposed) {
+                setConnectionError(message);
             }
-            connectionErrorReported = true;
-            setConnectionError(message);
         };
 
         if (!StorageService.get('user')) {
@@ -81,7 +78,6 @@ export const ScenesComponent = () => {
             const socket = createSceneSocket(authToken);
             wsClient = socket;
             socket.on('connect', () => {
-                connectionErrorReported = false;
                 authorizationRetried = false;
                 setConnectionError(undefined);
                 if (pendingDirection === undefined) {
@@ -129,6 +125,7 @@ export const ScenesComponent = () => {
                     return;
                 }
                 if (authorizationRetried) {
+                    wsClient = undefined;
                     reportConnectionError('Unable to connect to the world.');
                     return;
                 }
@@ -144,6 +141,7 @@ export const ScenesComponent = () => {
                         connect(refreshedToken);
                     })
                     .catch((refreshError: unknown) => {
+                        wsClient = undefined;
                         reportConnectionError(
                             refreshError instanceof Error
                                 ? refreshError.message

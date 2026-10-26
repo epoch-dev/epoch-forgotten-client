@@ -2,6 +2,8 @@ import { act } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { NpcDto } from '../../../src/common/api/.generated';
+import { useGameStore } from '../../../src/views/game/GameStore';
+import { GameView } from '../../../src/views/game/types';
 
 (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT =
     true;
@@ -24,32 +26,21 @@ function deferred<T>(): Deferred<T> {
 
 const mocks = vi.hoisted(() => ({
     completeDialogue: vi.fn(),
+    currentScene: vi.fn(),
     getNpc: vi.fn(),
-    npcName: 'prologue:npc/martha',
     toastError: vi.fn(),
-    applyGameOutcome: vi.fn(),
 }));
 
 vi.mock('../../../src/common/api/.generated', () => ({
     getNpc: mocks.getNpc,
     completeDialogue: mocks.completeDialogue,
-}));
-
-vi.mock('../../../src/views/game/GameStore', () => ({
-    useGameStore: () => ({
-        npcName: mocks.npcName,
-        setView: vi.fn(),
-    }),
+    currentScene: mocks.currentScene,
 }));
 
 vi.mock('../../../src/common/services/ToastService', () => ({
     ToastService: {
         error: mocks.toastError,
     },
-}));
-
-vi.mock('../../../src/common/services/gameOutcome', () => ({
-    applyGameOutcome: mocks.applyGameOutcome,
 }));
 
 import DialogueComponent from '../../../src/views/dialogue/DialogueComponent';
@@ -78,10 +69,50 @@ const npc = (label: string, title: string, text: string): NpcDto =>
         },
     }) satisfies NpcDto;
 
+const choiceNpc = (): NpcDto => ({
+    label: 'Martha',
+    title: 'Inn Keeper',
+    dialogue: {
+        id: 'prologue:dialogue/martha',
+        revision: 'revision-1',
+        startNodeId: 'choice',
+        nodes: [
+            {
+                id: 'choice',
+                kind: 'choice',
+                text: 'Choose.',
+                speaker: { kind: 'npc', npcId: 'prologue:npc/martha', label: 'Martha' },
+                choices: [
+                    { id: 'first', text: 'First', next: { kind: 'end' } },
+                    { id: 'second', text: 'Second', next: { kind: 'end' } },
+                ],
+            },
+        ],
+    },
+});
+
 let container: HTMLDivElement;
 let root: Root;
 
-async function mount(): Promise<void> {
+const findButton = (text: string): HTMLButtonElement => {
+    const button = Array.from(container.querySelectorAll('button')).find(
+        (candidate) => candidate.textContent === text,
+    );
+    if (!button) {
+        throw new Error(`Button "${text}" was not rendered`);
+    }
+    return button;
+};
+
+const clickAndSettle = async (button: HTMLButtonElement): Promise<void> => {
+    await act(async () => {
+        button.click();
+        await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+};
+
+async function mount(npcName = 'prologue:npc/martha'): Promise<void> {
+    useGameStore.setState({ view: GameView.Dialogue, npcName });
     container = document.createElement('div');
     document.body.append(container);
     root = createRoot(container);
@@ -95,8 +126,8 @@ describe('DialogueComponent loading', () => {
         mocks.getNpc.mockReset();
         mocks.completeDialogue.mockReset();
         mocks.toastError.mockReset();
-        mocks.applyGameOutcome.mockReset().mockResolvedValue({ refreshed: true });
-        mocks.npcName = 'prologue:npc/martha';
+        mocks.currentScene.mockReset().mockResolvedValue({ userPosition: { x: 0, y: 0 } });
+        vi.spyOn(console, 'error').mockImplementation(() => undefined);
     });
 
     afterEach(async () => {
@@ -104,6 +135,7 @@ describe('DialogueComponent loading', () => {
             await act(async () => root.unmount());
         }
         container?.remove();
+        vi.restoreAllMocks();
     });
 
     it('shows a retryable error instead of remaining loading', async () => {
@@ -116,12 +148,7 @@ describe('DialogueComponent loading', () => {
         expect(container.textContent).toContain('Try again');
         expect(mocks.toastError).not.toHaveBeenCalled();
 
-        const retry = Array.from(container.querySelectorAll('button')).find(
-            (button) => button.textContent === 'Try again',
-        );
-        if (!retry) {
-            throw new Error('Retry button was not rendered');
-        }
+        const retry = findButton('Try again');
         expect(retry).toBe(document.activeElement);
         expect(container.querySelector('[role="status"]')?.textContent).toBe(
             'Unable to load dialogue.',
@@ -176,15 +203,13 @@ describe('DialogueComponent loading', () => {
     it('ignores a stale NPC response and preserves title and speaker identity', async () => {
         const staleRequest = deferred<NpcDto>();
         const currentRequest = deferred<NpcDto>();
-        mocks.npcName = 'prologue:npc/amol';
         mocks.getNpc
             .mockReturnValueOnce(staleRequest.promise)
             .mockReturnValueOnce(currentRequest.promise);
-        await mount();
+        await mount('prologue:npc/amol');
 
-        mocks.npcName = 'prologue:npc/martha';
         await act(async () => {
-            root.render(<DialogueComponent />);
+            useGameStore.setState({ npcName: 'prologue:npc/martha' });
         });
         expect(mocks.getNpc).toHaveBeenCalledTimes(2);
 
@@ -203,50 +228,27 @@ describe('DialogueComponent loading', () => {
         expect(container.textContent).not.toContain('Stale line.');
     });
 
-    it('locks choice changes after a failed completion and retries the same run', async () => {
-        mocks.getNpc.mockResolvedValue({
-            label: 'Martha',
-            title: 'Inn Keeper',
-            dialogue: {
-                id: 'prologue:dialogue/martha',
-                revision: 'revision-1',
-                startNodeId: 'choice',
-                nodes: [
-                    {
-                        id: 'choice',
-                        kind: 'choice',
-                        text: 'Choose.',
-                        speaker: { kind: 'npc', npcId: 'prologue:npc/martha', label: 'Martha' },
-                        choices: [
-                            { id: 'first', text: 'First', next: { kind: 'end' } },
-                            { id: 'second', text: 'Second', next: { kind: 'end' } },
-                        ],
-                    },
-                ],
-            },
-        } satisfies NpcDto);
-        mocks.completeDialogue
-            .mockRejectedValueOnce(new Error('offline'))
-            .mockResolvedValueOnce({ events: [] });
+    it('locks choice changes after a failed completion and retries the same run to its outcome', async () => {
+        mocks.getNpc
+            .mockResolvedValueOnce(choiceNpc())
+            .mockResolvedValueOnce(npc('Elias', 'Herbalist', 'Follow-up line.'));
+        mocks.completeDialogue.mockRejectedValueOnce(new Error('offline')).mockResolvedValueOnce({
+            events: [
+                {
+                    kind: 'dialogue-opened',
+                    npcId: 'prologue:npc/elias',
+                    label: 'Elias',
+                    dialogueId: 'prologue:dialogue/elias',
+                    startNodeId: 'opening',
+                },
+            ],
+        });
         await mount();
 
-        const firstChoice = Array.from(container.querySelectorAll('button')).find(
-            (button) => button.textContent === '1: First',
-        );
-        if (!firstChoice) {
-            throw new Error('First choice was not rendered');
-        }
-        await act(async () => {
-            firstChoice.click();
-            await Promise.resolve();
-        });
+        await clickAndSettle(findButton('1: First'));
 
-        expect(container.textContent).toContain('Retry');
         expect(container.textContent).not.toContain('2: Second');
         expect(mocks.toastError).not.toHaveBeenCalled();
-        expect(mocks.completeDialogue).toHaveBeenCalledWith(
-            expect.objectContaining({ choicePath: ['first'] }),
-        );
         const wrapper = container.querySelector('[tabindex="-1"]');
         if (!wrapper) {
             throw new Error('Dialogue wrapper was not rendered');
@@ -258,21 +260,87 @@ describe('DialogueComponent loading', () => {
         });
         expect(mocks.completeDialogue).toHaveBeenCalledOnce();
 
-        const retry = Array.from(container.querySelectorAll('button')).find(
-            (button) => button.textContent === 'Retry',
-        );
-        if (!retry) {
-            throw new Error('Retry button was not rendered');
-        }
-        await act(async () => {
-            retry.click();
-            await Promise.resolve();
-        });
+        await clickAndSettle(findButton('Retry'));
 
         expect(mocks.completeDialogue).toHaveBeenCalledTimes(2);
         expect(mocks.completeDialogue).toHaveBeenLastCalledWith(
             expect.objectContaining({ choicePath: ['first'] }),
         );
+        expect(useGameStore.getState()).toMatchObject({
+            view: GameView.Dialogue,
+            npcName: 'prologue:npc/elias',
+        });
+        expect(mocks.currentScene).toHaveBeenCalledOnce();
+        expect(container.textContent).toContain('Elias: Follow-up line.');
+        expect(container.textContent).not.toContain('Retry');
+        expect(container.querySelector('[role="status"]')).toBeNull();
+    });
+
+    it('keeps Retry enabled and focused, described by the status, across repeated failures', async () => {
+        const retryRequest = deferred<never>();
+        mocks.getNpc.mockResolvedValue(choiceNpc());
+        mocks.completeDialogue
+            .mockRejectedValueOnce(new Error('offline'))
+            .mockReturnValueOnce(retryRequest.promise);
+        await mount();
+
+        await clickAndSettle(findButton('1: First'));
+        const retry = findButton('Retry');
+        expect(document.activeElement).toBe(retry);
+
+        await clickAndSettle(retry);
+        await clickAndSettle(retry);
+
+        // Browsers drop focus from a disabled button, so Retry must stay enabled while pending.
+        expect(retry.disabled).toBe(false);
+        expect(mocks.completeDialogue).toHaveBeenCalledTimes(2);
+
+        await act(async () => {
+            retryRequest.reject(new Error('offline'));
+            await retryRequest.promise.catch(() => undefined);
+        });
+
+        expect(document.activeElement).toBe(retry);
+        const statusId = retry.getAttribute('aria-describedby');
+        expect(statusId).toBeTruthy();
+        const status = container.querySelector('[role="status"]');
+        expect(status?.id).toBe(statusId);
+        expect(status?.textContent).toBe('Unable to complete dialogue. Try again.');
+    });
+
+    it('selects a choice by number key while a choice button has focus', async () => {
+        mocks.getNpc.mockResolvedValue(choiceNpc());
+        mocks.completeDialogue.mockReturnValue(new Promise(() => undefined));
+        await mount();
+
+        const firstChoice = findButton('1: First');
+        firstChoice.focus();
+        await act(async () => {
+            firstChoice.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: '2' }));
+        });
+
+        expect(mocks.completeDialogue).toHaveBeenCalledOnce();
+        expect(mocks.completeDialogue).toHaveBeenCalledWith(
+            expect.objectContaining({ choicePath: ['second'] }),
+        );
+    });
+
+    it('reloads the dialogue without applying an outcome when the completion is stale', async () => {
+        mocks.getNpc
+            .mockResolvedValueOnce(npc('Martha', 'Inn Keeper', 'Old line.'))
+            .mockResolvedValueOnce(npc('Martha', 'Inn Keeper', 'Current line.'));
+        mocks.completeDialogue.mockRejectedValueOnce(
+            Object.assign(new Error('Conflict'), { isAxiosError: true, response: { status: 409 } }),
+        );
+        await mount();
+
+        await clickAndSettle(findButton('OK'));
+
+        expect(mocks.getNpc).toHaveBeenCalledTimes(2);
+        expect(mocks.currentScene).not.toHaveBeenCalled();
+        expect(container.textContent).toContain('Martha: Current line.');
+        expect(container.querySelector('[role="status"]')).toBeNull();
+        expect(useGameStore.getState().view).toBe(GameView.Dialogue);
     });
 
     it('submits a keyboard completion once while its request is pending', async () => {
@@ -316,19 +384,9 @@ describe('DialogueComponent loading', () => {
         });
         await mount();
 
-        const complete = Array.from(container.querySelectorAll('button')).find(
-            (button) => button.textContent === 'OK',
-        );
-        if (!complete) {
-            throw new Error('Dialogue completion button was not rendered');
-        }
-        await act(async () => {
-            complete.click();
-            await Promise.resolve();
-            await Promise.resolve();
-        });
+        await clickAndSettle(findButton('OK'));
 
-        expect(mocks.applyGameOutcome).toHaveBeenCalledOnce();
+        expect(useGameStore.getState().view).toBe(GameView.Dialogue);
         expect(mocks.getNpc).toHaveBeenCalledTimes(2);
         expect(container.textContent).toContain('Follow-up line.');
     });

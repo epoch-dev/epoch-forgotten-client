@@ -33,18 +33,11 @@ export type DialogueNodeProjection = Readonly<{
     choices?: readonly DialogueChoiceProjection[];
 }>;
 
-export type DialogueDiagnostic = Readonly<{
-    code: 'unreachable' | 'non-terminating';
-    nodeId: string;
-    message: string;
-}>;
-
 export type DialogueGraphProjection = Readonly<{
     dialogueId: string;
     startNodeId: string;
     nodes: readonly DialogueNodeProjection[];
     completionCommandTraces: readonly CommandEventTrace[];
-    diagnostics: readonly DialogueDiagnostic[];
 }>;
 
 export type NpcDialoguePriorityProjection = Readonly<{
@@ -181,10 +174,6 @@ export const summarizeCondition = (condition: unknown): string => {
             return `active-party-has-character ${asString(record.characterId)}`;
         case 'resolver':
             return `resolver ${asString(record.name)}`;
-        case 'all':
-        case 'any':
-        case 'not':
-            return kind;
         default:
             return kind;
     }
@@ -222,116 +211,11 @@ export const projectSpeaker = (
     }
 };
 
-const collectOutgoingTargets = (node: JsonObject): readonly string[] => {
-    if (node.kind === 'line') {
-        const next = node.next as JsonObject | undefined;
-        return next?.kind === 'node' ? [asString(next.nodeId)] : [];
-    }
-    if (node.kind === 'choice') {
-        const choices = Array.isArray(node.choices) ? node.choices : [];
-        return choices
-            .map((choice) => {
-                const next = (choice as JsonObject).next as JsonObject | undefined;
-                return next?.kind === 'node' ? asString(next.nodeId) : undefined;
-            })
-            .filter((target): target is string => !!target);
-    }
-    return [];
-};
-
-const canReachEnd = (
-    nodeId: string,
-    nodesById: ReadonlyMap<string, JsonObject>,
-    visiting: ReadonlySet<string>,
-    memo: Map<string, boolean>,
-): boolean => {
-    if (memo.has(nodeId)) {
-        return memo.get(nodeId) ?? false;
-    }
-    if (visiting.has(nodeId)) {
-        return false;
-    }
-    const node = nodesById.get(nodeId);
-    if (!node) {
-        return false;
-    }
-    const nextVisiting = new Set(visiting);
-    nextVisiting.add(nodeId);
-    let result = false;
-    if (node.kind === 'line') {
-        const next = node.next as JsonObject | undefined;
-        result = next?.kind === 'end' ? true : canReachEnd(asString(next?.nodeId), nodesById, nextVisiting, memo);
-    } else if (node.kind === 'choice') {
-        const choices = Array.isArray(node.choices) ? node.choices : [];
-        result =
-            choices.length > 0 &&
-            choices.every((choice) => {
-                const next = (choice as JsonObject).next as JsonObject | undefined;
-                return next?.kind === 'end'
-                    ? true
-                    : canReachEnd(asString(next?.nodeId), nodesById, nextVisiting, memo);
-            });
-    }
-    memo.set(nodeId, result);
-    return result;
-};
-
-const buildDialogueDiagnostics = (
-    startNodeId: string,
-    nodesById: ReadonlyMap<string, JsonObject>,
-): readonly DialogueDiagnostic[] => {
-    const reachable = new Set<string>();
-    const queue = [startNodeId];
-    while (queue.length > 0) {
-        const nodeId = queue.shift();
-        if (!nodeId || reachable.has(nodeId)) {
-            continue;
-        }
-        const node = nodesById.get(nodeId);
-        if (!node) {
-            continue;
-        }
-        reachable.add(nodeId);
-        for (const target of collectOutgoingTargets(node)) {
-            if (!reachable.has(target)) {
-                queue.push(target);
-            }
-        }
-    }
-    const diagnostics: DialogueDiagnostic[] = [];
-    for (const nodeId of nodesById.keys()) {
-        if (!reachable.has(nodeId)) {
-            diagnostics.push({
-                code: 'unreachable',
-                nodeId,
-                message: `Node "${nodeId}" is not reachable from start "${startNodeId}".`,
-            });
-        }
-    }
-    const memo = new Map<string, boolean>();
-    for (const nodeId of reachable) {
-        if (!canReachEnd(nodeId, nodesById, new Set(), memo)) {
-            diagnostics.push({
-                code: 'non-terminating',
-                nodeId,
-                message: `Node "${nodeId}" has no path to an explicit end.`,
-            });
-        }
-    }
-    return diagnostics;
-};
-
 export const projectDialogueGraph = (
     dialogue: JsonObject,
     catalog: PreviewCatalog,
 ): DialogueGraphProjection => {
     const nodes = Array.isArray(dialogue.nodes) ? dialogue.nodes : [];
-    const nodesById = new Map(
-        nodes
-            .filter((nodeValue): nodeValue is JsonObject => !!nodeValue && typeof nodeValue === 'object')
-            .map((node) => [asString(node.id), node]),
-    );
-    const startNodeId = asString(dialogue.startNodeId);
     const projectedNodes = nodes.map((nodeValue) => {
         const node = nodeValue as JsonObject;
         const kind = node.kind === 'choice' ? 'choice' : 'line';
@@ -365,10 +249,9 @@ export const projectDialogueGraph = (
     });
     return {
         dialogueId: asString(dialogue.id),
-        startNodeId,
+        startNodeId: asString(dialogue.startNodeId),
         nodes: projectedNodes,
         completionCommandTraces: traceCommands(asCommands(dialogue.completionCommands)),
-        diagnostics: buildDialogueDiagnostics(startNodeId, nodesById),
     };
 };
 

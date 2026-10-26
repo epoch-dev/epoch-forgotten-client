@@ -24,13 +24,11 @@ yarn install
 git submodule update --init --recursive
 ```
 
-3. Sync the OpenAPI client from the backend (after API schema changes):
+3. Generate the API client (see [API client](#api-client)):
 
 ```bash
 yarn gen-client:sync
 ```
-
-Generated API types live in `src/common/api/.generated/` (gitignored). Orval generation requires Node.js 22.18 or newer.
 
 4. Optional: sync content preview for Content Lab:
 
@@ -42,29 +40,13 @@ Bundle path: `src/content/.generated/preview-bundle.json` (gitignored, protocol 
 
 ## Running
 
-### Dev
-
 ```bash
 yarn dev
 ```
 
 Content Lab (dev only): `#/content-lab`. Lazy-loaded when `import.meta.env.DEV` is true.
 
-### Stage
-
-```bash
-yarn stage
-```
-
 ## Building
-
-### Stage
-
-```bash
-yarn build:stage
-```
-
-### Production
 
 ```bash
 yarn build
@@ -109,21 +91,20 @@ Preview skill: `.cursor/skills/content-preview` in this repo.
 
 ## API client
 
-Regenerate when backend OpenAPI changes:
+Run `yarn gen-client:sync` after backend OpenAPI changes. It runs backend `yarn gen-api` in the
+sibling repo, then Orval into `src/common/api/.generated/`. Orval requires Node.js 22.18 or newer.
+
+CI regenerates the client from the backend commit pinned in `.server-ref` (an exact 40-character
+`epoch-forgotten` SHA). When the client needs newer backend API changes, push those backend
+commits first, then update the pin in the same client change:
 
 ```bash
-yarn gen-client:sync
+git -C ../epoch-forgotten rev-parse HEAD > .server-ref
 ```
 
-`gen-client:sync` first runs backend `yarn gen-api`, then runs this repository's Orval configuration into `src/common/api/.generated/`.
-
-CI and deployment regenerate the ignored client from an immutable backend revision. Set the
-`EPOCH_FORGOTTEN_SERVER_REF` Actions repository variable to an exact 40-character
-`epoch-forgotten` commit SHA for push and pull-request CI. Manual CI and deployment runs require
-the same SHA as `server_ref`; branch names are rejected.
-
-Until the corresponding backend API changes are committed and pushed, no valid SHA exists. Do not
-update the repository variable or start a deployment before that commit is available remotely.
+Manual CI runs accept an optional `server_ref` input that overrides the file. Branch names are
+rejected. CI runs on `main` (pushes and manual runs) deploy to GitHub Pages after verification
+passes.
 
 ## Generated files
 
@@ -136,6 +117,6 @@ Do not commit or hand-edit generated files.
 
 ## Troubleshooting
 
-If the TypeScript server misses updated API return types, reload the editor window after `yarn gen-client:sync`.
+If the TypeScript server misses updated API return types, reload the editor window after regenerating the client.
 
 If Content Lab shows a stale-bundle error, run `yarn content:sync-preview` from either repo.
