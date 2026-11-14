@@ -38,7 +38,7 @@ Or from client: `yarn content:sync-preview`.
 
 If the bundle is missing, Content Lab shows recovery text with that command. The loader uses a Vite-ignored dynamic import so production builds succeed without the file.
 
-Preview skill: `.cursor/skills/content-preview`.
+Preview skill: `.agents/skills/content-preview`.
 
 ## API and game events
 

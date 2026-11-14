@@ -87,7 +87,7 @@ yarn content:sync-preview
 
 Open `#/content-lab` in the browser. The loader deep-validates bundle v3 (catalog, conditions, commands). Stale v1/v2 bundles are rejected with recovery text. Never edit `src/content/.generated/preview-bundle.json` by hand.
 
-Preview skill: `.cursor/skills/content-preview` in this repo.
+Preview skill: `.agents/skills/content-preview` in this repo.
 
 ## API client
 
