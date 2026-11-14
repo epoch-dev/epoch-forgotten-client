@@ -1,18 +1,32 @@
-import { SceneDataDto, ScenePoint } from '../../common/api/.generated';
-import { scenesClient } from '../../common/api/client';
-import { EffectsService } from '../../common/services/EffectsService';
+import {
+    currentScene,
+    SceneDataDto,
+    ScenePoint,
+} from '../../common/api/.generated';
+import { useGameStore } from '../../views/game/GameStore';
+import { GameView } from '../../views/game/types';
+import { getSceneGridPixelSize } from './sceneGridSize';
 
 export class ScenesService {
     private static sceneData?: SceneDataDto;
     public static userPosition?: ScenePoint;
 
     public static async initialize() {
-        const data = (await scenesClient.currentScene()).data;
+        const data = await currentScene();
         this.sceneData = data;
         this.userPosition = data.userPosition;
-        if (data.plotPoint) {
-            await EffectsService.showEffects([{ dialogue: data.plotPoint }]);
+    }
+
+    public static openPendingDialogue() {
+        const pendingDialogueNpcId = this.sceneData?.pendingDialogueNpcId;
+        if (!pendingDialogueNpcId) {
+            return;
         }
+        useGameStore.setState((prev) => ({
+            ...prev,
+            view: GameView.Dialogue,
+            npcName: pendingDialogueNpcId,
+        }));
     }
 
     public static async getSceneData() {
@@ -24,13 +38,11 @@ export class ScenesService {
 
     public static async getSceneSize() {
         const scene = await this.getSceneData();
-        let width = 0;
-        let height = 0;
-        scene.tiles.forEach((tile) => {
-            width = Math.max(width, tile.position.x);
-            height = Math.max(height, tile.position.y);
+        return getSceneGridPixelSize({
+            columns: scene.columns,
+            rows: scene.rows,
+            tileSize: scene.tileSize,
         });
-        return { width, height };
     }
 
     public static async getUserPosition() {

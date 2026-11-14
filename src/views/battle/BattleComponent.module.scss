@@ -3,7 +3,7 @@
 @import '../../common/styles/mixins.scss';
 
 .battleWrapper {
-    height: 750px;
+    height: calc(100% + 2rem);
     margin: -1rem;
     padding: 1rem;
     position: relative;
@@ -26,7 +26,8 @@
 
 .fieldWrapper {
     width: 100%;
-    height: 575px;
+    min-height: 0;
+    flex: 1 1 auto;
     display: flex;
 }
 
@@ -55,7 +56,8 @@
 }
 
 .actionsWrapper {
-    height: 125px;
+    min-height: 6rem;
+    flex: 0 1 125px;
     margin-top: 1rem;
     display: grid;
     grid-template-columns: 2fr 1fr;

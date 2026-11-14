@@ -1,5 +1,5 @@
 import style from './TooltipComponent.module.scss';
-import { ReactNode, useState, useEffect, MouseEvent } from 'react';
+import { ReactNode, useState, useId, MouseEvent, FocusEvent, KeyboardEvent } from 'react';
 
 type TooltipConfig = {
     containerWidth?: string;
@@ -8,6 +8,8 @@ type TooltipConfig = {
     left?: string;
     transform?: string;
 };
+
+type TooltipPosition = Pick<TooltipConfig, 'top' | 'left' | 'transform'>;
 
 type TooltipComponentProps = {
     children: ReactNode;
@@ -24,30 +26,53 @@ const DEFAULT_CONFIG: TooltipConfig = {
 };
 
 export const TooltipComponent = ({ children, hint, config }: TooltipComponentProps) => {
-    const [cssConfig, setCssConfig] = useState(DEFAULT_CONFIG);
+    const [position, setPosition] = useState<TooltipPosition>();
     const [isVisible, setIsVisible] = useState(false);
+    const tooltipId = useId();
+    const cssConfig = { ...DEFAULT_CONFIG, ...config, ...position };
 
-    useEffect(() => {
-        setCssConfig({ ...DEFAULT_CONFIG, ...config });
-    }, [config]);
+    const positionAt = (x: number, y: number) => {
+        const translateX = x > window.innerWidth / 2 ? '-110%' : '10%';
+        const translateY = y > window.innerHeight / 2 ? '-110%' : '10%';
+
+        setPosition({
+            top: `${y}px`,
+            left: `${x}px`,
+            transform: `translateX(${translateX}) translateY(${translateY})`,
+        });
+    };
 
     const handleMouseEnter = () => {
         setIsVisible(true);
     };
 
     const handleMouseMove = ({ clientX, clientY }: MouseEvent) => {
-        const translateX = clientX > window.innerWidth / 2 ? '-110%' : '10%';
-        const translateY = clientY > window.innerHeight / 2 ? '-110%' : '10%';
-
-        setCssConfig((oldConfig) => ({
-            ...oldConfig,
-            top: `${clientY}px`,
-            left: `${clientX}px`,
-            transform: `translateX(${translateX}) translateY(${translateY})`,
-        }));
+        positionAt(clientX, clientY);
     };
 
     const handleMouseLeave = () => {
+        setIsVisible(false);
+    };
+
+    const handleFocus = ({ target }: FocusEvent<HTMLDivElement>) => {
+        const { left, top, bottom, width, height } = target.getBoundingClientRect();
+        const isInUpperHalf = top + height / 2 < window.innerHeight / 2;
+
+        target.setAttribute('aria-describedby', tooltipId);
+        positionAt(left + width / 2, isInUpperHalf ? bottom : top);
+        setIsVisible(true);
+    };
+
+    const handleBlur = ({ target }: FocusEvent<HTMLDivElement>) => {
+        target.removeAttribute('aria-describedby');
+        setIsVisible(false);
+    };
+
+    const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+        if (event.key !== 'Escape' || !isVisible) {
+            return;
+        }
+        event.stopPropagation();
         setIsVisible(false);
     };
 
@@ -55,12 +80,15 @@ export const TooltipComponent = ({ children, hint, config }: TooltipComponentPro
         <div
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
-            onMouseMove={(e) => handleMouseMove(e)}
+            onMouseMove={handleMouseMove}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+            onKeyDown={handleKeyDown}
             className={style.tooltipContainer}
             style={{ width: cssConfig.containerWidth }}>
             {children}
             {isVisible && (
-                <div className={style.tooltipWrapper} style={cssConfig}>
+                <div id={tooltipId} role="tooltip" className={style.tooltipWrapper} style={cssConfig}>
                     {hint}
                 </div>
             )}

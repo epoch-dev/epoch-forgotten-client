@@ -1,7 +1,12 @@
 import style from './PartyComponent.module.scss';
 import { useEffect, useState } from 'react';
-import { CharacterDto, PartySlot } from '../../common/api/.generated';
-import { charactersClient } from '../../common/api/client';
+import {
+    addToParty as addCharacterToParty,
+    CharacterDto,
+    getRoster,
+    PartySlot,
+    removeFromParty as removeCharacterFromParty,
+} from '../../common/api/.generated';
 import { CharacterComponent } from './CharacterComponent';
 import { SoundService } from '../../common/services/SoundService';
 import { throttle } from '../../common/utils';
@@ -22,7 +27,7 @@ export const PartyComponent = () => {
     }, []);
 
     const setupParty = async () => {
-        const rosterData = (await charactersClient.getRoster()).data;
+        const rosterData = await getRoster();
         setRoster(rosterData.filter((c) => c.partySlot === PartySlot.None));
         setParty(rosterData.filter((c) => c.partySlot !== PartySlot.None));
     };
@@ -42,7 +47,7 @@ export const PartyComponent = () => {
         } else {
             return;
         }
-        await charactersClient.addToParty({ characterId, slot });
+        await addCharacterToParty({ characterId, slot });
         soundService.toggleParty();
         setParty((p) => [{ ...character, partySlot: slot }, ...p]);
         setRoster((r) => r.filter((c) => c.id !== characterId));
@@ -53,7 +58,7 @@ export const PartyComponent = () => {
         if (!character || character.partySlot === PartySlot.Main) {
             return;
         }
-        await charactersClient.removeFromParty({ characterId });
+        await removeCharacterFromParty({ characterId });
         soundService.toggleParty();
         setParty((p) => p.filter((c) => c.id !== characterId));
         setRoster((r) => [character, ...r]);

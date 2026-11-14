@@ -13,6 +13,24 @@
     padding: 0 0.625rem;
 }
 
+.errorState {
+    min-height: 100%;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 0.75rem;
+    text-align: center;
+
+    button {
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        color: $color-light;
+        background: $color-dark;
+        border-bottom: 2px solid $color-primary;
+        border-radius: 0.5rem;
+    }
+}
+
 .tabs {
     display: flex;
     justify-content: center;
@@ -146,27 +164,27 @@
             margin-top: 0.35rem;
             padding-left: 0.35rem;
 
-            &.Unlocked {
+            &.discovered {
                 background-color: $color-light;
                 border-left: 4px solid $color-success;
             }
 
-            &.In-progress {
+            &.active {
                 background-color: $color-light;
                 border-left: 4px solid $color-epic;
             }
 
-            &.Failed {
+            &.failed {
                 background-color: $color-light;
                 border-left: 4px solid $color-error;
             }
 
-            &.On-hold {
+            &.on-hold {
                 background-color: $color-light;
                 border-left: 4px solid rgb(142, 36, 170);
             }
 
-            &.Completed {
+            &.completed {
                 background-color: $color-light;
                 border-left: 4px solid $color-rare;
             }

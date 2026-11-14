@@ -26,8 +26,8 @@
         @include boxShadow;
         position: absolute;
         bottom: 10rem;
+        width: min(80%, 72rem);
         padding: 1rem;
-        min-width: 36rem;
         max-width: 80%;
         background-color: rgba($color-dark, 0.8);
         color: $color-light;
@@ -45,8 +45,14 @@
             align-items: center;
             margin-bottom: 0.5rem;
             justify-content: space-between;
-        
+
+            p {
+                min-width: 0;
+                overflow-wrap: anywhere;
+            }
+
             .dialogueImage {
+                flex: 0 0 auto;
                 width: 4.5rem;
                 height: 4.5rem;
                 margin-right: 1rem;
@@ -55,6 +61,11 @@
                 background-color: rgba($color-dark, 0.0); /* for placeholder */
             }
         }
+    }
+
+    .errorState {
+        display: grid;
+        gap: 0.75rem;
     }
 
     .dialogueBtn {
@@ -87,6 +98,28 @@
         img {
             width: 1rem;
             aspect-ratio: 1/1;
+        }
+    }
+}
+
+@media (max-width: 700px), (max-height: 600px) {
+    .dialogueWrapper {
+        .dialogueItem {
+            bottom: 1rem;
+            width: calc(100% - 2rem);
+            max-width: none;
+
+            .dialogueContent {
+                .dialogueImage {
+                    width: 3rem;
+                    height: 3rem;
+                    margin-right: 0.5rem;
+                }
+
+                .dialogueImage:last-child {
+                    display: none;
+                }
+            }
         }
     }
 }

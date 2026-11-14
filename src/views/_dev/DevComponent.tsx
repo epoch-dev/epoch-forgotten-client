@@ -1,5 +1,8 @@
 import { useRef } from 'react';
-import { charactersClient, itemsClient } from '../../common/api/client';
+import {
+    addItem,
+    recruitCharacter,
+} from '../../common/api/.generated';
 import { ToastService } from '../../common/services/ToastService';
 
 /**
@@ -11,8 +14,8 @@ export const DevComponent = () => {
     const itemNameRef = useRef<HTMLInputElement>(null);
     const itemQuantityRef = useRef<HTMLInputElement>(null);
 
-    const recruitCharacter = async () => {
-        await charactersClient.recruitCharacter({
+    const handleRecruitCharacter = async () => {
+        await recruitCharacter({
             characterName: charNameRef.current!.value,
             level: +charLevelRef.current!.value,
             affinity: 0,
@@ -20,8 +23,8 @@ export const DevComponent = () => {
         ToastService.success({ message: `${charNameRef.current!.value} recruited` });
     };
 
-    const addItem = async () => {
-        await itemsClient.addItem({
+    const handleAddItem = async () => {
+        await addItem({
             name: itemNameRef.current!.value,
             quantity: +itemQuantityRef.current!.value || 1,
         });
@@ -34,14 +37,14 @@ export const DevComponent = () => {
                 <b>Recruit character</b>
                 <input ref={charNameRef} type="text" placeholder="name" />
                 <input ref={charLevelRef} type="number" placeholder="level" />
-                <button onClick={recruitCharacter}>Recruit</button>
+                <button onClick={handleRecruitCharacter}>Recruit</button>
             </section>
             <hr />
             <section className="formWrapper">
                 <b>Add Item</b>
                 <input ref={itemNameRef} type="text" placeholder="name" />
                 <input ref={itemQuantityRef} type="number" placeholder="quantity" />
-                <button onClick={addItem}>Add</button>
+                <button onClick={handleAddItem}>Add</button>
             </section>
         </>
     );

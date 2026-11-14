@@ -1,7 +1,7 @@
 import { AudioService, PlayingTrack } from './AudioService.ts';
 import { Howl } from 'howler';
 import { AssetsService } from './AssetsService.ts';
-import { ItemType } from '../api/.generated/api.ts';
+import { ItemType } from '../api/.generated';
 
 export class SoundService extends AudioService {
     private static instance: SoundService;

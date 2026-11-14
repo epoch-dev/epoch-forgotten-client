@@ -1,0 +1,110 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      server_ref:
+        description: Exact epoch-forgotten commit SHA (defaults to .server-ref)
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  verify:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout client and assets
+        uses: actions/checkout@v7
+        with:
+          submodules: recursive
+          token: ${{ secrets.PAT_TOKEN }}
+          persist-credentials: false
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22.18.0
+          cache: yarn
+
+      - name: Resolve server ref
+        shell: bash
+        env:
+          INPUT_SERVER_REF: ${{ inputs.server_ref }}
+        run: |
+          server_ref="${INPUT_SERVER_REF:-$(< .server-ref)}"
+          if [[ ! "$server_ref" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "Server ref must be an exact 40-character lowercase commit SHA, got '$server_ref'." >&2
+            exit 1
+          fi
+          echo "SERVER_REF=$server_ref" >> "$GITHUB_ENV"
+
+      - name: Checkout server for OpenAPI client
+        uses: actions/checkout@v7
+        with:
+          repository: epoch-dev/epoch-forgotten
+          path: server
+          ref: ${{ env.SERVER_REF }}
+          token: ${{ secrets.PAT_TOKEN }}
+          persist-credentials: false
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Install server dependencies
+        run: yarn install --frozen-lockfile --ignore-scripts
+        working-directory: server
+
+      - name: Generate server OpenAPI spec
+        run: yarn gen-api
+        working-directory: server
+
+      - name: Generate OpenAPI client
+        run: EPOCH_FORGOTTEN_OPENAPI_PATH="$GITHUB_WORKSPACE/server/src/common/api/swagger.json" yarn gen-client
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Test
+        run: yarn test
+
+      - name: Build
+        run: yarn build
+
+      - name: Upload Pages artifact
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+  deploy:
+    needs: verify
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Setup Pages
+        uses: actions/configure-pages@v6
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

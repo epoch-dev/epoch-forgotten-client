@@ -1,13 +1,16 @@
-import { ItemBuyDto } from '../../common/api/.generated';
-import { itemsClient, usersClient } from '../../common/api/client';
+import {
+    buyItems,
+    ItemBuyDto,
+    whoami,
+} from '../../common/api/.generated';
 
 export class ShopService {
     public static async getGold() {
-        const user = (await usersClient.whoami()).data;
+        const user = await whoami();
         return user.gold;
     }
 
     public static async buyItems(dto: ItemBuyDto[]) {
-        await itemsClient.buyItems(dto);
+        await buyItems(dto);
     }
 }

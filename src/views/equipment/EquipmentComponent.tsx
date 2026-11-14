@@ -1,8 +1,12 @@
 import style from './EquipmentComponent.module.scss';
 import { useEffect, useState } from 'react';
 import { useGameStore } from '../game/GameStore';
-import { charactersClient } from '../../common/api/client';
-import { CharacterEquipItemDtoTargetEnum, ItemDto, ItemType } from '../../common/api/.generated';
+import {
+    CharacterEquipItemDtoTarget,
+    getDetail,
+    ItemDto,
+    ItemType,
+} from '../../common/api/.generated';
 import { GameView } from '../game/types';
 import { AssetsService } from '../../common/services/AssetsService';
 import { EquipmentSelectionComponent, EquipmentSelectionComponentProps } from './EquipmentSelectionComponent';
@@ -22,15 +26,15 @@ export const EquipmentComponent = () => {
     }
 
     const fetchEquipment = async () => {
-        const characterData = await charactersClient.getDetail(character.id);
-        setCharacter(characterData.data);
+        const characterData = await getDetail(character.id);
+        setCharacter(characterData);
     };
 
     const showEquipmentSelection = (
         itemLabel: string,
         types: ItemType[],
         currentItem?: ItemDto,
-        target?: CharacterEquipItemDtoTargetEnum,
+        target?: CharacterEquipItemDtoTarget,
     ) => {
         setEqSelectionData({
             currentItem,

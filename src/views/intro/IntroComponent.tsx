@@ -1,11 +1,13 @@
 import style from './IntroComponent.module.scss';
-import { charactersClient } from '../../common/api/client';
+import {
+    CharacterClass,
+    createMainCharacter,
+} from '../../common/api/.generated';
 import { useState } from 'react';
 import { useGameStore } from '../game/GameStore';
 import { ToastService } from '../../common/services/ToastService';
 import { GameView } from '../game/types';
 import { ScenesService } from '../scenes/ScenesService';
-import { CharacterClass } from '../../common/api/.generated';
 import { TooltipComponent } from '../../common/components/TooltipComponent';
 import { throttle } from '../../common/utils';
 
@@ -18,10 +20,8 @@ export const IntroComponent = () => {
         if (!mainName.length || !mainClass) {
             return;
         }
-        await Promise.all([
-            charactersClient.createMainCharacter({ name: mainName, class: mainClass }),
-            ScenesService.initialize(),
-        ]);
+        await createMainCharacter({ name: mainName, class: mainClass });
+        await ScenesService.initialize();
         ToastService.success({ message: 'Let the journey begin' });
         setView(GameView.World);
     };

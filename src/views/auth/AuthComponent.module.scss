@@ -2,7 +2,9 @@
 @import '../../common/styles/variables.scss';
 @import '../../common/styles/mixins.scss';
 
-:root {
+.authLayout {
+    position: fixed;
+    inset: 0;
     overflow: hidden;
 }
 

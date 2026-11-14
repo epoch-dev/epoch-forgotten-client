@@ -14,11 +14,14 @@ import { InventoryComponent } from '../inventory/InventoryComponent';
 import ShopBuyComponent from '../shop/ShopBuyComponent';
 import { ShopSellComponent } from '../shop/ShopSellComponent';
 import { useEffect, useRef } from 'react';
-import { battleClient, charactersClient } from '../../common/api/client';
+import {
+    getParty,
+    loadBattle,
+} from '../../common/api/.generated';
 import { useYellowToast } from '../../common/hooks.ts';
 import SettingsPanel from '../../common/components/SettingsPanel.tsx';
 import InfoPanel from '../../common/components/InfoPanel.tsx';
-import { UserRole } from '../../common/api/.generated/api.ts';
+import { UserRole } from '../../common/api/.generated';
 import { StorageService } from '../../common/services/StorageService.ts';
 
 const NOT_SCROLLABLE_VIEWS = [
@@ -55,15 +58,15 @@ export const GameComponent = () => {
     }, [view]);
 
     const checkParty = async () => {
-        const party = await charactersClient.getParty();
-        if (!party.data.length) {
+        const party = await getParty();
+        if (!party.length) {
             setView(GameView.Intro);
         }
     };
 
     const checkBattle = async () => {
-        const battle = await battleClient.loadBattle();
-        if (!battle.data.finished) {
+        const battle = await loadBattle();
+        if (!battle.finished) {
             setView(GameView.Battle);
         }
     };
@@ -89,7 +92,7 @@ export const GameComponent = () => {
     };
 
     return (
-        <>
+        <div className={style.gameLayout}>
             <main className={style.contentWrapper} style={{ ...overflowHidden }}>
                 <ScenesComponent />
                 {view === GameView._Dev && <DevComponent />}
@@ -129,6 +132,6 @@ export const GameComponent = () => {
                     </button>
                 )}
             </aside>
-        </>
+        </div>
     );
 };

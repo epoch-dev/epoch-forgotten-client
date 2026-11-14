@@ -1,0 +1,141 @@
+.contentLabCard {
+    border: 1px solid #334155;
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    background: #111827;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+
+    img {
+        width: 4rem;
+        height: 4rem;
+        object-fit: contain;
+    }
+}
+
+.wrapper {
+    min-height: 100vh;
+    padding: 1rem;
+    color: #e2e8f0;
+    background: #020617;
+}
+
+.header {
+    margin-bottom: 1rem;
+
+    h1 {
+        margin: 0;
+    }
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: 12rem 1fr;
+    gap: 1rem;
+}
+
+.nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+
+    button {
+        text-align: left;
+        background: #1e293b;
+        color: inherit;
+        border: 1px solid #334155;
+        border-radius: 0.35rem;
+        padding: 0.45rem 0.6rem;
+        cursor: pointer;
+
+        &:hover {
+            background: #334155;
+        }
+
+        &:focus-visible {
+            outline: 2px solid #7dd3fc;
+            outline-offset: 2px;
+        }
+    }
+}
+
+.navActive {
+    border-color: #38bdf8 !important;
+    background: #0c4a6e !important;
+    color: #f0f9ff !important;
+    font-weight: 700;
+}
+
+.panel {
+    border: 1px solid #334155;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    background: #0f172a;
+    overflow: auto;
+}
+
+.recovery {
+    padding: 2rem;
+    color: #e2e8f0;
+    background: #020617;
+    min-height: 100vh;
+
+    code {
+        display: inline-block;
+        margin-top: 0.75rem;
+        padding: 0.35rem 0.5rem;
+        background: #1e293b;
+    }
+}
+
+.status {
+    padding: 2rem;
+    color: #e2e8f0;
+}
+
+.cardGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+    gap: 0.75rem;
+}
+
+.assetList {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 0.35rem;
+
+    li {
+        display: grid;
+        grid-template-columns: 4rem 1fr;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    code {
+        display: block;
+        font-size: 0.75rem;
+        color: #94a3b8;
+        word-break: break-all;
+    }
+}
+
+:global(.contentLabCanvas) {
+    width: 100%;
+    border: 1px solid #334155;
+    margin-top: 0.75rem;
+    image-rendering: pixelated;
+}
+
+.traceList {
+    list-style: none;
+    padding-left: 0.5rem;
+    margin: 0.35rem 0;
+    font-size: 0.85rem;
+}
+
+:global(.contentLabMeta) {
+    color: #94a3b8;
+    font-size: 0.85rem;
+}

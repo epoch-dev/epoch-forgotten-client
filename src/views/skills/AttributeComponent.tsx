@@ -1,8 +1,11 @@
 import style from './SkillsComponent.module.scss';
 import { AssetsService } from '../../common/services/AssetsService';
 import { useGameStore } from '../game/GameStore';
-import { CharacterAttrs, CharacterImproveAttributeDtoAttributeEnum } from '../../common/api/.generated';
-import { charactersClient } from '../../common/api/client';
+import {
+    CharacterAttrs,
+    CharacterImproveAttributeDtoAttribute,
+    improveAttribute,
+} from '../../common/api/.generated';
 import { SoundService } from '../../common/services/SoundService';
 import { throttle } from '../../common/utils';
 
@@ -28,13 +31,13 @@ export const AttributeComponent = ({
         if (!name || character.attributePoints <= 0) {
             return;
         }
-        const updatedCharacterData = await charactersClient.improveAttribute({
+        const updatedCharacterData = await improveAttribute({
             characterId: character.id,
-            attribute: name as CharacterImproveAttributeDtoAttributeEnum,
+            attribute: name as CharacterImproveAttributeDtoAttribute,
         });
         soundService.attrUp();
         setCharacter({
-            ...updatedCharacterData.data,
+            ...updatedCharacterData,
         });
     };
 

@@ -1,5 +1,5 @@
 import style from './BattleCharacterComponent.module.scss';
-import { BattleCharacter, BattleMoveResult, BattleStatus } from '../../common/api/.generated';
+import { BattleMoveResult, BattleStatus, type BattleCharacter } from '../../common/api/.generated';
 import { TooltipComponent } from '../../common/components/TooltipComponent';
 import { AssetsService } from '../../common/services/AssetsService';
 import { ProgressBarComponent } from '../../common/components/ProgressBarComponent';
@@ -53,6 +53,7 @@ export const BattleCharacterComponent = ({
         : AssetsService.getEnemyUri(character.imageUri);
 
     const animatedLog = animatedSkill?.moveLogs.find((log) => log.targetId === character.id);
+    const characterSize = character.size;
 
     return (
         <TooltipComponent
@@ -91,8 +92,8 @@ export const BattleCharacterComponent = ({
                 onClick={onClick}
                 className={characterClass}
                 style={{
-                    width: `${WIDTH_FACTOR * character.size}px`,
-                    height: `${HEIGHT_FACTOR * character.size}px`,
+                    width: `${WIDTH_FACTOR * characterSize}px`,
+                    height: `${HEIGHT_FACTOR * characterSize}px`,
                 }}>
                 {animatedSkill?.characterId === character.id && (
                     <div className={style.logItem}>
@@ -123,7 +124,7 @@ export const BattleCharacterComponent = ({
                 <img
                     src={characterImgUri}
                     alt={character.label}
-                    style={{ animationDuration: `${character.size / 20}s` }}
+                    style={{ animationDuration: `${characterSize / 20}s` }}
                 />
                 <ProgressBarComponent
                     current={character.statistics.health}

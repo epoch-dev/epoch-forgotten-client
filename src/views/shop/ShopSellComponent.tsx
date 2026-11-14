@@ -1,7 +1,12 @@
 import { useEffect, useState } from 'react';
 import style from './ShopComponent.module.scss';
-import { ItemDto, ItemSellDtoItemsInner } from '../../common/api/.generated';
-import { itemsClient, npcsClient } from '../../common/api/client';
+import {
+    getItems,
+    getNpc,
+    ItemDto,
+    ItemSellDtoItemsItem,
+    sellItems,
+} from '../../common/api/.generated';
 import { useGameStore } from '../game/GameStore';
 import { SoundService } from '../../common/services/SoundService';
 import { GameView } from '../game/types';
@@ -33,14 +38,14 @@ export const ShopSellComponent = () => {
         if (!npcName) {
             return;
         }
-        const merchantData = await npcsClient.getNpc(npcName);
-        setPurchaseFactor(merchantData.data.purchaseFactor ?? 0);
+        const merchantData = await getNpc(npcName);
+        setPurchaseFactor(merchantData.purchaseFactor ?? 0);
     };
 
     const fetchItems = async () => {
         setLoading(true);
-        const items = await itemsClient.getItems();
-        setUserItems(items.data.filter((item) => item.price !== undefined));
+        const items = await getItems();
+        setUserItems(items.filter((item) => item.price !== undefined));
         setLoading(false);
     };
 
@@ -78,10 +83,10 @@ export const ShopSellComponent = () => {
             return;
         }
         setLoading(true);
-        const items: ItemSellDtoItemsInner[] = Object.keys(checkout)
+        const items: ItemSellDtoItemsItem[] = Object.keys(checkout)
             .map((itemId) => ({ id: itemId, quantity: checkout[itemId] }))
             .filter((item) => item.quantity > 0);
-        await itemsClient.sellItems({ npcName, items });
+        await sellItems({ npcName, items });
         await fetchItems();
         setGold((prevGold) => prevGold + totalFactored);
         setTotalPrice(0);

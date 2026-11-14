@@ -1,19 +1,18 @@
-import style from './BattleResultComponent.module.scss';
+import { useEffect, useRef, useState } from 'react';
 import {
     BattleDefeatResults,
     BattleVictoryRewards,
     BattleVictoryRewardsLevel,
 } from '../../common/api/.generated';
-import { useGameStore } from '../game/GameStore';
-import { GameView } from '../game/types';
-import { AssetsService } from '../../common/services/AssetsService';
-import { ProgressBarComponent } from '../../common/components/ProgressBarComponent';
-import { useEffect, useState } from 'react';
-import { wait } from '../../common/utils';
-import { CSS_COLOR } from '../../common/styles';
-import { ScenesService } from '../scenes/ScenesService';
-import { EffectsService } from '../../common/services/EffectsService';
 import { getLevelExperience } from '../../common/api/definitions/levelUtil';
+import { ProgressBarComponent } from '../../common/components/ProgressBarComponent';
+import { runExclusive } from '../../common/runExclusive';
+import { AssetsService } from '../../common/services/AssetsService';
+import { applyGameOutcome } from '../../common/services/gameOutcome';
+import { CSS_COLOR } from '../../common/styles';
+import { wait } from '../../common/utils';
+import { useGameStore } from '../game/GameStore';
+import style from './BattleResultComponent.module.scss';
 
 export const BattleResultComponent = ({
     victoryResults,
@@ -22,20 +21,18 @@ export const BattleResultComponent = ({
     victoryResults: BattleVictoryRewards | undefined;
     defeatResults: BattleDefeatResults | undefined;
 }) => {
-    const { scene, setView } = useGameStore();
+    const { scene } = useGameStore();
+    const isClosingRef = useRef(false);
+    const [isClosing, setIsClosing] = useState(false);
 
-    useEffect(() => {
-        void handleBattleEnded();
-    }, [victoryResults]);
-
-    const handleBattleEnded = async () => {
-        await EffectsService.showEffects([
-            ...(victoryResults?.effects ? [victoryResults.effects] : []),
-            ...(defeatResults?.effects ? [defeatResults.effects] : []),
-        ]);
-        await ScenesService.initialize();
-        await scene?.loadScene();
-    };
+    const handleClose = () =>
+        runExclusive(isClosingRef, async () => {
+            setIsClosing(true);
+            await applyGameOutcome([...(victoryResults?.events ?? []), ...(defeatResults?.events ?? [])]);
+            await scene
+                ?.loadScene()
+                .catch((error: unknown) => console.error('Unable to reload the scene after battle', error));
+        });
 
     if (!victoryResults) {
         return (
@@ -47,9 +44,13 @@ export const BattleResultComponent = ({
                 </p>
                 <br />
                 <hr />
-                <div onClick={() => setView(GameView.World)} className={style.closeBtn}>
+                <button
+                    type="button"
+                    onClick={() => void handleClose()}
+                    className={style.closeBtn}
+                    disabled={isClosing}>
                     Close
-                </div>
+                </button>
             </section>
         );
     }
@@ -89,9 +90,13 @@ export const BattleResultComponent = ({
                 </div>
             </div>
 
-            <div onClick={() => setView(GameView.World)} className={style.closeBtn}>
+            <button
+                type="button"
+                onClick={() => void handleClose()}
+                className={style.closeBtn}
+                disabled={isClosing}>
                 Close
-            </div>
+            </button>
         </section>
     );
 };
