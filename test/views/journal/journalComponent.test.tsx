@@ -53,7 +53,7 @@ describe('JournalComponent loading', () => {
 
         expect(container.textContent).toContain('Unable to load journal.');
         expect(container.textContent).toContain('Try again');
-        expect(mocks.toastError).toHaveBeenCalledWith({ message: 'Unable to load journal.' });
+        expect(mocks.toastError).not.toHaveBeenCalled();
 
         const retry = container.querySelector('button');
         if (!retry) {

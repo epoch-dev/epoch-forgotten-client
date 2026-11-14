@@ -9,9 +9,12 @@ import { getCurrentTimeStamp } from '../../common/utils';
 import { appConfig } from '../../common/config';
 import { SceneMoveDirection, SceneMoveResultDto } from '../../common/api/definitions/sceneTypes';
 
+const SCENE_LOAD_MOVEMENT_LOCK_MS = 1500;
+
 export class SceneRenderer extends Scene {
     public blockMovement = false;
     public musicUri?: string;
+    private movementLockedUntil = 0;
     private user?: UserSprite;
     private onMove: (direction: SceneMoveDirection) => void;
     private onEncounter: (encounter: SceneMoveResultDto['encounterData']) => void;
@@ -61,7 +64,7 @@ export class SceneRenderer extends Scene {
             this.musicService.play(sceneData.musicUri);
         }, 0);
 
-        this.load.on('complete', () => {
+        this.load.once('complete', () => {
             this.sceneImageRef?.destroy();
             this.tileRenderer.clearTiles();
 
@@ -85,9 +88,7 @@ export class SceneRenderer extends Scene {
             this.cameras.main.startFollow(this.user, true, 0.1, 0.1);
             this.cameras.main.setZoom(2);
             this.fadeIn();
-
-            this.blockMovement = true;
-            setTimeout(() => (this.blockMovement = false), 1500);
+            this.movementLockedUntil = getCurrentTimeStamp() + SCENE_LOAD_MOVEMENT_LOCK_MS;
         });
     }
 
@@ -112,6 +113,7 @@ export class SceneRenderer extends Scene {
         if (
             !this.isAnyKeyPressed() ||
             this.lastMove + appConfig.moveInterval > getCurrentTimeStamp() ||
+            this.movementLockedUntil > getCurrentTimeStamp() ||
             this.blockMovement ||
             !this.user
         ) {

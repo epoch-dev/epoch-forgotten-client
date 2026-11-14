@@ -1,4 +1,5 @@
 import style from './BattleComponent.module.scss';
+import { isAxiosError } from 'axios';
 import { KeyboardEvent, useEffect, useState } from 'react';
 import {
     BattleCharacter,
@@ -27,6 +28,7 @@ import { SoundService } from '../../common/services/SoundService';
 import { ToastService } from '../../common/services/ToastService';
 
 const ANIMATION_TIME_MS = 1000;
+const TURN_CONFLICT_MESSAGE = 'The battle changed before your turn resolved. Try again.';
 const musicService = MusicService.getInstance();
 const soundService = SoundService.getInstance();
 
@@ -189,7 +191,17 @@ export const BattleComponent = () => {
                 setDefeatResults(turnResult.defeat);
                 soundService.defeat();
             }
-        } catch {
+        } catch (error) {
+            await recoverFromTurnFailure(error);
+        }
+    };
+
+    const recoverFromTurnFailure = async (error: unknown) => {
+        if (isAxiosError(error) && error.response?.status === 409) {
+            ToastService.error({ message: TURN_CONFLICT_MESSAGE });
+        }
+        const battle = await loadBattle().catch(() => undefined);
+        if (!battle || battle.finished) {
             setView(GameView.World);
         }
     };
@@ -199,7 +211,13 @@ export const BattleComponent = () => {
             return;
         }
 
-        const result = await escapeBattle();
+        let result: BattleTurnResultDto;
+        try {
+            result = await escapeBattle();
+        } catch (error) {
+            await recoverFromTurnFailure(error);
+            return;
+        }
         if (result.escaped) {
             ToastService.success({ message: 'Escaped successfully', duration: 1000 });
             return setView(GameView.World);

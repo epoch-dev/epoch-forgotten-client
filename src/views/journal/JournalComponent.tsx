@@ -5,7 +5,6 @@ import {
     QuestJournalEntryDtoStatus,
 } from '../../common/api/.generated';
 import LoadingOverlay from '../../common/components/LoadingOverlay';
-import { ToastService } from '../../common/services/ToastService';
 import QuestItem from './components/QuestItem';
 import style from './JournalComponent.module.scss';
 
@@ -39,9 +38,7 @@ const JournalComponent = () => {
                 }
             } catch {
                 if (!cancelled) {
-                    const message = 'Unable to load journal.';
-                    setLoadError(message);
-                    ToastService.error({ message });
+                    setLoadError('Unable to load journal.');
                 }
             } finally {
                 if (!cancelled) {
